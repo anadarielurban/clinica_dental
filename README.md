@@ -1,5 +1,22 @@
 # DentalClinic
+
 The DentalClinicWPF application is a desktop application built using WPF and MVVM for managing a dental clinic’s operations. It includes functionalities for handling appointments, patients, dentists, invoices, medical records, treatments, prescriptions, inventory, and staff management.
+
+Technologies used in the project:
+
+.NET (C#)
+
+WPF (Windows Presentation Foundation)
+
+Entity Framework Core – ORM for database management.
+
+CommunityToolkit.Mvvm – Simplifies MVVM implementation.
+
+XAML – Defines the user interface.
+
+SQL Server – Database system.
+
+-------------------------------------
 
 ![Zrzut ekranu 2025-02-01 152547](https://github.com/user-attachments/assets/116ce3ef-67df-4714-aace-fcb1fe19eca3)
 
