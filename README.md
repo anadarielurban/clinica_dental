@@ -1,215 +1,133 @@
-# DentalClinic
+[![.NET](https://img.shields.io/badge/.NET-8.0-purple)](https://dotnet.microsoft.com/) [![WPF](https://img.shields.io/badge/WPF-Desktop-blueviolet)]() [![Build Status](https://img.shields.io/github/actions/workflow/status/yourusername/DentalClinicWPF/ci.yml?branch=main)](https://github.com/yourusername/DentalClinicWPF/actions) [![License: MIT](https://img.shields.io/badge/License-MIT-green)](LICENSE)
 
-The DentalClinicWPF application is a desktop application built using WPF and MVVM for managing a dental clinic’s operations. It includes functionalities for handling appointments, patients, dentists, invoices, medical records, treatments, prescriptions, inventory, and staff management.
+# 🦷 DentalClinicWPF
 
-Technologies used in the project:
+A modern **WPF (C#)** desktop application for end‑to‑end management of a dental clinic. The app tracks **appointments, patients, dentists, invoices, treatments, prescriptions, inventory, and staff** with an intuitive MVVM front‑end and a robust Entity Framework Core backend.
 
-.NET (C#)
+---
 
-WPF (Windows Presentation Foundation)
+## 📌 Table of Contents
 
-Entity Framework Core – ORM for database management.
+* [✨ Key Features](#✨-key-features)
+* [🛠️ Tech Stack](#🛠️-tech-stack)
+* [🏗️ Project Structure](#🏗️-project-structure)
+* [⚙️ Installation](#⚙️-installation)
+* [▶️ Running the App](#▶️-running-the-app)
+* [📸 Screenshots](#📸-screenshots)
+* [📄 License](#📄-license)
 
-CommunityToolkit.Mvvm – Simplifies MVVM implementation.
+---
 
-XAML – Defines the user interface.
+## ✨ Key Features
 
-SQL Server – Database system.
+* **Dashboard KPI Widgets** – upcoming appointments, revenue, unpaid invoices, revenue per dentist & timeline chart.
+* **Appointments** – weekly calendar, dentist availability, quick add/edit/preview.
+* **Patients** – full CRUD with validation (uppercase names, phone/email rules, age ≥ 18), search & sort, detailed history tabs.
+* **Billing** – invoice generation, status tracking, print & PDF export.
+* **Treatments & Prescriptions** – per‑patient record keeping with print‑ready docs.
+* **Inventory** – stock levels, reorder alerts (optional feature flag).
+* **Staff Management** – dentists & assistants, working hours, revenue breakdown.
+* **MVVM & CommunityToolkit.Mvvm** – clean separation, async commands, dependency injection.
+* **Export** – one‑click Excel/PDF export for dashboards and lists.
 
--------------------------------------
+---
 
-![Zrzut ekranu 2025-02-01 152547](https://github.com/user-attachments/assets/116ce3ef-67df-4714-aace-fcb1fe19eca3)
+## 🛠️ Tech Stack
 
-Upcoming Appointments: A table listing scheduled appointments with patient names, assigned dentists, and appointment times.
+| Layer           | Technology                                      |
+| --------------- | ----------------------------------------------- |
+| **Language**    | C# 12                                           |
+| **Runtime**     | .NET 8 LTS                                      |
+| **UI**          | Windows Presentation Foundation (WPF)           |
+| **Patterns**    | MVVM + CommunityToolkit.Mvvm                    |
+| **Database**    | SQL Server Express (local)                      |
+| **ORM**         | Entity Framework Core 8 – Code‑First Migrations |
+| **Charts**      | LiveCharts 2                                    |
+| **PDF / Excel** | QuestPDF & EPPlus                               |
+| **Testing**     | xUnit, Moq, FluentAssertions                    |
+| **CI/CD**       | GitHub Actions – build, test, code‑analysis     |
 
-Financial Statistics: Displays total revenue and the number of unpaid invoices.
+---
 
-Revenue per Dentist: A breakdown of earnings by each dentist in the clinic.
+## 🏗️ Project Structure
 
-Revenue Over Time Chart: A bar graph illustrating revenue trends over recent months.
+```text
+DentalClinicWPF.sln
+│
+├─ DentalClinic.Domain/          # Entities & business rules
+├─ DentalClinic.Infrastructure/  # EF Core DbContext & migrations
+├─ DentalClinic.Application/     # Services, DTOs, validators
+├─ DentalClinic.Presentation/    # WPF views (XAML), view‑models
+└─ DentalClinic.Tests/           # Unit & integration tests
+```
 
-Export Options: Buttons for exporting the dashboard data to PDF or Excel.
+---
 
-Quick Actions: Buttons for adding new appointments and patients.
+## ⚙️ Installation
 
-![Zrzut ekranu 2025-02-01 152953](https://github.com/user-attachments/assets/bcc92f8b-65f8-42ea-9974-07517c3dcc66)
-![Zrzut ekranu 2025-02-01 153000](https://github.com/user-attachments/assets/bff15de1-e51a-4737-95eb-272fcbca7879)
+### 🔑 Prerequisites
 
+* **Windows 10/11**
+* **.NET SDK 8.0+**
+  `winget install Microsoft.DotNet.SDK.8`
+* **SQL Server Express 2019+** *(or change the connection string to another SQL Server instance)*
+* *(Optional)* **Visual Studio 2022** with ".NET Desktop Development" workload.
 
-Patient List View:
+### 🏃‍♂️ Quick Start
 
-![Zrzut ekranu 2025-02-01 152633](https://github.com/user-attachments/assets/c0a6d4e4-de2b-4035-9cb2-3f033214257e)
+```bash
+# 1  Clone repository
+git clone https://github.com/yourusername/DentalClinicWPF.git
+cd DentalClinicWPF
 
-Displays a table of registered patients with their first name, last name, phone number, email, and date of birth.
+# 2  Restore NuGet packages
+dotnet restore
 
-Provides search, reload, add, edit, and view details functionalities.
+# 3  Configure database
+#    Edit ./DentalClinic.Infrastructure/appsettings.json
+#    Default connection string uses (localdb)\\MSSQLLocalDB
 
-Sorting options allow organization by various criteria.
+# 4  Apply migrations & seed sample data
+dotnet ef database update --project DentalClinic.Infrastructure
 
-Add New Patient Form:
+# 5  Run the application
+dotnet run --project DentalClinic.Presentation
+```
 
-![Zrzut ekranu 2025-02-01 152643](https://github.com/user-attachments/assets/e3a6c835-ef23-4c39-8733-9b1facbd7e44)
+> **Tip:** Opening the solution in Visual Studio auto‑restores packages and sets **DentalClinic.Presentation** as the startup project.
 
-A form for entering new patient details including first name, last name, date of birth, gender, phone number, email, and address.
+---
 
-Dropdown selection for gender and automatic validation of phone numbers and emails.
-
-Edit/Delete Patient Form:
-
-![Zrzut ekranu 2025-02-01 152649](https://github.com/user-attachments/assets/0316c1ec-1006-47fe-955f-afbe5985d711)
-
-Enables updating patient details with options to cancel, save, or delete.
-
-Date of birth selection via a DatePicker.
-
-Validation Errors:
-
-![Zrzut ekranu 2025-02-01 152704](https://github.com/user-attachments/assets/e35ad1ef-a910-42f8-a31e-f8d257d9a717)
-
-Shows red error messages when invalid data is entered.
-
-Includes rules such as name starting with an uppercase letter, valid email format, phone number structure, and address format.
-
-Prevents adding underage patients.
-
-Search & Sorting Functionality:
-
-![Zrzut ekranu 2025-02-01 152741](https://github.com/user-attachments/assets/1a067a3a-12ba-4040-818a-b44745a77972)
-
-![Zrzut ekranu 2025-02-01 152748](https://github.com/user-attachments/assets/0d59329b-b824-4e81-8ec9-f40b713c7577)
-Allows filtering patients by name and sorting them by different attributes (e.g., Date of Birth).
-
-The patient list updates dynamically based on search criteria.
-
-Patient Details View:
-
-![Zrzut ekranu 2025-02-01 152715](https://github.com/user-attachments/assets/1ca3177b-27f8-4e10-ae0f-ddd933424191)
-
-Displays patient information:
-
-Name, date of birth, phone number, email, and address.
-
-Statistics Section:
-
-Total number of visits.
-
-Payment status for invoices.
-
-Tabbed Interface:
-
-Appointments: List of scheduled appointments with dates, times, assigned dentists, treatments, and notes.
-
-Prescriptions, Treatment Plans, Invoices, and Medical Documentation tabs for comprehensive patient records.
-
-Search & Export Functionality:
-
-Search/filter patient history.
-
-Export patient details to PDF.
-
-Action Buttons:
-
-Add, Edit, and Preview options for managing appointments.
-
-Appointment Preview:
-
-![Zrzut ekranu 2025-02-01 152722](https://github.com/user-attachments/assets/0f44207c-29bd-4d23-b702-12f2080b1b12)
-
-A detailed preview window for a selected appointment.
-
-Displays:
-
-Appointment ID, date, and time.
-
-Patient details (name and DOB).
-
-Assigned dentist and treatment.
-
-Additional notes.
-
-Weekly Appointment Overview:
-
-![Zrzut ekranu 2025-02-01 152801](https://github.com/user-attachments/assets/8e58ad33-a917-499a-b1d1-a3f1472adad4)
-![Zrzut ekranu 2025-02-01 152808](https://github.com/user-attachments/assets/c2688839-08b2-4706-9ae2-6591ec6c15c6)
-
-The calendar presents scheduled appointments for the selected week, organized by date.
-
-Each entry includes:
-
-Time of appointment
-
-Patient name
-
-Treatment type
-
-Additional treatment details (if applicable)
-
-Displays the dentist’s details, including:
-
-Specialization (e.g., Orthodontics)
-
-Phone number & email
-
-Availability (e.g., Monday–Friday, 9:00–18:00)
-
-Key Performance Metrics:
-
-Total number of appointments this week
-
-Most frequent procedure performed
-
-"Previous Week" and "Next Week" buttons allow easy navigation between weeks.
-
-Invoice Details View
-
-![Zrzut ekranu 2025-02-01 152824](https://github.com/user-attachments/assets/f66beb7f-a1d8-4c82-ab97-118db545edf3)
-
-Shows billing details for a patient's dental visit.
-
-Includes:
-
-Invoice ID
-
-Patient details (Name & DOB)
-
-Dentist’s name
-
-Treatment type
-
-Appointment date
-
-Total amount billed
-
-Payment status (Paid/Unpaid)
-
-Action Buttons:
-
-Preview: Displays a print-friendly version of the invoice.
-
-Print: Allows direct printing.
-
-Export to PDF: Saves the invoice as a PDF for record-keeping or sharing with the patient.
-
-Printed Invoice PDF Preview
-
-![Zrzut ekranu 2025-02-01 153004](https://github.com/user-attachments/assets/fdc36836-3334-44cb-a37f-b3738897329f)
-
-A formatted document containing:
-
-Clinic name, address, and phone number at the top.
-
-Invoice details, including bank account number for payments.
-
-Patient and treatment details.
-
-Signatures section for clinic and client authorization.
-
-
-
-
-
-
-
-
-
-
+## ▶️ Running the App
+
+* Login screen is skipped; the demo database seeds two dentists and three test patients.
+* Dashboard opens by default – use the left navigation bar to access Patients, Appointments, Billing, etc.
+* Press **F1** anywhere for contextual help overlays.
+
+---
+
+## 📸 Screenshots
+
+| #  | Screen                                                                               | Description                                                  |
+| -- | ------------------------------------------------------------------------------------ | ------------------------------------------------------------ |
+| 1  | ![](https://github.com/user-attachments/assets/116ce3ef-67df-4714-aace-fcb1fe19eca3) | **Dashboard** – upcoming appointments, revenue KPIs & charts |
+| 2  | ![](https://github.com/user-attachments/assets/bcc92f8b-65f8-42ea-9974-07517c3dcc66) | **Appointment Form** – schedule new visit                    |
+| 3  | ![](https://github.com/user-attachments/assets/bff15de1-e51a-4737-95eb-272fcbca7879) | **Appointment List** – sortable, filterable                  |
+| 4  | ![](https://github.com/user-attachments/assets/c0a6d4e4-de2b-4035-9cb2-3f033214257e) | **Patients** – search & CRUD table                           |
+| 5  | ![](https://github.com/user-attachments/assets/e3a6c835-ef23-4c39-8733-9b1facbd7e44) | **Add Patient** – validated form                             |
+| 6  | ![](https://github.com/user-attachments/assets/0316c1ec-1006-47fe-955f-afbe5985d711) | **Edit/Delete Patient**                                      |
+| 7  | ![](https://github.com/user-attachments/assets/e35ad1ef-a910-42f8-a31e-f8d257d9a717) | **Validation Errors** – inline feedback                      |
+| 8  | ![](https://github.com/user-attachments/assets/1a067a3a-12ba-4040-818a-b44745a77972) | **Search Bar** – live filtering                              |
+| 9  | ![](https://github.com/user-attachments/assets/0d59329b-b824-4e81-8ec9-f40b713c7577) | **Sorting Menu**                                             |
+| 10 | ![](https://github.com/user-attachments/assets/1ca3177b-27f8-4e10-ae0f-ddd933424191) | **Patient Details** – tabs & stats                           |
+| 11 | ![](https://github.com/user-attachments/assets/0f44207c-29bd-4d23-b702-12f2080b1b12) | **Appointment Preview** modal                                |
+| 12 | ![](https://github.com/user-attachments/assets/8e58ad33-a917-499a-b1d1-a3f1472adad4) | **Weekly Calendar (left)**                                   |
+| 13 | ![](https://github.com/user-attachments/assets/c2688839-08b2-4706-9ae2-6591ec6c15c6) | **Weekly Calendar (right)**                                  |
+| 14 | ![](https://github.com/user-attachments/assets/f66beb7f-a1d8-4c82-ab97-118db545edf3) | **Invoice Details** – actions & status                       |
+| 15 | ![](https://github.com/user-attachments/assets/fdc36836-3334-44cb-a37f-b3738897329f) | **Invoice PDF Preview**                                      |
+
+---
+
+## 📄 License
+
+Released under the [MIT License](LICENSE).
