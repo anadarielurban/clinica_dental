@@ -1,0 +1,50 @@
+﻿<UserControl x:Class="DentalClinicWPF.Views.Supplier.SupplierView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" /> <!-- Toolbar -->
+            <RowDefinition Height="Auto" /> <!-- Sorting -->
+            <RowDefinition Height="*" />    <!-- Data Grid -->
+        </Grid.RowDefinitions>
+
+        <!-- Toolbar -->
+        <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,10">
+            <TextBox Width="300" 
+                     Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" 
+                     ToolTip="Search by company name or contact name" 
+                     Margin="0,0,10,0" />
+            <Button Content="Search" Command="{Binding SearchCommand}" Width="100" Margin="0,0,10,0" />
+            <Button Content="Reload" Command="{Binding ReloadCommand}" Width="100" Margin="0,0,10,0" />
+            <Button Content="Add Supplier" Command="{Binding AddSupplierCommand}" Width="150" Margin="0,0,10,0" />
+            <Button Content="Edit Supplier" Command="{Binding EditSupplierCommand}"
+                    Width="150" Margin="0,0,10,0"
+                    IsEnabled="{Binding SelectedSupplier}" />
+        </StackPanel>
+
+        <!-- Sorting Section -->
+        <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="0,0,0,10">
+            <ComboBox Width="150" ItemsSource="{Binding SortOptions}" 
+                      SelectedItem="{Binding SelectedSortOption}" 
+                      ToolTip="Select sorting criterion" 
+                      Margin="0,0,10,0" />
+            <Button Content="Sort" Command="{Binding SortCommand}" Width="100" />
+        </StackPanel>
+
+        <!-- Supplier List -->
+        <DataGrid Grid.Row="2" ItemsSource="{Binding Suppliers}" 
+                  AutoGenerateColumns="False" 
+                  SelectedItem="{Binding SelectedSupplier}" 
+                  IsReadOnly="True" 
+                  SelectionMode="Single"
+                  Margin="0,0,0,10">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Company Name" Binding="{Binding CompanyName}" Width="*" />
+                <DataGridTextColumn Header="Contact Name" Binding="{Binding ContactName}" Width="*" />
+                <DataGridTextColumn Header="Phone Number" Binding="{Binding PhoneNumber}" Width="*" />
+                <DataGridTextColumn Header="Email" Binding="{Binding Email}" Width="*" />
+                <DataGridTextColumn Header="Address" Binding="{Binding Address}" Width="2*" />
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</UserControl>

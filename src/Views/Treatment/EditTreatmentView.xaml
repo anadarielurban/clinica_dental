@@ -1,0 +1,39 @@
+﻿<Window x:Class="DentalClinicWPF.Views.Treatment.EditTreatmentView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        Title="Edit Treatment" Height="400" Width="600"
+        WindowStartupLocation="CenterOwner">
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- Input Fields -->
+        <StackPanel Grid.Row="0" Margin="10">
+            <Label Content="Name" />
+            <TextBox Text="{Binding EditingTreatment.Name, UpdateSourceTrigger=PropertyChanged}" Margin="0,5" />
+
+            <Label Content="Description" />
+            <TextBox Text="{Binding EditingTreatment.Description, UpdateSourceTrigger=PropertyChanged}" Margin="0,5" />
+
+            <Label Content="Price (PLN)" />
+            <StackPanel Orientation="Horizontal" Margin="0,5">
+                <TextBox Text="{Binding EditingTreatment.Price, UpdateSourceTrigger=PropertyChanged}" Width="100" />
+                <Label Content="PLN" VerticalAlignment="Center" Margin="5,0,0,0" />
+            </StackPanel>
+
+            <Label Content="Duration (minutes)" />
+            <TextBox Text="{Binding EditingTreatment.Duration, Converter={StaticResource TimeSpanToStringConverter}, UpdateSourceTrigger=PropertyChanged}" 
+                     Margin="0,5" />
+        </StackPanel>
+
+        <!-- Action Buttons -->
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
+            <Button Content="Save" Command="{Binding SaveCommand}" Width="100" Margin="5" />
+            <Button Content="Delete" Command="{Binding DeleteCommand}" Width="100" Margin="5" Background="Red" Foreground="White"/>
+            <Button Content="Cancel" Command="{Binding CancelCommand}" Width="100" Margin="5" />
+        </StackPanel>
+    </Grid>
+</Window>

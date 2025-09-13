@@ -1,0 +1,55 @@
+﻿<UserControl x:Class="DentalClinicWPF.Views.Schedule.ScheduleView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:DentalClinicWPF.Views.Schedule"
+             xmlns:converters="clr-namespace:DentalClinicWPF.Converters">
+    <UserControl.Resources>
+        <converters:NullToBoolConverter x:Key="NullToBoolConverter" />
+    </UserControl.Resources>
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" /> <!-- Toolbar -->
+            <RowDefinition Height="Auto" /> <!-- Sorting -->
+            <RowDefinition Height="*" />    <!-- Data Grid -->
+        </Grid.RowDefinitions>
+
+        <!-- Toolbar -->
+        <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,10">
+            <TextBox Width="300" 
+                     Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" 
+                     ToolTip="Search by Dentist Name" 
+                     Margin="0,0,10,0" />
+            <Button Content="Search" Command="{Binding SearchCommand}" Width="100" Margin="0,0,10,0" />
+            <Button Content="Reload" Command="{Binding ReloadSchedulesCommand}" Width="100" Margin="0,0,10,0" />
+            <Button Content="Add Schedule" Command="{Binding AddScheduleCommand}" Width="150" Margin="0,0,10,0" />
+            <Button Content="Edit Schedule" Command="{Binding EditScheduleCommand}" 
+                    Width="150" Margin="0,0,10,0" 
+                    IsEnabled="{Binding SelectedSchedule, Converter={StaticResource NullToBoolConverter}}" />
+        </StackPanel>
+
+        <!-- Sorting Section -->
+        <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="0,0,0,10">
+            <ComboBox Width="150" ItemsSource="{Binding SortOptions}" 
+                      SelectedItem="{Binding SelectedSortOption}" 
+                      ToolTip="Select sorting criterion" 
+                      Margin="0,0,10,0" />
+            <Button Content="Sort" Command="{Binding SortCommand}" Width="100" />
+        </StackPanel>
+
+        <!-- Schedule List -->
+        <DataGrid Grid.Row="2" ItemsSource="{Binding Schedules}" 
+                  AutoGenerateColumns="False" 
+                  SelectedItem="{Binding SelectedSchedule, Mode=TwoWay}" 
+                  IsReadOnly="True" SelectionMode="Single" 
+                  Margin="0,0,0,10">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Dentist" Binding="{Binding Dentist.DisplayInfo}" Width="*" />
+                <DataGridTextColumn Header="Start Date" Binding="{Binding StartDate, StringFormat=d}" Width="Auto" />
+                <DataGridTextColumn Header="End Date" Binding="{Binding EndDate, StringFormat=d}" Width="Auto" />
+                <DataGridTextColumn Header="Start Time" Binding="{Binding StartTime, StringFormat=hh\\:mm}" Width="Auto" />
+                <DataGridTextColumn Header="End Time" Binding="{Binding EndTime, StringFormat=hh\\:mm}" Width="Auto" />
+                <DataGridCheckBoxColumn Header="Day Off" Binding="{Binding IsDayOff}" Width="Auto" />
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</UserControl>

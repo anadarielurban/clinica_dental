@@ -1,0 +1,38 @@
+﻿<Window x:Class="DentalClinicWPF.Views.TreatmentPlan.AddTreatmentPlanView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Add Treatment Plan" Height="400" Width="600"
+        WindowStartupLocation="CenterOwner">
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0">
+            <Label Content="Patient" />
+            <ComboBox ItemsSource="{Binding Patients}" 
+                      DisplayMemberPath="DisplayInfo" 
+                      SelectedValuePath="PatientID" 
+                      SelectedValue="{Binding TreatmentPlan.PatientID, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                      Margin="0,5,0,10" />
+
+
+            <Label Content="Dentist" />
+            <ComboBox ItemsSource="{Binding Dentists}" 
+                      DisplayMemberPath="DisplayInfo" 
+                      SelectedValuePath="DentistID" 
+                      SelectedValue="{Binding TreatmentPlan.DentistID, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                      Margin="0,5,0,10" />
+
+            <Label Content="Details" />
+            <TextBox Text="{Binding TreatmentPlan.Details, UpdateSourceTrigger=PropertyChanged}" 
+                     AcceptsReturn="True" Height="100" Margin="0,5,0,10" />
+        </StackPanel>
+
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
+            <Button Content="Cancel" Command="{Binding CancelCommand}" Width="100" Margin="5" />
+            <Button Content="Save" Command="{Binding SaveCommand}" Width="100" Margin="5" />
+        </StackPanel>
+    </Grid>
+</Window>

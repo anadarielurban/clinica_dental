@@ -1,0 +1,40 @@
+﻿<!-- Views/Schedule/EditScheduleView.xaml -->
+<Window x:Class="DentalClinicWPF.Views.Schedule.EditScheduleView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Edit Schedule" Height="400" Width="400">
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <StackPanel>
+            <Label Content="Dentist" />
+            <ComboBox ItemsSource="{Binding Dentists}" 
+                      DisplayMemberPath="FullName" 
+                      SelectedValuePath="DentistID" 
+                      SelectedValue="{Binding Schedule.DentistID}" />
+
+            <Label Content="Start Date" />
+            <DatePicker SelectedDate="{Binding Schedule.StartDate}" />
+
+            <Label Content="End Date" />
+            <DatePicker SelectedDate="{Binding Schedule.EndDate}" />
+
+            <Label Content="Start Time" />
+            <TextBox Text="{Binding Schedule.StartTime}" IsReadOnly="True" />
+
+            <Label Content="End Time" />
+            <TextBox Text="{Binding Schedule.EndTime}" IsReadOnly="True" />
+
+            <CheckBox Content="Day Off" IsChecked="{Binding Schedule.IsDayOff}" />
+        </StackPanel>
+
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Content="Cancel" Command="{Binding CancelCommand}" Width="100" Margin="5" />
+            <Button Content="Save" Command="{Binding SaveCommand}" Width="100" Margin="5" />
+            <Button Content="Delete" Command="{Binding DeleteCommand}" Width="100" Margin="5" />
+        </StackPanel>
+    </Grid>
+</Window>
