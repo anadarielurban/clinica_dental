@@ -24,7 +24,7 @@ A modern **WPF (C#)** desktop application for end‑to‑end management of a de
 
 ---
 
-## ✨ Key Features
+## ✨ Key Features
 
 * **Dashboard KPI Widgets** – upcoming appointments, revenue, unpaid invoices, revenue per dentist & timeline chart.
 * **Appointments** – weekly calendar, dentist availability, quick add/edit/preview.
