@@ -1,4 +1,8 @@
-[![.NET](https://img.shields.io/badge/.NET-8.0-purple)](https://dotnet.microsoft.com/) [![WPF](https://img.shields.io/badge/WPF-Desktop-blueviolet)]() [![Build Status](https://img.shields.io/github/actions/workflow/status/yourusername/DentalClinicWPF/ci.yml?branch=main)](https://github.com/yourusername/DentalClinicWPF/actions) [![License: MIT](https://img.shields.io/badge/License-MIT-green)](LICENSE)
+[![.NET 8](https://img.shields.io/badge/.NET-8.0-512BD4?logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/)
+[![WPF](https://img.shields.io/badge/WPF-.NET%208-512BD4?logo=windows&logoColor=white)](https://learn.microsoft.com/dotnet/desktop/wpf/)
+[![Project Quality](https://github.com/Adrianowsski/DentalClinic/actions/workflows/project-quality.yml/badge.svg)](https://github.com/Adrianowsski/DentalClinic/actions/workflows/project-quality.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green)](LICENSE)
+
 
 # 🦷 DentalClinicWPF
 
