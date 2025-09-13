@@ -8,13 +8,13 @@ A modern **WPF (C#)** desktop application for end‑to‑end management of a de
 
 ## 📌 Table of Contents
 
-* [✨ Key Features](#✨-key-features)
-* [🛠️ Tech Stack](#🛠️-tech-stack)
-* [🏗️ Project Structure](#🏗️-project-structure)
-* [⚙️ Installation](#⚙️-installation)
-* [▶️ Running the App](#▶️-running-the-app)
-* [📸 Screenshots](#📸-screenshots)
-* [📄 License](#📄-license)
+* [✨ Key Features](#key-features)
+* [🛠️ Tech Stack](#tech-stack)
+* [🏗️ Project Structure](#project-structure)
+* [⚙️ Installation](#installation)
+* [▶️ Running the App](#running-the-app)
+* [📸 Screenshots](#screenshots)
+* [📄 License](#license)
 
 ---
 
