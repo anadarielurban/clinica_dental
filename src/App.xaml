@@ -1,0 +1,124 @@
+﻿<Application x:Class="DentalClinicWPF.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:DentalClinicWPF"
+             xmlns:vm="clr-namespace:DentalClinicWPF.ViewModels"
+             xmlns:views="clr-namespace:DentalClinicWPF.Views"
+             xmlns:converters="clr-namespace:DentalClinicWPF.Converters"
+             xmlns:patient="clr-namespace:DentalClinicWPF.ViewModels.Patient"
+             xmlns:patient1="clr-namespace:DentalClinicWPF.Views.Patient"
+             xmlns:dentist="clr-namespace:DentalClinicWPF.Views.Dentist"
+             xmlns:vm1="clr-namespace:DentalClinicWPF.ViewModels.Dentist"
+             xmlns:room="clr-namespace:DentalClinicWPF.ViewModels.Room"
+             xmlns:room1="clr-namespace:DentalClinicWPF.Views.Room"
+             xmlns:appointment="clr-namespace:DentalClinicWPF.ViewModels.Appointment"
+             xmlns:appointment1="clr-namespace:DentalClinicWPF.Views.Appointment"
+             xmlns:treatment="clr-namespace:DentalClinicWPF.ViewModels.Treatment"
+             xmlns:treatment1="clr-namespace:DentalClinicWPF.Views.Treatment"
+             xmlns:invoice="clr-namespace:DentalClinicWPF.ViewModels.Invoice"
+             xmlns:invoice1="clr-namespace:DentalClinicWPF.Views.Invoice"
+             xmlns:treatmentPlan="clr-namespace:DentalClinicWPF.ViewModels.TreatmentPlan"
+             xmlns:treatmentPlan1="clr-namespace:DentalClinicWPF.Views.TreatmentPlan"
+             xmlns:medicalRecord="clr-namespace:DentalClinicWPF.ViewModels.MedicalRecord"
+             xmlns:medicalRecord1="clr-namespace:DentalClinicWPF.Views.MedicalRecord"
+             xmlns:prescription="clr-namespace:DentalClinicWPF.ViewModels.Prescription"
+             xmlns:prescription1="clr-namespace:DentalClinicWPF.Views.Prescription"
+             xmlns:schedule="clr-namespace:DentalClinicWPF.ViewModels.Schedule"
+             xmlns:schedule1="clr-namespace:DentalClinicWPF.Views.Schedule"
+             xmlns:inventory="clr-namespace:DentalClinicWPF.ViewModels.Inventory"
+             xmlns:inventory1="clr-namespace:DentalClinicWPF.Views.Inventory"
+             xmlns:supplier="clr-namespace:DentalClinicWPF.ViewModels.Supplier"
+             xmlns:supplier1="clr-namespace:DentalClinicWPF.Views.Supplier"
+             xmlns:labOrder="clr-namespace:DentalClinicWPF.ViewModels.LabOrder"
+             xmlns:labOrder1="clr-namespace:DentalClinicWPF.Views.LabOrder"
+             xmlns:employee="clr-namespace:DentalClinicWPF.ViewModels.Employee"
+             xmlns:employee1="clr-namespace:DentalClinicWPF.Views.Employee"
+             xmlns:dashboard="clr-namespace:DentalClinicWPF.ViewModels.Dashboard"
+             xmlns:dashboard1="clr-namespace:DentalClinicWPF.Views.Dashboard"
+             xmlns:equipment="clr-namespace:DentalClinicWPF.ViewModels.Equipment"
+             xmlns:equipment1="clr-namespace:DentalClinicWPF.Views.Equipment"
+             xmlns:patientDetail="clr-namespace:DentalClinicWPF.Views.Patient.PatientDetail"
+             xmlns:patientDetailViewModels="clr-namespace:DentalClinicWPF.ViewModels.Patient.PatientDetail"
+             StartupUri="MainWindow.xaml">
+    <Application.Resources>
+        <ResourceDictionary>
+            <!-- Merge Style Dictionaries -->
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Styles/ButtonStyles.xaml" />
+                <ResourceDictionary Source="Styles/CommonStyles.xaml" />
+                <ResourceDictionary Source="Styles/TextBoxStyles.xaml" />
+                <ResourceDictionary Source="Styles/ComboBoxStyles.xaml" />
+                <ResourceDictionary Source="Styles/LabelStyles.xaml" />
+                <ResourceDictionary Source="Styles/ValidationStyles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <!-- Converters -->
+            <converters:NullToBoolConverter x:Key="NullToBoolConverter" />
+            <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+            <converters:TimeSpanToStringConverter x:Key="TimeSpanToStringConverter" />
+            <converters:StatusToColorConverter x:Key="StatusToColorConverter" />
+
+            <!-- DataTemplates for Views -->
+            <DataTemplate DataType="{x:Type prescription:PrescriptionDetailViewModel}">
+                <prescription1:PrescriptionDetailView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type invoice:InvoiceDetailViewModel}">
+                <invoice1:InvoiceDetailView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm1:DentistDetailViewModel}">
+                <dentist:DentistDetailView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type patientDetailViewModels:PatientDetailViewModel}">
+                <patientDetail:PatientDetailView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type dashboard:DashboardViewModel}">
+                <dashboard1:DashboardView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type patient:PatientViewModel}">
+                <patient1:PatientView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type appointment:AppointmentViewModel}">
+                <appointment1:AppointmentView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type equipment:EquipmentViewModel}">
+                <equipment1:EquipmentView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm1:DentistViewModel}">
+                <dentist:DentistView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type treatment:TreatmentViewModel}">
+                <treatment1:TreatmentView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type invoice:InvoiceViewModel}">
+                <invoice1:InvoiceView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type treatmentPlan:TreatmentPlanViewModel}">
+                <treatmentPlan1:TreatmentPlanView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type medicalRecord:MedicalRecordViewModel}">
+                <medicalRecord1:MedicalRecordView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type prescription:PrescriptionViewModel}">
+                <prescription1:PrescriptionView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type schedule:ScheduleViewModel}">
+                <schedule1:ScheduleView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type inventory:InventoryViewModel}">
+                <inventory1:InventoryView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type supplier:SupplierViewModel}">
+                <supplier1:SupplierView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type labOrder:LabOrderViewModel}">
+                <labOrder1:LabOrderView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type employee:EmployeeViewModel}">
+                <employee1:EmployeeView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type room:RoomViewModel}">
+                <room1:RoomView />
+            </DataTemplate>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

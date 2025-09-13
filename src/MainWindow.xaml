@@ -1,0 +1,61 @@
+﻿<Window x:Class="DentalClinicWPF.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:viewModels="clr-namespace:DentalClinicWPF.ViewModels"
+        mc:Ignorable="d"
+        Title="Dental Clinic Management" Height="800" Width="1200"
+        Background="#121212" Foreground="#E0E0E0">
+    <Window.DataContext>
+        <viewModels:MainViewModel />
+    </Window.DataContext>
+
+    <DockPanel>
+        <!-- Sidebar -->
+        <Border DockPanel.Dock="Left" Width="250" Background="#1C1C1C" BorderBrush="#2C2C2C" BorderThickness="0,0,1,0">
+            <StackPanel>
+                <!-- Header -->
+                <TextBlock Text="Dental Clinic" FontSize="20" FontWeight="Bold" Foreground="#FFFFFF"
+                           Margin="20,20,20,30" TextAlignment="Center" />
+
+                <!-- Buttons -->
+                <Button Content="Dashboard" Command="{Binding ShowDashboardCommand}" Style="{StaticResource SidebarButtonStyle}" />
+                <Button Content="Patients" Command="{Binding ShowPatientsCommand}" Style="{StaticResource SidebarButtonStyle}" />
+                <Button Content="Appointments" Command="{Binding ShowAppointmentsCommand}" Style="{StaticResource SidebarButtonStyle}" />
+                <Button Content="Dentists" Command="{Binding ShowDentistsCommand}" Style="{StaticResource SidebarButtonStyle}" />
+                <Button Content="Treatments" Command="{Binding ShowTreatmentsCommand}" Style="{StaticResource SidebarButtonStyle}" />
+                <Button Content="Invoices" Command="{Binding ShowInvoicesCommand}" Style="{StaticResource SidebarButtonStyle}" />
+                <Button Content="Treatment Plans" Command="{Binding ShowTreatmentPlansCommand}" Style="{StaticResource SidebarButtonStyle}" />
+                <Button Content="Medical Records" Command="{Binding ShowMedicalRecordsCommand}" Style="{StaticResource SidebarButtonStyle}" />
+                <Button Content="Prescriptions" Command="{Binding ShowPrescriptionsCommand}" Style="{StaticResource SidebarButtonStyle}" />
+                <Button Content="Schedules" Command="{Binding ShowSchedulesCommand}" Style="{StaticResource SidebarButtonStyle}" />
+                <Button Content="Inventory" Command="{Binding ShowInventoryCommand}" Style="{StaticResource SidebarButtonStyle}" />
+                <Button Content="Suppliers" Command="{Binding ShowSuppliersCommand}" Style="{StaticResource SidebarButtonStyle}" />
+                <Button Content="Equipment" Command="{Binding ShowEquipmentCommand}" Style="{StaticResource SidebarButtonStyle}" />
+                <Button Content="Lab Orders" Command="{Binding ShowLabOrdersCommand}" Style="{StaticResource SidebarButtonStyle}" />
+                <Button Content="Employees" Command="{Binding ShowEmployeesCommand}" Style="{StaticResource SidebarButtonStyle}" />
+                <Button Content="Rooms" Command="{Binding ShowRoomsCommand}" Style="{StaticResource SidebarButtonStyle}" />
+            </StackPanel>
+        </Border>
+
+        <!-- Main Content Area -->
+        <TabControl ItemsSource="{Binding OpenTabs}" SelectedItem="{Binding SelectedTab}" BorderThickness="0">
+            <TabControl.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal" Background="#2C2C2C" Margin="0,0,10,0">
+                        <TextBlock Text="{Binding Header}" Margin="5,0,10,0" Foreground="#E0E0E0" />
+                        <Button Content="×" Command="{Binding CloseCommand}" Width="25" Height="25" 
+                                Background="#E74C3C" Foreground="#FFFFFF" BorderBrush="Transparent" 
+                                FontWeight="Bold" />
+                    </StackPanel>
+                </DataTemplate>
+            </TabControl.ItemTemplate>
+            <TabControl.ContentTemplate>
+                <DataTemplate>
+                    <ContentControl Content="{Binding Content}" />
+                </DataTemplate>
+            </TabControl.ContentTemplate>
+        </TabControl>
+    </DockPanel>
+</Window>
