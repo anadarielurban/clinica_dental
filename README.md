@@ -38,7 +38,7 @@ A modern **WPF (C#)** desktop application for end‑to‑end management of a de
 
 ---
 
-## 🛠️ Tech Stack
+## 🛠️ Tech Stack
 
 | Layer           | Technology                                      |
 | --------------- | ----------------------------------------------- |
@@ -55,7 +55,7 @@ A modern **WPF (C#)** desktop application for end‑to‑end management of a de
 
 ---
 
-## 🏗️ Project Structure
+## 🏗️ Project Structure
 
 ```text
 DentalClinicWPF.sln
