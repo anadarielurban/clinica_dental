@@ -1,0 +1,73 @@
+﻿<Window x:Class="DentalClinicWPF.Views.Appointment.AddAppointmentView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:DentalClinicWPF.ViewModels.Appointment"
+        Title="Add Appointment" Height="750" Width="500" WindowStartupLocation="CenterOwner">
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- Input Fields -->
+        <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto">
+            <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" VerticalAlignment="Top">
+                <!-- Patient -->
+                <Label Content="Patient" Style="{StaticResource FormLabelStyle}" />
+                <ComboBox ItemsSource="{Binding Patients}" 
+                          DisplayMemberPath="DisplayInfo" 
+                          SelectedValuePath="PatientID" 
+                          SelectedValue="{Binding PatientID, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=True}" 
+                          Style="{StaticResource FormComboBoxStyle}" />
+
+                <!-- Dentist -->
+                <Label Content="Dentist" Style="{StaticResource FormLabelStyle}" />
+                <ComboBox ItemsSource="{Binding Dentists}" 
+                          DisplayMemberPath="DisplayInfo" 
+                          SelectedValuePath="DentistID" 
+                          SelectedValue="{Binding DentistID, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=True}" 
+                          Style="{StaticResource FormComboBoxStyle}" />
+
+                <!-- Treatment -->
+                <Label Content="Treatment" Style="{StaticResource FormLabelStyle}" />
+                <ComboBox ItemsSource="{Binding Treatments}" 
+                          DisplayMemberPath="DisplayInfo" 
+                          SelectedValuePath="TreatmentID" 
+                          SelectedValue="{Binding TreatmentID, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=True}" 
+                          Style="{StaticResource FormComboBoxStyle}" />
+
+                <!-- Appointment Date -->
+                <Label Content="Appointment Date" Style="{StaticResource FormLabelStyle}" />
+                <DatePicker SelectedDate="{Binding AppointmentDate, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=True}" 
+                            Style="{StaticResource FormDatePickerStyle}" />
+
+                <!-- Start Time -->
+                <Label Content="Start Time" Style="{StaticResource FormLabelStyle}" />
+                <TextBox Text="{Binding StartTime, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=True}" 
+                         ToolTip="Format: HH:mm (e.g., 09:00)" 
+                         Style="{StaticResource FormTextBoxStyle}" />
+
+                <!-- End Time -->
+                <Label Content="End Time" Style="{StaticResource FormLabelStyle}" />
+                <TextBox Text="{Binding EndTime, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=True}" 
+                         ToolTip="Format: HH:mm (e.g., 10:00)" 
+                         Style="{StaticResource FormTextBoxStyle}" />
+
+                <!-- Notes -->
+                <Label Content="Notes" Style="{StaticResource FormLabelStyle}" />
+                <TextBox Text="{Binding Notes, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=True}" 
+                         AcceptsReturn="True" 
+                         Height="100" 
+                         TextWrapping="Wrap" 
+                         Style="{StaticResource FormTextBoxStyle}" />
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- Buttons -->
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10">
+            <Button Content="Cancel" Command="{Binding CancelCommand}" Width="100" Margin="5" />
+            <Button Content="Save" Command="{Binding SaveCommand}" Width="100" Margin="5" />
+        </StackPanel>
+    </Grid>
+</Window>

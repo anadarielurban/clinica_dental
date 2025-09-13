@@ -1,0 +1,56 @@
+﻿<UserControl x:Class="DentalClinicWPF.Views.MedicalRecord.MedicalRecordView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:converters="clr-namespace:DentalClinicWPF.Converters"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d"
+             d:DesignHeight="600" d:DesignWidth="800">
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" /> <!-- Toolbar -->
+            <RowDefinition Height="Auto" /> <!-- Sorting -->
+            <RowDefinition Height="*" />    <!-- Medical Record List -->
+        </Grid.RowDefinitions>
+
+        <!-- Toolbar -->
+        <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,10">
+            <TextBox Width="300" 
+                     Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" 
+                     VerticalAlignment="Center" 
+                     ToolTip="Search by Patient Name, Notes, or Record ID" 
+                     Margin="0,0,10,0" />
+            <Button Content="Search" Command="{Binding SearchCommand}" Margin="0,0,10,0" Width="100" />
+            <Button Content="Reload" Command="{Binding ReloadCommand}" Margin="0,0,10,0" Width="100" />
+            <Button Content="Add Medical Record" Command="{Binding AddCommand}" Width="150" Margin="0,0,10,0" />
+            <Button Content="Edit Medical Record" Command="{Binding EditCommand}" 
+                    Width="150" Margin="0,0,10,0" 
+                    IsEnabled="{Binding SelectedMedicalRecord, Converter={StaticResource NullToBoolConverter}}" />
+        </StackPanel>
+
+        <!-- Sorting -->
+        <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="0,0,0,10">
+            <ComboBox Width="150" ItemsSource="{Binding SortOptions}" 
+                      SelectedItem="{Binding SelectedSortOption}" 
+                      ToolTip="Select sorting criterion" 
+                      Margin="0,0,10,0" />
+            <Button Content="Sort" Command="{Binding SortCommand}" Width="100" />
+        </StackPanel>
+
+        <!-- Medical Record List -->
+        <DataGrid Grid.Row="2" ItemsSource="{Binding MedicalRecords}" 
+                  AutoGenerateColumns="False" 
+                  SelectedItem="{Binding SelectedMedicalRecord, Mode=TwoWay}" 
+                  IsReadOnly="True" 
+                  SelectionMode="Single" 
+                  Margin="0,0,0,10">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Record ID" Binding="{Binding RecordID}" Width="100" />
+                <DataGridTextColumn Header="Patient" Binding="{Binding Patient.DisplayInfo}" Width="*" />
+                <DataGridTextColumn Header="Dentist" Binding="{Binding Dentist.DisplayInfo}" Width="*" />
+                <DataGridTextColumn Header="Date" Binding="{Binding Date, StringFormat=yyyy-MM-dd}" Width="150" />
+                <DataGridTextColumn Header="Notes" Binding="{Binding Notes}" Width="2*" />
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</UserControl>

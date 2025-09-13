@@ -1,0 +1,53 @@
+﻿<UserControl x:Class="DentalClinicWPF.Views.Patient.PatientView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:DentalClinicWPF.Views.Patient"
+             mc:Ignorable="d"
+             d:DesignHeight="600" d:DesignWidth="800">
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" /> <!-- Toolbar -->
+            <RowDefinition Height="Auto" /> <!-- Sorting -->
+            <RowDefinition Height="*" />    <!-- Main Content -->
+        </Grid.RowDefinitions>
+
+        <!-- Toolbar -->
+        <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,10">
+            <TextBox Width="300" 
+                     Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" 
+                     ToolTip="Search by patient details (e.g., name, email, phone)" />
+            <Button Content="Search" Command="{Binding SearchCommand}" Margin="10,0,0,0" Width="100" />
+            <Button Content="Reload" Command="{Binding ReloadCommand}" Margin="10,0,0,0" Width="100" />
+            <Button Content="Add Patient" Command="{Binding OpenAddPatientCommand}" Width="150" Margin="10,0,0,0" />
+            <Button Content="Edit Patient" Command="{Binding OpenEditPatientCommand}" 
+                    Width="150" Margin="10,0,0,0" 
+                    IsEnabled="{Binding SelectedPatient, Converter={StaticResource NullToBoolConverter}}" />
+            <Button Content="View Details" Command="{Binding OpenPatientDetailCommand}" 
+                    Width="150" Margin="10,0,0,0" 
+                    IsEnabled="{Binding SelectedPatient, Converter={StaticResource NullToBoolConverter}}" />
+        </StackPanel>
+
+        <!-- Sorting -->
+        <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="0,0,0,10">
+            <ComboBox Width="150" ItemsSource="{Binding SortOptions}" 
+                      SelectedItem="{Binding SelectedSortOption}" 
+                      ToolTip="Select sorting criterion" />
+            <Button Content="Sort" Command="{Binding SortCommand}" Width="100" />
+        </StackPanel>
+
+        <!-- Patient List -->
+        <DataGrid Grid.Row="2" ItemsSource="{Binding Patients}" AutoGenerateColumns="False"
+                  SelectedItem="{Binding SelectedPatient, Mode=TwoWay}" 
+                  IsReadOnly="True" SelectionMode="Single">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="First Name" Binding="{Binding FirstName}" Width="*" />
+                <DataGridTextColumn Header="Last Name" Binding="{Binding LastName}" Width="*" />
+                <DataGridTextColumn Header="Phone" Binding="{Binding PhoneNumber}" Width="150" />
+                <DataGridTextColumn Header="Email" Binding="{Binding Email}" Width="150" />
+                <DataGridTextColumn Header="Date of Birth" Binding="{Binding DateOfBirth, StringFormat=d}" Width="150" />
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</UserControl>

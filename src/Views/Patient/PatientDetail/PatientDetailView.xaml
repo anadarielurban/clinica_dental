@@ -1,0 +1,409 @@
+﻿<UserControl x:Class="DentalClinicWPF.Views.Patient.PatientDetail.PatientDetailView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:DentalClinicWPF.Views.Patient.PatientDetail"
+             mc:Ignorable="d" 
+             d:DesignHeight="600" d:DesignWidth="1000">
+
+    <!-- Resources -->
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <!-- Merge in the custom style file -->
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Styles/PatientStyles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+
+            <!-- Converter that shows/hides the preview overlay based on a bool property -->
+            <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <Grid Margin="20">
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- TOP SECTION: Patient Info and Statistics -->
+        <Border Style="{StaticResource MinimalBorderStyle}" Margin="0,0,0,20">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="2*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Column 1: Patient basic data -->
+                <StackPanel Orientation="Vertical" HorizontalAlignment="Left" Margin="10">
+                    <TextBlock Text="{Binding Patient.FullName}"
+                               FontSize="18" FontWeight="Bold"
+                               Margin="0,0,0,10"/>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="DOB: " FontWeight="Bold"/>
+                        <TextBlock Text="{Binding Patient.DateOfBirth, StringFormat='yyyy-MM-dd'}"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Phone: " FontWeight="Bold"/>
+                        <TextBlock Text="{Binding Patient.PhoneNumber}"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Email: " FontWeight="Bold"/>
+                        <TextBlock Text="{Binding Patient.Email}"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Address: " FontWeight="Bold"/>
+                        <TextBlock Text="{Binding Patient.Address}" TextWrapping="Wrap"/>
+                    </StackPanel>
+                </StackPanel>
+
+                <!-- Column 2: Statistics -->
+                <StackPanel Orientation="Vertical" Grid.Column="1" HorizontalAlignment="Left" Margin="10">
+                    <TextBlock Text="Statistics"
+                               FontWeight="Bold" FontSize="16"
+                               Margin="0,0,0,10"/>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Number of visits: " FontWeight="Bold"/>
+                        <TextBlock Text="{Binding TotalVisits}"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="All invoices paid: " FontWeight="Bold"/>
+                        <TextBlock Text="{Binding IsEverythingPaid}"/>
+                    </StackPanel>
+                </StackPanel>
+
+                <!-- Column 3: Filter + PDF export -->
+                <StackPanel Grid.Column="2" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10">
+                    <TextBlock Text="Search / Filter:" FontWeight="Bold" Margin="0,0,0,5"/>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBox Width="160" 
+                                 Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                                 Style="{StaticResource MinimalTextBoxStyle}"
+                                 Margin="0,0,5,0"/>
+                        <Button Content="Filter"
+                                Command="{Binding FilterCommand}"
+                                Style="{StaticResource MinimalButtonStyle}"
+                                Margin="0,0,10,0"/>
+                    </StackPanel>
+
+                    <Separator Margin="0,10,0,10"/>
+
+                    <Button Content="Export to PDF"
+                            Command="{Binding ExportPdfCommand}"
+                            Style="{StaticResource MinimalButtonStyle}"
+                            Width="120"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- TABCONTROL: Appointments, Prescriptions, etc. -->
+        <TabControl Grid.Row="1" Style="{StaticResource MinimalTabControlStyle}">
+            <!-- APPOINTMENTS TAB -->
+            <TabItem Header="Appointments">
+                <Grid Margin="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Buttons Row -->
+                    <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,10">
+                        <Button Content="Add" 
+                                Command="{Binding AddAppointmentCommand}"
+                                Style="{StaticResource MinimalButtonStyle}"
+                                Margin="5"/>
+                        <Button Content="Edit"
+                                Command="{Binding EditAppointmentCommand}"
+                                CommandParameter="{Binding SelectedItem, ElementName=AppointmentsGrid}"
+                                Style="{StaticResource MinimalButtonStyle}"
+                                Margin="5"/>
+                        <Button Content="Preview"
+                                Command="{Binding ViewAppointmentCommand}"
+                                CommandParameter="{Binding SelectedItem, ElementName=AppointmentsGrid}"
+                                Style="{StaticResource MinimalButtonStyle}"
+                                Margin="5"/>
+                    </StackPanel>
+
+                    <!-- Appointments DataGrid -->
+                    <DataGrid x:Name="AppointmentsGrid"
+                              Grid.Row="1"
+                              ItemsSource="{Binding Appointments}"
+                              Style="{StaticResource MinimalDataGridStyle}"
+                              AutoGenerateColumns="False">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Date"
+                                                Binding="{Binding AppointmentDate, StringFormat=yyyy-MM-dd}"
+                                                Width="120"/>
+                            <DataGridTextColumn Header="Time"
+                                                Binding="{Binding StartTime, StringFormat=hh\\:mm}"
+                                                Width="80"/>
+                            <DataGridTextColumn Header="Dentist"
+                                                Binding="{Binding Dentist.DisplayInfo}"
+                                                Width="150"/>
+                            <DataGridTextColumn Header="Treatment"
+                                                Binding="{Binding Treatment.Name}"
+                                                Width="*"/>
+                            <DataGridTextColumn Header="Notes"
+                                                Binding="{Binding Notes}"
+                                                Width="200"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </TabItem>
+
+            <!-- PRESCRIPTIONS TAB -->
+            <TabItem Header="Prescriptions">
+                <Grid Margin="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Buttons Row -->
+                    <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,10">
+                        <Button Content="Add"
+                                Command="{Binding AddPrescriptionCommand}"
+                                Style="{StaticResource MinimalButtonStyle}"
+                                Margin="5"/>
+                        <Button Content="Edit"
+                                Command="{Binding EditPrescriptionCommand}"
+                                CommandParameter="{Binding SelectedItem, ElementName=PrescriptionsGrid}"
+                                Style="{StaticResource MinimalButtonStyle}"
+                                Margin="5"/>
+                        <Button Content="Preview"
+                                Command="{Binding ViewPrescriptionCommand}"
+                                CommandParameter="{Binding SelectedItem, ElementName=PrescriptionsGrid}"
+                                Style="{StaticResource MinimalButtonStyle}"
+                                Margin="5"/>
+                    </StackPanel>
+
+                    <!-- Prescriptions DataGrid -->
+                    <DataGrid x:Name="PrescriptionsGrid"
+                              Grid.Row="1"
+                              ItemsSource="{Binding Prescriptions}"
+                              Style="{StaticResource MinimalDataGridStyle}"
+                              AutoGenerateColumns="False">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="ID" Binding="{Binding PrescriptionID}" Width="60"/>
+                            <DataGridTextColumn Header="Issued"
+                                                Binding="{Binding DateIssued, StringFormat=yyyy-MM-dd}"
+                                                Width="130"/>
+                            <DataGridTextColumn Header="Medication"
+                                                Binding="{Binding Medication}"
+                                                Width="150"/>
+                            <DataGridTextColumn Header="Dosage"
+                                                Binding="{Binding Dosage}"
+                                                Width="120"/>
+                            <DataGridTextColumn Header="Dentist"
+                                                Binding="{Binding Dentist.DisplayInfo}"
+                                                Width="150"/>
+                            <DataGridTextColumn Header="Instructions"
+                                                Binding="{Binding Instructions}"
+                                                Width="*"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </TabItem>
+
+            <!-- TREATMENT PLANS TAB -->
+            <TabItem Header="Treatment Plans">
+                <Grid Margin="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Buttons Row -->
+                    <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,10">
+                        <Button Content="Add"
+                                Command="{Binding AddTreatmentPlanCommand}"
+                                Style="{StaticResource MinimalButtonStyle}"
+                                Margin="5"/>
+                        <Button Content="Edit"
+                                Command="{Binding EditTreatmentPlanCommand}"
+                                CommandParameter="{Binding SelectedItem, ElementName=TreatmentPlansGrid}"
+                                Style="{StaticResource MinimalButtonStyle}"
+                                Margin="5"/>
+                        <Button Content="Preview"
+                                Command="{Binding ViewTreatmentPlanCommand}"
+                                CommandParameter="{Binding SelectedItem, ElementName=TreatmentPlansGrid}"
+                                Style="{StaticResource MinimalButtonStyle}"
+                                Margin="5"/>
+                    </StackPanel>
+
+                    <!-- Treatment Plans DataGrid -->
+                    <DataGrid x:Name="TreatmentPlansGrid"
+                              Grid.Row="1"
+                              ItemsSource="{Binding TreatmentPlans}"
+                              Style="{StaticResource MinimalDataGridStyle}"
+                              AutoGenerateColumns="False">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="ID" Binding="{Binding TreatmentPlanID}" Width="60"/>
+                            <DataGridTextColumn Header="Creation Date"
+                                                Binding="{Binding CreationDate, StringFormat=yyyy-MM-dd}"
+                                                Width="150"/>
+                            <DataGridTextColumn Header="Dentist"
+                                                Binding="{Binding Dentist.DisplayInfo}"
+                                                Width="150"/>
+                            <DataGridTextColumn Header="Details"
+                                                Binding="{Binding Details}"
+                                                Width="*"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </TabItem>
+
+            <!-- INVOICES TAB -->
+            <TabItem Header="Invoices">
+                <Grid Margin="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Buttons Row -->
+                    <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,10">
+                        <Button Content="Add"
+                                Command="{Binding AddInvoiceCommand}"
+                                Style="{StaticResource MinimalButtonStyle}"
+                                Margin="5"/>
+                        <Button Content="Edit"
+                                Command="{Binding EditInvoiceCommand}"
+                                CommandParameter="{Binding SelectedItem, ElementName=InvoicesGrid}"
+                                Style="{StaticResource MinimalButtonStyle}"
+                                Margin="5"/>
+                        <Button Content="Preview"
+                                Command="{Binding ViewInvoiceCommand}"
+                                CommandParameter="{Binding SelectedItem, ElementName=InvoicesGrid}"
+                                Style="{StaticResource MinimalButtonStyle}"
+                                Margin="5"/>
+                    </StackPanel>
+
+                    <!-- Invoices DataGrid -->
+                    <DataGrid x:Name="InvoicesGrid"
+                              Grid.Row="1"
+                              ItemsSource="{Binding Invoices}"
+                              Style="{StaticResource MinimalDataGridStyle}"
+                              AutoGenerateColumns="False">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Invoice ID"
+                                                Binding="{Binding InvoiceID}"
+                                                Width="100"/>
+                            <DataGridTextColumn Header="Date"
+                                                Binding="{Binding InvoiceDate, StringFormat=yyyy-MM-dd}"
+                                                Width="130"/>
+                            <DataGridTextColumn Header="Amount"
+                                                Binding="{Binding TotalAmount, StringFormat=C}"
+                                                Width="100"/>
+                            <DataGridCheckBoxColumn Header="Paid"
+                                                    Binding="{Binding IsPaid}"
+                                                    Width="60"/>
+                            <DataGridTextColumn Header="Appointment"
+                                                Binding="{Binding Appointment.DisplayInfo}"
+                                                Width="*"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </TabItem>
+
+            <!-- MEDICAL DOCUMENTATION TAB -->
+            <TabItem Header="Medical Documentation">
+                <Grid Margin="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Buttons Row -->
+                    <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,10">
+                        <Button Content="Add"
+                                Command="{Binding AddMedicalRecordCommand}"
+                                Style="{StaticResource MinimalButtonStyle}"
+                                Margin="5"/>
+                        <Button Content="Edit"
+                                Command="{Binding EditMedicalRecordCommand}"
+                                CommandParameter="{Binding SelectedItem, ElementName=MedicalRecordsGrid}"
+                                Style="{StaticResource MinimalButtonStyle}"
+                                Margin="5"/>
+                        <Button Content="Download"
+                                Command="{Binding DownloadAttachmentCommand}"
+                                CommandParameter="{Binding SelectedItem, ElementName=MedicalRecordsGrid}"
+                                Style="{StaticResource MinimalButtonStyle}"
+                                Margin="5"/>
+                        <Button Content="Preview"
+                                Command="{Binding ViewMedicalRecordCommand}"
+                                CommandParameter="{Binding SelectedItem, ElementName=MedicalRecordsGrid}"
+                                Style="{StaticResource MinimalButtonStyle}"
+                                Margin="5"/>
+                    </StackPanel>
+
+                    <!-- Medical Records DataGrid -->
+                    <DataGrid x:Name="MedicalRecordsGrid"
+                              Grid.Row="1"
+                              ItemsSource="{Binding MedicalRecords}"
+                              Style="{StaticResource MinimalDataGridStyle}"
+                              AutoGenerateColumns="False">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Record ID" Binding="{Binding RecordID}" Width="100"/>
+                            <DataGridTextColumn Header="Date"
+                                                Binding="{Binding Date, StringFormat=yyyy-MM-dd}"
+                                                Width="130"/>
+                            <DataGridTextColumn Header="Dentist"
+                                                Binding="{Binding Dentist.DisplayInfo}"
+                                                Width="150"/>
+                            <DataGridTextColumn Header="Notes"
+                                                Binding="{Binding Notes}"
+                                                Width="*"/>
+                            <DataGridTemplateColumn Header="Attachment" Width="100">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <!-- Example placeholder if you want a button here -->
+                                        <Button Command="{Binding DataContext.DownloadAttachmentCommand,
+                                                                  RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                CommandParameter="{Binding}"
+                                                Width="60" Margin="2"
+                                                ToolTip="Download attached file"
+                                                Style="{StaticResource MinimalButtonStyle}">
+                                            <TextBlock Text="DL" HorizontalAlignment="Center"/>
+                                        </Button>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </TabItem>
+        </TabControl>
+
+        <!-- PREVIEW OVERLAY -->
+        <!-- This covers the entire UserControl when IsPreviewOpen == true -->
+        <Border Background="#80000000"
+                Visibility="{Binding IsPreviewOpen, Converter={StaticResource BoolToVisibilityConverter}}"
+                Grid.RowSpan="2"
+                Panel.ZIndex="9999">
+            <Grid HorizontalAlignment="Center" VerticalAlignment="Center" Width="600" Background="White">
+                <Grid.Margin>
+                    <Thickness>20</Thickness>
+                </Grid.Margin>
+                <StackPanel Margin="20">
+                    <TextBlock Text="{Binding PreviewTitle}"
+                               FontSize="18" FontWeight="Bold"
+                               TextAlignment="Center"
+                               Margin="0,0,0,10"/>
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" Height="400">
+                        <TextBlock Text="{Binding PreviewContent}" 
+                                   TextWrapping="Wrap" 
+                                   FontSize="14"/>
+                    </ScrollViewer>
+                    <Button Content="Close"
+                            Width="80"
+                            HorizontalAlignment="Right"
+                            Margin="0,10,0,0"
+                            Command="{Binding ClosePreviewCommand}"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

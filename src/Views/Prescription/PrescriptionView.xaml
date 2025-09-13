@@ -1,0 +1,62 @@
+﻿<UserControl x:Class="DentalClinicWPF.Views.Prescription.PrescriptionView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:converters="clr-namespace:DentalClinicWPF.Converters"
+             mc:Ignorable="d"
+             d:DesignHeight="600" d:DesignWidth="800">
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" /> <!-- Toolbar -->
+            <RowDefinition Height="Auto" /> <!-- Sorting -->
+            <RowDefinition Height="*" />    <!-- Data Grid -->
+        </Grid.RowDefinitions>
+
+        <!-- Toolbar -->
+        <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,10">
+            <TextBox Width="300" 
+                     Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" 
+                     VerticalAlignment="Center" 
+                     ToolTip="Search prescriptions by patient, dentist, or medication" 
+                     Margin="0,0,10,0" />
+            <Button Content="Search" Command="{Binding SearchCommand}" Margin="0,0,10,0" Width="100" />
+            <Button Content="Reload" Command="{Binding ReloadPrescriptionsCommand}" Margin="0,0,10,0" Width="100" />
+            <Button Content="Add Prescription" Command="{Binding AddPrescriptionCommand}" Width="150" Margin="0,0,10,0" />
+            <Button Content="Edit Prescription" Command="{Binding EditPrescriptionCommand}" 
+                    Width="150" 
+                    Margin="0,0,10,0" 
+                    IsEnabled="{Binding SelectedPrescription, Converter={StaticResource NullToBoolConverter}}" />
+            <Button Content="View Details" Command="{Binding OpenPrescriptionDetailCommand}" 
+                    Width="150" 
+                    Margin="0,0,10,0" 
+                    IsEnabled="{Binding SelectedPrescription, Converter={StaticResource NullToBoolConverter}}" />
+        </StackPanel>
+
+        <!-- Sorting -->
+        <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="0,0,0,10">
+            <ComboBox Width="150" ItemsSource="{Binding SortOptions}" 
+                      SelectedItem="{Binding SelectedSortOption}" 
+                      ToolTip="Select sorting criterion" 
+                      Margin="0,0,10,0" />
+            <Button Content="Sort" Command="{Binding SortCommand}" Width="100" />
+        </StackPanel>
+
+        <!-- Prescription List -->
+        <DataGrid Grid.Row="2" ItemsSource="{Binding Prescriptions}" 
+                  AutoGenerateColumns="False" 
+                  SelectedItem="{Binding SelectedPrescription}" 
+                  IsReadOnly="True" 
+                  SelectionMode="Single" 
+                  Margin="0,0,0,10">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Patient Name" Binding="{Binding Patient.DisplayInfo}" Width="200" />
+                <DataGridTextColumn Header="Dentist Name" Binding="{Binding Dentist.DisplayInfo}" Width="200" />
+                <DataGridTextColumn Header="Date Issued" Binding="{Binding DateIssued, StringFormat=yyyy-MM-dd}" Width="150" />
+                <DataGridTextColumn Header="Medication" Binding="{Binding Medication}" Width="*" />
+                <DataGridTextColumn Header="Dosage" Binding="{Binding Dosage}" Width="100" />
+                <DataGridTextColumn Header="Instructions" Binding="{Binding Instructions}" Width="250" />
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</UserControl>

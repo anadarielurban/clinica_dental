@@ -1,0 +1,116 @@
+﻿<UserControl x:Class="DentalClinicWPF.Views.Prescription.PrescriptionDetailView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d"
+             d:DesignHeight="400" d:DesignWidth="600">
+
+    <!-- Merge your resource dictionaries for subtle styling. 
+         Adjust the Source path to your actual style file. -->
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <!-- Example: 
+                <ResourceDictionary Source="pack://application:,,,/DentalClinicWPF;component/Styles/Prescription.xaml"/> 
+                -->
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <!-- Light background for the view -->
+    <Grid Background="#FFFFFF">
+
+        <!-- Outer border for a subtle, card-like appearance -->
+        <Border BorderThickness="1" BorderBrush="#DDDDDD" CornerRadius="6" 
+                Background="#FAFAFA" Padding="20" Margin="10">
+
+            <StackPanel>
+                <!-- Header / Title -->
+                <TextBlock Text="Prescription Details"
+                           FontSize="20"
+                           FontWeight="Bold"
+                           Foreground="#333333"
+                           Margin="0,0,0,10"/>
+
+                <!-- Using a 2-column Grid for label-value pairs -->
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="140" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Prescription ID -->
+                    <TextBlock Text="Prescription ID:" FontWeight="Bold" Grid.Row="0" Grid.Column="0" 
+                               Margin="0,0,0,5" />
+                    <TextBlock Text="{Binding Prescription.PrescriptionID}" Grid.Row="0" Grid.Column="1" 
+                               Margin="0,0,0,5" />
+
+                    <!-- Patient -->
+                    <TextBlock Text="Patient:" FontWeight="Bold" Grid.Row="1" Grid.Column="0" 
+                               Margin="0,5,0,5" />
+                    <TextBlock Text="{Binding Prescription.Patient.DisplayInfo}" Grid.Row="1" Grid.Column="1" 
+                               Margin="0,5,0,5" />
+
+                    <!-- Dentist -->
+                    <TextBlock Text="Dentist:" FontWeight="Bold" Grid.Row="2" Grid.Column="0" 
+                               Margin="0,5,0,5" />
+                    <TextBlock Text="{Binding Prescription.Dentist.DisplayInfo}" Grid.Row="2" Grid.Column="1"
+                               Margin="0,5,0,5"/>
+
+                    <!-- Date Issued -->
+                    <TextBlock Text="Date Issued:" FontWeight="Bold" Grid.Row="3" Grid.Column="0" 
+                               Margin="0,5,0,5"/>
+                    <TextBlock Text="{Binding Prescription.DateIssued, StringFormat={}{0:yyyy-MM-dd}}" 
+                               Grid.Row="3" Grid.Column="1" Margin="0,5,0,5"/>
+
+                    <!-- Medication -->
+                    <TextBlock Text="Medication:" FontWeight="Bold" Grid.Row="4" Grid.Column="0" 
+                               Margin="0,5,0,5"/>
+                    <TextBlock Text="{Binding Prescription.Medication}" 
+                               Grid.Row="4" Grid.Column="1" Margin="0,5,0,5"/>
+
+                    <!-- Dosage -->
+                    <TextBlock Text="Dosage:" FontWeight="Bold" Grid.Row="5" Grid.Column="0" 
+                               Margin="0,5,0,5"/>
+                    <TextBlock Text="{Binding Prescription.Dosage}" 
+                               Grid.Row="5" Grid.Column="1" Margin="0,5,0,5"/>
+
+                    <!-- Instructions -->
+                    <TextBlock Text="Instructions:" FontWeight="Bold" Grid.Row="6" Grid.Column="0" 
+                               Margin="0,5,0,5"/>
+                    <TextBlock Text="{Binding Prescription.Instructions}"
+                               TextWrapping="Wrap" 
+                               Grid.Row="6" Grid.Column="1" Margin="0,5,0,5"/>
+                </Grid>
+
+                <!-- Buttons: Preview, Print, and Export PDF -->
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,20,0,0">
+                    <Button Content="Preview"
+                            Command="{Binding PreviewCommand}"
+                            Margin="0,0,10,0"
+                            Width="80"/>
+
+                    <Button Content="Print"
+                            Command="{Binding PrintCommand}"
+                            Margin="0,0,10,0"
+                            Width="80"/>
+
+                    <Button Content="Export PDF"
+                            Command="{Binding ExportPdfCommand}"
+                            Width="100"/>
+                </StackPanel>
+
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>

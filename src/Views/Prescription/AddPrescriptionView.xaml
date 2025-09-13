@@ -1,0 +1,46 @@
+﻿<Window x:Class="DentalClinicWPF.Views.Prescription.AddPrescriptionView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Add Prescription" Height="550" Width="600">
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Form Inputs -->
+        <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="0,0,0,10">
+                <Label Content="Patient" />
+                <ComboBox ItemsSource="{Binding Patients}" 
+                          DisplayMemberPath="DisplayInfo" 
+                          SelectedValuePath="PatientID" 
+                          SelectedValue="{Binding Prescription.PatientID, Mode=TwoWay}" />
+
+                <Label Content="Dentist" Margin="0,10,0,0" />
+                <ComboBox ItemsSource="{Binding Dentists}" 
+                          DisplayMemberPath="DisplayInfo" 
+                          SelectedValuePath="DentistID" 
+                          SelectedValue="{Binding Prescription.DentistID, Mode=TwoWay}" />
+                
+                <Label Content="Date Issued" Margin="0,10,0,0" />
+                <DatePicker SelectedDate="{Binding Prescription.DateIssued, Mode=TwoWay}" />
+
+                <Label Content="Medication" Margin="0,10,0,0" />
+                <TextBox Text="{Binding Prescription.Medication, Mode=TwoWay}" />
+
+                <Label Content="Dosage" Margin="0,10,0,0" />
+                <TextBox Text="{Binding Prescription.Dosage, Mode=TwoWay}" />
+
+                <Label Content="Instructions" Margin="0,10,0,0" />
+                <TextBox Text="{Binding Prescription.Instructions, Mode=TwoWay}" AcceptsReturn="True" Height="100" />
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- Buttons -->
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Content="Cancel" Command="{Binding CancelCommand}" Width="100" Margin="5" />
+            <Button Content="Save" Command="{Binding SaveCommand}" Width="100" Margin="5" />
+        </StackPanel>
+    </Grid>
+</Window>

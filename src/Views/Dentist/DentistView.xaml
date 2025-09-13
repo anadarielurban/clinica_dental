@@ -1,0 +1,64 @@
+﻿<UserControl x:Class="DentalClinicWPF.Views.Dentist.DentistView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:converters="clr-namespace:DentalClinicWPF.Converters"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d"
+             d:DesignHeight="600" d:DesignWidth="800">
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" /> <!-- Toolbar -->
+            <RowDefinition Height="Auto" /> <!-- Sorting -->
+            <RowDefinition Height="*" />    <!-- Main Content -->
+        </Grid.RowDefinitions>
+
+        <!-- Toolbar -->
+        <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,10">
+            <TextBox Width="300" 
+                     Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" 
+                     ToolTip="Search by First Name, Last Name, or Specialization" 
+                     Margin="0,0,10,0" />
+            <Button Content="Search" Command="{Binding SearchCommand}" Margin="0,0,10,0" Width="100" />
+            <Button Content="Reload" Command="{Binding ReloadCommand}" Margin="0,0,10,0" Width="100" />
+            <Button Content="Add Dentist" Command="{Binding AddDentistCommand}" Width="150" Margin="0,0,10,0" />
+            <Button Content="Edit Dentist" Command="{Binding EditDentistCommand}" 
+                    Width="150" Margin="0,0,10,0" 
+                    IsEnabled="{Binding SelectedDentist, Converter={StaticResource NullToBoolConverter}}" />
+            <Button Content="View Details" Command="{Binding OpenDentistDetailCommand}" 
+                    Width="150" Margin="0,0,10,0" 
+                    IsEnabled="{Binding SelectedDentist, Converter={StaticResource NullToBoolConverter}}" />
+        </StackPanel>
+
+        <!-- Sorting -->
+        <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="0,0,0,10">
+            <ComboBox Width="150" ItemsSource="{Binding SortOptions}" 
+                      SelectedItem="{Binding SelectedSortOption}" 
+                      ToolTip="Select sorting criterion" 
+                      Margin="0,0,10,0" />
+            <Button Content="Sort" Command="{Binding SortCommand}" Width="100" />
+        </StackPanel>
+
+        <!-- Dentist List -->
+        <DataGrid Grid.Row="2" ItemsSource="{Binding Dentists}" 
+                  AutoGenerateColumns="False" 
+                  SelectedItem="{Binding SelectedDentist}" 
+                  IsReadOnly="True" 
+                  SelectionMode="Single" 
+                  Margin="0,0,0,10">
+            <DataGrid.RowStyle>
+                <Style TargetType="DataGridRow">
+                    <EventSetter Event="MouseDoubleClick" Handler="DataGridRow_MouseDoubleClick" />
+                </Style>
+            </DataGrid.RowStyle>
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="First Name" Binding="{Binding FirstName}" Width="*" />
+                <DataGridTextColumn Header="Last Name" Binding="{Binding LastName}" Width="*" />
+                <DataGridTextColumn Header="Specialization" Binding="{Binding Specialization}" Width="*" />
+                <DataGridTextColumn Header="Phone Number" Binding="{Binding PhoneNumber}" Width="*" />
+                <DataGridTextColumn Header="Email" Binding="{Binding Email}" Width="*" />
+                <DataGridTextColumn Header="Room" Binding="{Binding Room.RoomNumber}" Width="*" />
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</UserControl>
