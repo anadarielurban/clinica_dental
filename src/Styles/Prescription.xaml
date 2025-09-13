@@ -1,0 +1,60 @@
+﻿<!-- Prescription.xaml -->
+<ResourceDictionary 
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- A border style for the main container (rounded corners, light background) -->
+    <Style x:Key="PrescriptionRootBorderStyle" TargetType="Border">
+        <Setter Property="CornerRadius" Value="8"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="BorderBrush" Value="#CCC"/>
+        <Setter Property="Background" Value="#FAFAFA"/>
+        <Setter Property="Padding" Value="15"/>
+        <Setter Property="Margin" Value="10"/>
+    </Style>
+
+    <!-- A bold label style for text blocks that are labels -->
+    <Style x:Key="PrescriptionLabelStyle" TargetType="TextBlock">
+        <Setter Property="FontWeight" Value="Bold"/>
+        <Setter Property="Margin" Value="0,5,0,0"/>
+    </Style>
+
+    <!-- A style for buttons, giving them a modern flat appearance -->
+    <Style x:Key="PrescriptionButtonStyle" TargetType="Button">
+        <Setter Property="Background" Value="#0078D4"/>
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="BorderBrush" Value="#0078D4"/>
+        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="Padding" Value="10"/>
+        <Setter Property="Margin" Value="5"/>
+        <Setter Property="HorizontalAlignment" Value="Left"/>
+        <!-- Optional fixed width if needed -->
+        <!-- <Setter Property="Width" Value="100"/> -->
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border CornerRadius="4"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="1">
+                        <ContentPresenter HorizontalAlignment="Center" 
+                                          VerticalAlignment="Center" />
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="#005A9E"/>
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+                <Setter Property="Background" Value="#003F6B"/>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Background" Value="#808080"/>
+                <Setter Property="BorderBrush" Value="#808080"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+</ResourceDictionary>
