@@ -24,7 +24,7 @@ A modern **WPF (C#)** desktop application for end‑to‑end management of a de
 
 ---
 
-## ✨ Key Features
+<h2 id="key-features">✨ Key Features</h2>
 
 * **Dashboard KPI Widgets** – upcoming appointments, revenue, unpaid invoices, revenue per dentist & timeline chart.
 * **Appointments** – weekly calendar, dentist availability, quick add/edit/preview.
@@ -38,7 +38,7 @@ A modern **WPF (C#)** desktop application for end‑to‑end management of a de
 
 ---
 
-## 🛠️ Tech Stack
+<h2 id="tech-stack">🛠️ Tech Stack</h2>
 
 | Layer           | Technology                                      |
 | --------------- | ----------------------------------------------- |
@@ -55,7 +55,7 @@ A modern **WPF (C#)** desktop application for end‑to‑end management of a de
 
 ---
 
-## 🏗️ Project Structure
+<h2 id="project-structure">🏗️ Project Structure</h2>
 
 ```text
 DentalClinicWPF.sln
@@ -69,7 +69,7 @@ DentalClinicWPF.sln
 
 ---
 
-## ⚙️ Installation
+<h2 id="installation">⚙️ Installation</h2>
 
 ### 🔑 Prerequisites
 
@@ -104,7 +104,7 @@ dotnet run --project DentalClinic.Presentation
 
 ---
 
-## ▶️ Running the App
+<h2 id="running-the-app">▶️ Running the App</h2>
 
 * Login screen is skipped; the demo database seeds two dentists and three test patients.
 * Dashboard opens by default – use the left navigation bar to access Patients, Appointments, Billing, etc.
@@ -112,7 +112,7 @@ dotnet run --project DentalClinic.Presentation
 
 ---
 
-## 📸 Screenshots
+<h2 id="screenshots">📸 Screenshots</h2>
 
 | #  | Screen                                                                               | Description                                                  |
 | -- | ------------------------------------------------------------------------------------ | ------------------------------------------------------------ |
@@ -134,6 +134,6 @@ dotnet run --project DentalClinic.Presentation
 
 ---
 
-## 📄 License
+<h2 id="license">📄 License</h2>
 
 Released under the [MIT License](LICENSE).
