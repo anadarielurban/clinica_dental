@@ -83,7 +83,7 @@ DentalClinicWPF.sln
 
 ```bash
 # 1  Clone repository
-git clone https://github.com/yourusername/DentalClinicWPF.git
+git clone https://github.com/Adrianowsski/DentalClinicWPF.git
 cd DentalClinicWPF
 
 # 2  Restore NuGet packages
