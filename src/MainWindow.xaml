@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:viewModels="clr-namespace:DentalClinicWPF.ViewModels"
         mc:Ignorable="d"
-        Title="Dental Clinic Management" Height="800" Width="1200"
+        Title="Gestión de Clínica Dental" Height="800" Width="1200"
         Background="#121212" Foreground="#E0E0E0">
     <Window.DataContext>
         <viewModels:MainViewModel />
@@ -16,26 +16,26 @@
         <Border DockPanel.Dock="Left" Width="250" Background="#1C1C1C" BorderBrush="#2C2C2C" BorderThickness="0,0,1,0">
             <StackPanel>
                 <!-- Header -->
-                <TextBlock Text="Dental Clinic" FontSize="20" FontWeight="Bold" Foreground="#FFFFFF"
+                <TextBlock Text="Clínica Dental" FontSize="20" FontWeight="Bold" Foreground="#FFFFFF"
                            Margin="20,20,20,30" TextAlignment="Center" />
 
                 <!-- Buttons -->
-                <Button Content="Dashboard" Command="{Binding ShowDashboardCommand}" Style="{StaticResource SidebarButtonStyle}" />
-                <Button Content="Patients" Command="{Binding ShowPatientsCommand}" Style="{StaticResource SidebarButtonStyle}" />
-                <Button Content="Appointments" Command="{Binding ShowAppointmentsCommand}" Style="{StaticResource SidebarButtonStyle}" />
-                <Button Content="Dentists" Command="{Binding ShowDentistsCommand}" Style="{StaticResource SidebarButtonStyle}" />
-                <Button Content="Treatments" Command="{Binding ShowTreatmentsCommand}" Style="{StaticResource SidebarButtonStyle}" />
-                <Button Content="Invoices" Command="{Binding ShowInvoicesCommand}" Style="{StaticResource SidebarButtonStyle}" />
-                <Button Content="Treatment Plans" Command="{Binding ShowTreatmentPlansCommand}" Style="{StaticResource SidebarButtonStyle}" />
-                <Button Content="Medical Records" Command="{Binding ShowMedicalRecordsCommand}" Style="{StaticResource SidebarButtonStyle}" />
-                <Button Content="Prescriptions" Command="{Binding ShowPrescriptionsCommand}" Style="{StaticResource SidebarButtonStyle}" />
-                <Button Content="Schedules" Command="{Binding ShowSchedulesCommand}" Style="{StaticResource SidebarButtonStyle}" />
-                <Button Content="Inventory" Command="{Binding ShowInventoryCommand}" Style="{StaticResource SidebarButtonStyle}" />
-                <Button Content="Suppliers" Command="{Binding ShowSuppliersCommand}" Style="{StaticResource SidebarButtonStyle}" />
-                <Button Content="Equipment" Command="{Binding ShowEquipmentCommand}" Style="{StaticResource SidebarButtonStyle}" />
-                <Button Content="Lab Orders" Command="{Binding ShowLabOrdersCommand}" Style="{StaticResource SidebarButtonStyle}" />
-                <Button Content="Employees" Command="{Binding ShowEmployeesCommand}" Style="{StaticResource SidebarButtonStyle}" />
-                <Button Content="Rooms" Command="{Binding ShowRoomsCommand}" Style="{StaticResource SidebarButtonStyle}" />
+                <Button Content="Inicio" Command="{Binding ShowDashboardCommand}" Style="{StaticResource SidebarButtonStyle}" />
+                <Button Content="Pacientes" Command="{Binding ShowPatientsCommand}" Style="{StaticResource SidebarButtonStyle}" />
+                <Button Content="Citas" Command="{Binding ShowAppointmentsCommand}" Style="{StaticResource SidebarButtonStyle}" />
+                <Button Content="Dentistas" Command="{Binding ShowDentistsCommand}" Style="{StaticResource SidebarButtonStyle}" />
+                <Button Content="Tratamientos" Command="{Binding ShowTreatmentsCommand}" Style="{StaticResource SidebarButtonStyle}" />
+                <Button Content="Facturas" Command="{Binding ShowInvoicesCommand}" Style="{StaticResource SidebarButtonStyle}" />
+                <Button Content="Planes de Tratamiento" Command="{Binding ShowTreatmentPlansCommand}" Style="{StaticResource SidebarButtonStyle}" />
+                <Button Content="Expedientes" Command="{Binding ShowMedicalRecordsCommand}" Style="{StaticResource SidebarButtonStyle}" />
+                <Button Content="Recetas" Command="{Binding ShowPrescriptionsCommand}" Style="{StaticResource SidebarButtonStyle}" />
+                <Button Content="Horarios" Command="{Binding ShowSchedulesCommand}" Style="{StaticResource SidebarButtonStyle}" />
+                <Button Content="Inventario" Command="{Binding ShowInventoryCommand}" Style="{StaticResource SidebarButtonStyle}" />
+                <Button Content="Proveedores" Command="{Binding ShowSuppliersCommand}" Style="{StaticResource SidebarButtonStyle}" />
+                <Button Content="Equipos" Command="{Binding ShowEquipmentCommand}" Style="{StaticResource SidebarButtonStyle}" />
+                <Button Content="Órdenes de Laboratorio" Command="{Binding ShowLabOrdersCommand}" Style="{StaticResource SidebarButtonStyle}" />
+                <Button Content="Empleados" Command="{Binding ShowEmployeesCommand}" Style="{StaticResource SidebarButtonStyle}" />
+                <Button Content="Consultorios" Command="{Binding ShowRoomsCommand}" Style="{StaticResource SidebarButtonStyle}" />
             </StackPanel>
         </Border>
 
@@ -59,3 +59,4 @@
         </TabControl>
     </DockPanel>
 </Window>
+
