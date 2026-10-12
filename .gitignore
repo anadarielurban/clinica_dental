@@ -1,0 +1,19 @@
+﻿# === .NET / WPF ===
+bin/
+obj/
+*.user
+*.suo
+*.DotSettings.user
+
+# === Visual Studio ===
+.vs/
+
+# === Base de datos local ===
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+
+# === Respaldos personales ===
+*.bak
+*.bak.*

@@ -18,8 +18,8 @@ namespace DentalClinicWPF.Models
         public string Specialization { get; set; }
 
         [Required, MaxLength(15)]
-        [RegularExpression(@"^\+48\d{9}$", ErrorMessage = "Phone Number must start with +48 and contain 9 digits.")]
-        public string PhoneNumber { get; set; } = "+48";
+        [RegularExpression(@"^[\d\s\+\-\(\)]{7,}$", ErrorMessage = "Phone Number must contain at least 7 digits.")]
+        public string PhoneNumber { get; set; } = "+52";
 
         [MaxLength(100)]
         [EmailAddress]

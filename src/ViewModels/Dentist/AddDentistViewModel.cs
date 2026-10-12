@@ -57,7 +57,7 @@ namespace DentalClinicWPF.ViewModels.Dentist
             }
         }
 
-        private string _phoneNumber = "+48";
+        private string _phoneNumber = "+52";
         public string PhoneNumber
         {
             get => _phoneNumber;
@@ -119,7 +119,7 @@ namespace DentalClinicWPF.ViewModels.Dentist
                    !string.IsNullOrWhiteSpace(FirstName) &&
                    !string.IsNullOrWhiteSpace(LastName) &&
                    !string.IsNullOrWhiteSpace(Specialization) &&
-                   Regex.IsMatch(PhoneNumber, @"^\+48\d{9}$") &&
+                   Regex.IsMatch(PhoneNumber, @"^[\d\s\+\-\(\)]{7,}$") &&
                    (!string.IsNullOrWhiteSpace(Email) && Regex.IsMatch(Email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$")) &&
                    RoomID != 0;
         }
@@ -184,8 +184,8 @@ namespace DentalClinicWPF.ViewModels.Dentist
                     break;
 
                 case nameof(PhoneNumber):
-                    if (!Regex.IsMatch(PhoneNumber, @"^\+48\d{9}$"))
-                        AddError(propertyName, "Phone Number must start with +48 and contain 9 digits.");
+                    if (!Regex.IsMatch(PhoneNumber, @"^[\d\s\+\-\(\)]{7,}$"))
+                        AddError(propertyName, "Phone Number must contain at least 7 digits, spaces, +, -, (, ) are allowed.");
                     break;
 
                 case nameof(Email):

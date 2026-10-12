@@ -27,8 +27,8 @@ namespace DentalClinicWPF.Models
 
         [Required(ErrorMessage = "Phone Number is required.")]
         [MaxLength(15, ErrorMessage = "Phone Number cannot exceed 15 characters.")]
-        [RegularExpression(@"^\+48\d{9}$", ErrorMessage = "Phone Number must start with +48 and contain 9 digits.")]
-        public string PhoneNumber { get; set; } = "+48";
+        [RegularExpression(@"^[\d\s\+\-\(\)]{7,}$", ErrorMessage = "Phone Number must contain at least 7 digits.")]
+        public string PhoneNumber { get; set; } = "+52";
 
         [MaxLength(100, ErrorMessage = "Email cannot exceed 100 characters.")]
         [EmailAddress(ErrorMessage = "Invalid Email Address.")]
