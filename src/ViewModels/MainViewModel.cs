@@ -63,25 +63,25 @@ namespace DentalClinicWPF.ViewModels
             _context = new DentalClinicContext();
 
             // Define navigation commands with OpenTab action
-            ShowDashboardCommand = new RelayCommand(() => OpenTab("Dashboard", new DashboardViewModel(_context, OpenTab)));
-            ShowPatientsCommand = new RelayCommand(() => OpenTab("Patients", new PatientViewModel(_context, OpenTab)));
-            ShowAppointmentsCommand = new RelayCommand(() => OpenTab("Appointments", new AppointmentViewModel(_context)));
-            ShowDentistsCommand = new RelayCommand(() => OpenTab("Dentists", new DentistViewModel(_context, OpenTab)));
-            ShowTreatmentsCommand = new RelayCommand(() => OpenTab("Treatments", new TreatmentViewModel(_context)));
-            ShowInvoicesCommand = new RelayCommand(() => OpenTab("Invoices", new InvoiceViewModel(_context, OpenTab)));
-            ShowTreatmentPlansCommand = new RelayCommand(() => OpenTab("Treatment Plans", new TreatmentPlanViewModel(_context)));
-            ShowMedicalRecordsCommand = new RelayCommand(() => OpenTab("Medical Records", new MedicalRecordViewModel(_context)));
-            ShowPrescriptionsCommand = new RelayCommand(() => OpenTab("Prescriptions", new PrescriptionViewModel(_context, OpenTab)));
-            ShowSchedulesCommand = new RelayCommand(() => OpenTab("Schedules", new ScheduleViewModel(_context)));
-            ShowInventoryCommand = new RelayCommand(() => OpenTab("Inventory", new InventoryViewModel(_context)));
-            ShowSuppliersCommand = new RelayCommand(() => OpenTab("Suppliers", new SupplierViewModel(_context)));
-            ShowLabOrdersCommand = new RelayCommand(() => OpenTab("Lab Orders", new LabOrderViewModel(_context)));
-            ShowEmployeesCommand = new RelayCommand(() => OpenTab("Employees", new EmployeeViewModel(_context)));
-            ShowRoomsCommand = new RelayCommand(() => OpenTab("Rooms", new RoomViewModel(_context)));
-            ShowEquipmentCommand = new RelayCommand(() => OpenTab("Equipment", new EquipmentViewModel(_context)));
+            ShowDashboardCommand = new RelayCommand(() => OpenTab("Inicio", new DashboardViewModel(_context, OpenTab)));
+            ShowPatientsCommand = new RelayCommand(() => OpenTab("Pacientes", new PatientViewModel(_context, OpenTab)));
+            ShowAppointmentsCommand = new RelayCommand(() => OpenTab("Citas", new AppointmentViewModel(_context)));
+            ShowDentistsCommand = new RelayCommand(() => OpenTab("Dentistas", new DentistViewModel(_context, OpenTab)));
+            ShowTreatmentsCommand = new RelayCommand(() => OpenTab("Tratamientos", new TreatmentViewModel(_context)));
+            ShowInvoicesCommand = new RelayCommand(() => OpenTab("Facturas", new InvoiceViewModel(_context, OpenTab)));
+            ShowTreatmentPlansCommand = new RelayCommand(() => OpenTab("Planes de Tratamiento", new TreatmentPlanViewModel(_context)));
+            ShowMedicalRecordsCommand = new RelayCommand(() => OpenTab("Expedientes", new MedicalRecordViewModel(_context)));
+            ShowPrescriptionsCommand = new RelayCommand(() => OpenTab("Recetas", new PrescriptionViewModel(_context, OpenTab)));
+            ShowSchedulesCommand = new RelayCommand(() => OpenTab("Horarios", new ScheduleViewModel(_context)));
+            ShowInventoryCommand = new RelayCommand(() => OpenTab("Inventario", new InventoryViewModel(_context)));
+            ShowSuppliersCommand = new RelayCommand(() => OpenTab("Proveedores", new SupplierViewModel(_context)));
+            ShowLabOrdersCommand = new RelayCommand(() => OpenTab("Órdenes de Laboratorio", new LabOrderViewModel(_context)));
+            ShowEmployeesCommand = new RelayCommand(() => OpenTab("Empleados", new EmployeeViewModel(_context)));
+            ShowRoomsCommand = new RelayCommand(() => OpenTab("Consultorios", new RoomViewModel(_context)));
+            ShowEquipmentCommand = new RelayCommand(() => OpenTab("Equipos", new EquipmentViewModel(_context)));
 
             // Open default tab (Dashboard)
-            OpenTab("Dashboard", new DashboardViewModel(_context, OpenTab));
+            OpenTab("Inicio", new DashboardViewModel(_context, OpenTab));
         }
 
         private void OpenTab(string header, BaseViewModel content)
