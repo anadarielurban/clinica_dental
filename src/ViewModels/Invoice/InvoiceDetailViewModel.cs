@@ -61,7 +61,7 @@ namespace DentalClinicWPF.ViewModels.Invoice
                     FontWeight = FontWeights.Normal,
                     FontSize = 12
                 });
-                headerParagraph.Inlines.Add(new Run("Phone: +48 123 456 789\n")
+                headerParagraph.Inlines.Add(new Run("Phone: +52 55 1234 5678\n")
                 {
                     FontWeight = FontWeights.Normal,
                     FontSize = 12
@@ -174,7 +174,7 @@ namespace DentalClinicWPF.ViewModels.Invoice
                     // ----------------------------------
                     gfx.DrawString("Dental Clinic XYZ", fontBold, XBrushes.Black, new XPoint(xPos, yPos));
                     gfx.DrawString("123 Main Street, City, Country", fontRegular, XBrushes.Black, new XPoint(xPos, yPos + 20));
-                    gfx.DrawString("Phone: +48 123 456 789", fontRegular, XBrushes.Black, new XPoint(xPos, yPos + 40));
+                    gfx.DrawString("Phone: +52 55 1234 5678", fontRegular, XBrushes.Black, new XPoint(xPos, yPos + 40));
 
                     yPos += 70;
 

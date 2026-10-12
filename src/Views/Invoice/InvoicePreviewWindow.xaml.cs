@@ -36,7 +36,7 @@ namespace DentalClinicWPF.Views.Invoice
                 FontWeight = FontWeights.Normal, 
                 FontSize = 12
             });
-            headerParagraph.Inlines.Add(new Run("Phone: +48 123 456 789\n")
+            headerParagraph.Inlines.Add(new Run("Phone: +52 55 1234 5678\n")
             {
                 FontWeight = FontWeights.Normal, 
                 FontSize = 12

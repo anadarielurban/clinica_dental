@@ -62,7 +62,7 @@ namespace DentalClinicWPF.ViewModels.Patient
             set => SetProperty(ref _gender, value);
         }
 
-        private string _phoneNumber = "+48";
+        private string _phoneNumber = "+52";
         public string PhoneNumber
         {
             get => _phoneNumber;
@@ -121,7 +121,7 @@ namespace DentalClinicWPF.ViewModels.Patient
                    !string.IsNullOrWhiteSpace(FirstName) &&
                    !string.IsNullOrWhiteSpace(LastName) &&
                    CalculateAge(DateOfBirth) >= 18 &&
-                   Regex.IsMatch(PhoneNumber, @"^\+48\d{9}$") &&
+                   Regex.IsMatch(PhoneNumber, @"^[\d\s\+\-\(\)]{7,}$") &&
                    !string.IsNullOrWhiteSpace(Email) &&
                    Regex.IsMatch(Email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$") &&
                    ValidateAddress(Address);
@@ -185,8 +185,8 @@ namespace DentalClinicWPF.ViewModels.Patient
                 case nameof(PhoneNumber):
                     if (string.IsNullOrWhiteSpace(PhoneNumber))
                         AddError(propertyName, "Phone Number is required.");
-                    else if (!Regex.IsMatch(PhoneNumber, @"^\+48\d{9}$"))
-                        AddError(propertyName, "Phone Number must start with +48 and contain 9 digits.");
+                    else if (!Regex.IsMatch(PhoneNumber, @"^[\d\s\+\-\(\)]{7,}$"))
+                        AddError(propertyName, "Phone Number must contain at least 7 digits, spaces, +, -, (, ) are allowed.");
                     break;
 
                 case nameof(Email):
@@ -201,14 +201,14 @@ namespace DentalClinicWPF.ViewModels.Patient
 
                 case nameof(Address):
                     if (!ValidateAddress(Address))
-                        AddError(propertyName, "Address must start with a postal code (00-000), followed by city and street.");
+                        AddError(propertyName, "Address is required.");
                     break;
             }
         }
 
         private bool ValidateAddress(string address)
         {
-            return Regex.IsMatch(address, @"^\d{2}-\d{3} .+");
+            return !string.IsNullOrWhiteSpace(address);
         }
 
         private bool StartsWithUppercase(string value)

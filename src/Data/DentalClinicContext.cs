@@ -23,7 +23,7 @@ namespace DentalClinicWPF.Data
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer("Server=ADRIANPC;Database=DentalClinicDB;Trusted_Connection=True;TrustServerCertificate=True;");
+            optionsBuilder.UseSqlite("Data Source=clinica-dental.db");
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
