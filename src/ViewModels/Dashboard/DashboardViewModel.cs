@@ -105,11 +105,15 @@ namespace DentalClinicWPF.ViewModels.Dashboard
             try
             {
                 // Upcoming Appointments (max 10)
+                var now = DateTime.Now;
+                var today = now.Date;
+                var currentTime = now.TimeOfDay;
+
                 var appointments = _context.Appointment
                     .Include(a => a.Patient)
                     .Include(a => a.Dentist)
-                    .Where(a => a.AppointmentDate.Date > DateTime.Now.Date ||
-                                (a.AppointmentDate.Date == DateTime.Now.Date && a.StartTime > DateTime.Now.TimeOfDay))
+                    .AsEnumerable().Where(a => a.AppointmentDate.Date > today ||
+                                (a.AppointmentDate.Date == today && a.StartTime > currentTime))
                     .OrderBy(a => a.AppointmentDate)
                     .ThenBy(a => a.StartTime)
                     .Take(10)
@@ -131,13 +135,19 @@ namespace DentalClinicWPF.ViewModels.Dashboard
                 UnpaidInvoices = _context.Invoice.Count(i => !i.IsPaid);
 
                 // Revenue per Dentist
-                var revenuePerDentist = _context.Dentist
+                var allDentists = _context.Dentist
+                    .Include(d => d.Appointments)
+                        .ThenInclude(a => a.Treatment)
+                    .AsEnumerable()
+                    .ToList();
+
+                var revenuePerDentist = allDentists
                     .Select(d => new DentistRevenue
                     {
                         DentistName = d.FirstName + " " + d.LastName,
                         Revenue = d.Appointments
-                            .Where(a => a.AppointmentDate.Date > DateTime.Now.Date ||
-                                        (a.AppointmentDate.Date == DateTime.Now.Date && a.StartTime > DateTime.Now.TimeOfDay))
+                            .Where(a => a.AppointmentDate.Date > today ||
+                                        (a.AppointmentDate.Date == today && a.StartTime > currentTime))
                             .Sum(a => a.Treatment.Price)
                     })
                     .ToList();
@@ -161,6 +171,7 @@ namespace DentalClinicWPF.ViewModels.Dashboard
                 // Show revenue for the last 6 months
                 var sixMonthsAgo = DateTime.Now.AddMonths(-5);
                 var revenueData = _context.Invoice
+                    .AsEnumerable()
                     .Where(i => i.InvoiceDate >= new DateTime(sixMonthsAgo.Year, sixMonthsAgo.Month, 1))
                     .GroupBy(i => new { i.InvoiceDate.Year, i.InvoiceDate.Month })
                     .OrderBy(g => g.Key.Year)
