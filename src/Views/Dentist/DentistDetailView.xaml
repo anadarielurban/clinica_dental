@@ -44,33 +44,33 @@
         <!-- Left panel with dentist information and statistics -->
         <StackPanel Grid.Row="1" Grid.Column="0" Margin="10">
             <!-- Dentist Information -->
-            <GroupBox Header="Dentist Info" Margin="0,0,0,10">
+            <GroupBox Header="Información del Dentista" Margin="0,0,0,10">
                 <StackPanel Margin="10">
-                    <TextBlock Text="Specialization:" FontWeight="Bold"/>
+                    <TextBlock Text="Especialización:" FontWeight="Bold"/>
                     <TextBlock Text="{Binding Dentist.Specialization}" Margin="0,0,0,5"/>
 
-                    <TextBlock Text="Phone:" FontWeight="Bold"/>
+                    <TextBlock Text="Teléfono:" FontWeight="Bold"/>
                     <TextBlock Text="{Binding Dentist.PhoneNumber}" Margin="0,0,0,5"/>
 
-                    <TextBlock Text="Email:" FontWeight="Bold"/>
+                    <TextBlock Text="Correo:" FontWeight="Bold"/>
                     <TextBlock Text="{Binding Dentist.Email}" Margin="0,0,0,5"/>
                 </StackPanel>
             </GroupBox>
 
             <!-- Availability -->
-            <GroupBox Header="Availability" Margin="0,0,0,10">
+            <GroupBox Header="Disponibilidad" Margin="0,0,0,10">
                 <StackPanel Margin="10">
-                    <TextBlock Text="Mon-Fri: 9:00-18:00"/>
+                    <TextBlock Text="Lun-Vie: 9:00-18:00"/>
                 </StackPanel>
             </GroupBox>
 
             <!-- Weekly Statistics -->
-            <GroupBox Header="Key Performance (This Week)">
+            <GroupBox Header="Rendimiento (Esta Semana)">
                 <StackPanel Margin="10">
-                    <TextBlock Text="Appointments this week:" FontWeight="Bold"/>
+                    <TextBlock Text="Citas esta semana:" FontWeight="Bold"/>
                     <TextBlock Text="{Binding TotalAppointmentsThisWeek}" Margin="0,0,0,5"/>
 
-                    <TextBlock Text="Most frequent procedure this week:" FontWeight="Bold"/>
+                    <TextBlock Text="Procedimiento más frecuente esta semana:" FontWeight="Bold"/>
                     <TextBlock Text="{Binding MostFrequentProcedureThisWeek}"/>
                 </StackPanel>
             </GroupBox>
@@ -86,7 +86,7 @@
             <!-- Week navigation bar -->
             <Border Grid.Row="0" Padding="5" Margin="0,0,0,10">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                    <Button Content="Previous Week" 
+                    <Button Content="Semana Anterior" 
                             Command="{Binding PreviousWeekCommand}" 
                             Margin="5,0"/>
 
@@ -95,7 +95,7 @@
                                FontSize="16" FontWeight="Bold"
                                VerticalAlignment="Center"/>
 
-                    <Button Content="Next Week" 
+                    <Button Content="Semana Siguiente" 
                             Command="{Binding NextWeekCommand}" 
                             Margin="5,0"/>
                 </StackPanel>
@@ -157,7 +157,7 @@
                         </ItemsControl>
 
                         <!-- When there are no appointments -->
-                        <TextBlock Text="No appointments" 
+                        <TextBlock Text="Sin citas" 
                                    HorizontalAlignment="Center" Margin="5"
                                    Visibility="{Binding WeekDays[0].Appointments.Count,
                                                Converter={StaticResource CountToVisibilityConverter},
@@ -198,7 +198,7 @@
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
 
-                        <TextBlock Text="No appointments" 
+                        <TextBlock Text="Sin citas" 
                                    HorizontalAlignment="Center" Margin="5"
                                    Visibility="{Binding WeekDays[1].Appointments.Count,
                                                Converter={StaticResource CountToVisibilityConverter},
@@ -238,7 +238,7 @@
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
 
-                        <TextBlock Text="No appointments" 
+                        <TextBlock Text="Sin citas" 
                                    HorizontalAlignment="Center" Margin="5"
                                    Visibility="{Binding WeekDays[2].Appointments.Count,
                                                Converter={StaticResource CountToVisibilityConverter},
@@ -278,7 +278,7 @@
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
 
-                        <TextBlock Text="No appointments"
+                        <TextBlock Text="Sin citas"
                                    HorizontalAlignment="Center" Margin="5"
                                    Visibility="{Binding WeekDays[3].Appointments.Count,
                                                Converter={StaticResource CountToVisibilityConverter},
@@ -318,7 +318,7 @@
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
 
-                        <TextBlock Text="No appointments"
+                        <TextBlock Text="Sin citas"
                                    HorizontalAlignment="Center" Margin="5"
                                    Visibility="{Binding WeekDays[4].Appointments.Count,
                                                Converter={StaticResource CountToVisibilityConverter},

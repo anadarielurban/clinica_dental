@@ -17,15 +17,15 @@
         <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,10">
             <TextBox Width="300" 
                      Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" 
-                     ToolTip="Search by First Name, Last Name, or Specialization" 
+                     ToolTip="Buscar por nombre, apellido o especialización" 
                      Margin="0,0,10,0" />
-            <Button Content="Search" Command="{Binding SearchCommand}" Margin="0,0,10,0" Width="100" />
-            <Button Content="Reload" Command="{Binding ReloadCommand}" Margin="0,0,10,0" Width="100" />
-            <Button Content="Add Dentist" Command="{Binding AddDentistCommand}" Width="150" Margin="0,0,10,0" />
-            <Button Content="Edit Dentist" Command="{Binding EditDentistCommand}" 
+            <Button Content="Buscar" Command="{Binding SearchCommand}" Margin="0,0,10,0" Width="100" />
+            <Button Content="Recargar" Command="{Binding ReloadCommand}" Margin="0,0,10,0" Width="100" />
+            <Button Content="Agregar Dentista" Command="{Binding AddDentistCommand}" Width="150" Margin="0,0,10,0" />
+            <Button Content="Editar Dentista" Command="{Binding EditDentistCommand}" 
                     Width="150" Margin="0,0,10,0" 
                     IsEnabled="{Binding SelectedDentist, Converter={StaticResource NullToBoolConverter}}" />
-            <Button Content="View Details" Command="{Binding OpenDentistDetailCommand}" 
+            <Button Content="Ver Detalles" Command="{Binding OpenDentistDetailCommand}" 
                     Width="150" Margin="0,0,10,0" 
                     IsEnabled="{Binding SelectedDentist, Converter={StaticResource NullToBoolConverter}}" />
         </StackPanel>
@@ -34,9 +34,9 @@
         <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="0,0,0,10">
             <ComboBox Width="150" ItemsSource="{Binding SortOptions}" 
                       SelectedItem="{Binding SelectedSortOption}" 
-                      ToolTip="Select sorting criterion" 
+                      ToolTip="Seleccionar criterio de ordenamiento" 
                       Margin="0,0,10,0" />
-            <Button Content="Sort" Command="{Binding SortCommand}" Width="100" />
+            <Button Content="Ordenar" Command="{Binding SortCommand}" Width="100" />
         </StackPanel>
 
         <!-- Dentist List -->
@@ -52,12 +52,12 @@
                 </Style>
             </DataGrid.RowStyle>
             <DataGrid.Columns>
-                <DataGridTextColumn Header="First Name" Binding="{Binding FirstName}" Width="*" />
-                <DataGridTextColumn Header="Last Name" Binding="{Binding LastName}" Width="*" />
-                <DataGridTextColumn Header="Specialization" Binding="{Binding Specialization}" Width="*" />
-                <DataGridTextColumn Header="Phone Number" Binding="{Binding PhoneNumber}" Width="*" />
-                <DataGridTextColumn Header="Email" Binding="{Binding Email}" Width="*" />
-                <DataGridTextColumn Header="Room" Binding="{Binding Room.RoomNumber}" Width="*" />
+                <DataGridTextColumn Header="Nombre" Binding="{Binding FirstName}" Width="*" />
+                <DataGridTextColumn Header="Apellido" Binding="{Binding LastName}" Width="*" />
+                <DataGridTextColumn Header="Especialización" Binding="{Binding Specialization}" Width="*" />
+                <DataGridTextColumn Header="Teléfono" Binding="{Binding PhoneNumber}" Width="*" />
+                <DataGridTextColumn Header="Correo" Binding="{Binding Email}" Width="*" />
+                <DataGridTextColumn Header="Consultorio" Binding="{Binding Room.RoomNumber}" Width="*" />
             </DataGrid.Columns>
         </DataGrid>
     </Grid>
