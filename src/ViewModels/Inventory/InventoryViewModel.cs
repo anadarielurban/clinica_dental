@@ -35,9 +35,9 @@ namespace DentalClinicWPF.ViewModels.Inventory
         // Właściwości do sortowania
         public ObservableCollection<string> SortOptions { get; } = new ObservableCollection<string>
         {
-            "Product Name",
+            "Nombre del Producto",
             "Quantity",
-            "Reorder Level",
+            "Nivel de Reorden",
             "Supplier"
         };
         public string SelectedSortOption { get; set; }
@@ -75,7 +75,7 @@ namespace DentalClinicWPF.ViewModels.Inventory
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error loading inventory: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error al cargar el inventario: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -122,9 +122,9 @@ namespace DentalClinicWPF.ViewModels.Inventory
 
             IEnumerable<Models.Inventory> sortedItems = SelectedSortOption switch
             {
-                "Product Name" => InventoryItems.OrderBy(i => i.ProductName),
+                "Nombre del Producto" => InventoryItems.OrderBy(i => i.ProductName),
                 "Quantity" => InventoryItems.OrderBy(i => i.Quantity),
-                "Reorder Level" => InventoryItems.OrderBy(i => i.ReorderLevel),
+                "Nivel de Reorden" => InventoryItems.OrderBy(i => i.ReorderLevel),
                 "Supplier" => InventoryItems.OrderBy(i => i.Supplier.CompanyName),
                 _ => InventoryItems
             };

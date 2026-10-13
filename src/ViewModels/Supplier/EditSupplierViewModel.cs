@@ -46,7 +46,7 @@ namespace DentalClinicWPF.ViewModels.Supplier
             {
                 if (!IsSupplierDataValid())
                 {
-                    MessageBox.Show("Please fill in all required fields correctly!", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show("Completa todos los campos correctamente.", "Error de Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
 
@@ -60,12 +60,12 @@ namespace DentalClinicWPF.ViewModels.Supplier
                 _context.Supplier.Update(OriginalSupplier);
                 _context.SaveChanges();
 
-                MessageBox.Show("Supplier updated successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("¡Proveedor actualizado correctamente!", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
                 CloseWindow(true);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error while saving supplier: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error al guardar el proveedor: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -79,8 +79,8 @@ namespace DentalClinicWPF.ViewModels.Supplier
             try
             {
                 var result = MessageBox.Show(
-                    "Are you sure you want to delete this supplier?",
-                    "Confirm Delete",
+                    "¿Seguro que quieres eliminar este proveedor?",
+                    "Confirmar Eliminación",
                     MessageBoxButton.YesNo,
                     MessageBoxImage.Warning);
 
@@ -89,13 +89,13 @@ namespace DentalClinicWPF.ViewModels.Supplier
                     _context.Supplier.Remove(OriginalSupplier);
                     _context.SaveChanges();
 
-                    MessageBox.Show("Supplier deleted successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                    MessageBox.Show("¡Proveedor eliminado correctamente!", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
                     CloseWindow(true);
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error while deleting supplier: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error al eliminar el proveedor: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -123,13 +123,13 @@ namespace DentalClinicWPF.ViewModels.Supplier
 
             if (!System.Text.RegularExpressions.Regex.IsMatch(EditingSupplier.PhoneNumber, @"^\+?\d+$"))
             {
-                MessageBox.Show("Invalid phone number format!", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("¡Formato de teléfono inválido!", "Error de Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return false;
             }
 
             if (!System.Text.RegularExpressions.Regex.IsMatch(EditingSupplier.Email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
             {
-                MessageBox.Show("Invalid email format!", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("¡Formato de correo inválido!", "Error de Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return false;
             }
 

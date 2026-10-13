@@ -47,18 +47,18 @@ namespace DentalClinicWPF.ViewModels.Inventory
             {
                 if (!IsInventoryDataValid())
                 {
-                    MessageBox.Show("Please fill in all required fields correctly!", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show("Completa todos los campos correctamente.", "Error de Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
 
                 _context.Inventory.Add(Inventory);
                 _context.SaveChanges();
-                MessageBox.Show("Inventory item added successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("¡Elemento de inventario agregado!", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
                 CloseWindow(true);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"An error occurred while saving: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Ocurrió un error al guardar: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -84,25 +84,25 @@ namespace DentalClinicWPF.ViewModels.Inventory
         {
             if (string.IsNullOrWhiteSpace(Inventory.ProductName))
             {
-                MessageBox.Show("Product Name is required.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("El nombre del producto es obligatorio.", "Error de Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return false;
             }
 
             if (Inventory.Quantity < 0)
             {
-                MessageBox.Show("Quantity cannot be negative.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("La cantidad no puede ser negativa.", "Error de Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return false;
             }
 
             if (Inventory.ReorderLevel < 0)
             {
-                MessageBox.Show("Reorder Level cannot be negative.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("El nivel de reorden no puede ser negativo.", "Error de Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return false;
             }
 
             if (Inventory.SupplierID == 0)
             {
-                MessageBox.Show("Please select a Supplier.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Selecciona un proveedor.", "Error de Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return false;
             }
 

@@ -15,7 +15,7 @@
         <Border BorderThickness="1" BorderBrush="#DDDDDD" CornerRadius="6" 
                 Background="#FAFAFA" Padding="20" Margin="10">
             <StackPanel>
-                <TextBlock Text="Invoice Details"
+                <TextBlock Text="Detalles de la Factura"
                            FontSize="20"
                            FontWeight="Bold"
                            Foreground="#333333"
@@ -37,43 +37,43 @@
                     </Grid.RowDefinitions>
     
                     <!-- Invoice ID -->
-                    <TextBlock Text="Invoice ID:" FontWeight="Bold" Grid.Row="0" Grid.Column="0" 
+                    <TextBlock Text="ID de Factura:" FontWeight="Bold" Grid.Row="0" Grid.Column="0" 
                                Margin="0,0,0,5" />
                     <TextBlock Text="{Binding Invoice.InvoiceID}" Grid.Row="0" Grid.Column="1" 
                                Margin="0,0,0,5" />
     
                     <!-- Patient -->
-                    <TextBlock Text="Patient:" FontWeight="Bold" Grid.Row="1" Grid.Column="0" 
+                    <TextBlock Text="Paciente:" FontWeight="Bold" Grid.Row="1" Grid.Column="0" 
                                Margin="0,5,0,5" />
                     <TextBlock Text="{Binding Invoice.Appointment.Patient.DisplayInfo}" Grid.Row="1" Grid.Column="1" 
                                Margin="0,5,0,5" />
     
                     <!-- Dentist -->
-                    <TextBlock Text="Dentist:" FontWeight="Bold" Grid.Row="2" Grid.Column="0" 
+                    <TextBlock Text="Dentista:" FontWeight="Bold" Grid.Row="2" Grid.Column="0" 
                                Margin="0,5,0,5" />
                     <TextBlock Text="{Binding Invoice.Appointment.Dentist.DisplayInfo}" Grid.Row="2" Grid.Column="1"
                                Margin="0,5,0,5"/>
     
                     <!-- Treatment -->
-                    <TextBlock Text="Treatment:" FontWeight="Bold" Grid.Row="3" Grid.Column="0" 
+                    <TextBlock Text="Tratamiento:" FontWeight="Bold" Grid.Row="3" Grid.Column="0" 
                                Margin="0,5,0,5"/>
                     <TextBlock Text="{Binding Invoice.Appointment.Treatment.Name}" 
                                Grid.Row="3" Grid.Column="1" Margin="0,5,0,5"/>
     
                     <!-- Appointment Date -->
-                    <TextBlock Text="Appointment Date:" FontWeight="Bold" Grid.Row="4" Grid.Column="0" 
+                    <TextBlock Text="Fecha de Cita:" FontWeight="Bold" Grid.Row="4" Grid.Column="0" 
                                Margin="0,5,0,5"/>
                     <TextBlock Text="{Binding Invoice.Appointment.AppointmentDate, StringFormat={}{0:yyyy-MM-dd}}" 
                                Grid.Row="4" Grid.Column="1" Margin="0,5,0,5"/>
     
                     <!-- Total Amount -->
-                    <TextBlock Text="Total Amount:" FontWeight="Bold" Grid.Row="5" Grid.Column="0" 
+                    <TextBlock Text="Monto Total:" FontWeight="Bold" Grid.Row="5" Grid.Column="0" 
                                Margin="0,5,0,5"/>
                     <TextBlock Text="{Binding Invoice.TotalAmount, StringFormat={}{0:C}}" 
                                Grid.Row="5" Grid.Column="1" Margin="0,5,0,5"/>
     
                     <!-- Paid -->
-                    <TextBlock Text="Paid:" FontWeight="Bold" Grid.Row="6" Grid.Column="0" 
+                    <TextBlock Text="Pagada:" FontWeight="Bold" Grid.Row="6" Grid.Column="0" 
                                Margin="0,5,0,5"/>
                     <TextBlock Text="{Binding Invoice.IsPaid, Converter={StaticResource BoolToYesNoConverter}}" 
                                Grid.Row="6" Grid.Column="1" Margin="0,5,0,5"/>
@@ -81,17 +81,17 @@
     
                 <!-- Buttons: Preview, Print, and Export PDF -->
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,20,0,0">
-                    <Button Content="Preview"
+                    <Button Content="Vista Previa"
                             Command="{Binding PreviewCommand}"
                             Margin="0,0,10,0"
                             Width="80"/>
     
-                    <Button Content="Print"
+                    <Button Content="Imprimir"
                             Command="{Binding PrintCommand}"
                             Margin="0,0,10,0"
                             Width="80"/>
     
-                    <Button Content="Export PDF"
+                    <Button Content="Exportar PDF"
                             Command="{Binding ExportPdfCommand}"
                             Width="100"/>
                 </StackPanel>

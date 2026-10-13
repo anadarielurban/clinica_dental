@@ -18,12 +18,12 @@
             <TextBox Width="300" 
                      Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" 
                      VerticalAlignment="Center" 
-                     ToolTip="Search by product name or supplier" 
+                     ToolTip="Buscar por nombre de producto o proveedor" 
                      Margin="0,0,10,0" />
-            <Button Content="Search" Command="{Binding SearchCommand}" Margin="0,0,10,0" Width="100" />
-            <Button Content="Reload" Command="{Binding ReloadCommand}" Margin="0,0,10,0" Width="100" />
-            <Button Content="Add Inventory" Command="{Binding AddInventoryCommand}" Width="150" Margin="0,0,10,0" />
-            <Button Content="Edit Inventory" Command="{Binding EditInventoryCommand}" 
+            <Button Content="Buscar" Command="{Binding SearchCommand}" Margin="0,0,10,0" Width="100" />
+            <Button Content="Recargar" Command="{Binding ReloadCommand}" Margin="0,0,10,0" Width="100" />
+            <Button Content="Agregar Inventario" Command="{Binding AddInventoryCommand}" Width="150" Margin="0,0,10,0" />
+            <Button Content="Editar Inventario" Command="{Binding EditInventoryCommand}" 
                     Width="150" Margin="0,0,10,0" 
                     IsEnabled="{Binding SelectedInventory, Converter={StaticResource NullToBoolConverter}}" />
         </StackPanel>
@@ -32,9 +32,9 @@
         <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="0,0,0,10">
             <ComboBox Width="150" ItemsSource="{Binding SortOptions}" 
                       SelectedItem="{Binding SelectedSortOption}" 
-                      ToolTip="Select sorting criterion" 
+                      ToolTip="Seleccionar criterio de ordenamiento" 
                       Margin="0,0,10,0" />
-            <Button Content="Sort" Command="{Binding SortCommand}" Width="100" />
+            <Button Content="Ordenar" Command="{Binding SortCommand}" Width="100" />
         </StackPanel>
 
         <!-- Inventory List -->
@@ -45,11 +45,11 @@
                   SelectionMode="Single" 
                   Margin="0,0,0,10">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Product Name" Binding="{Binding ProductName}" Width="*" />
-                <DataGridTextColumn Header="Quantity" Binding="{Binding Quantity}" Width="Auto" />
-                <DataGridTextColumn Header="Reorder Level" Binding="{Binding ReorderLevel}" Width="Auto" />
-                <DataGridTextColumn Header="Supplier" Binding="{Binding Supplier.CompanyName}" Width="*" />
-                <DataGridTextColumn Header="Room" Binding="{Binding Room.RoomNumber}" Width="*" />
+                <DataGridTextColumn Header="Nombre del Producto" Binding="{Binding ProductName}" Width="*" />
+                <DataGridTextColumn Header="Cantidad" Binding="{Binding Quantity}" Width="Auto" />
+                <DataGridTextColumn Header="Nivel de Reorden" Binding="{Binding ReorderLevel}" Width="Auto" />
+                <DataGridTextColumn Header="Proveedor" Binding="{Binding Supplier.CompanyName}" Width="*" />
+                <DataGridTextColumn Header="Consultorio" Binding="{Binding Room.RoomNumber}" Width="*" />
             </DataGrid.Columns>
         </DataGrid>
     </Grid>

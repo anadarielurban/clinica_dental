@@ -34,10 +34,10 @@ namespace DentalClinicWPF.ViewModels.Invoice
 
         public ObservableCollection<string> SortOptions { get; } = new ObservableCollection<string>
         {
-            "Invoice ID",
+            "ID Factura",
             "Patient",
             "Dentist",
-            "Total Amount",
+            "Monto Total",
             "Appointment Date"
         };
         public string SelectedSortOption { get; set; }
@@ -145,12 +145,12 @@ namespace DentalClinicWPF.ViewModels.Invoice
 
             IEnumerable<Models.Invoice> sortedInvoices = SelectedSortOption switch
             {
-                "Invoice ID" => Invoices.OrderBy(i => i.InvoiceID),
+                "ID Factura" => Invoices.OrderBy(i => i.InvoiceID),
                 "Patient" => Invoices.OrderBy(i => i.Appointment.Patient.LastName)
                                       .ThenBy(i => i.Appointment.Patient.FirstName),
                 "Dentist" => Invoices.OrderBy(i => i.Appointment.Dentist.LastName)
                                       .ThenBy(i => i.Appointment.Dentist.FirstName),
-                "Total Amount" => Invoices.OrderBy(i => i.TotalAmount),
+                "Monto Total" => Invoices.OrderBy(i => i.TotalAmount),
                 "Appointment Date" => Invoices.OrderBy(i => i.Appointment.AppointmentDate),
                 _ => Invoices
             };

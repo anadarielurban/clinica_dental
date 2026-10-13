@@ -32,9 +32,9 @@ namespace DentalClinicWPF.ViewModels.Supplier
         // Właściwości do sortowania
         public ObservableCollection<string> SortOptions { get; } = new ObservableCollection<string>
         {
-            "Company Name",
-            "Contact Name",
-            "Phone Number"
+            "Nombre de la Empresa",
+            "Nombre de Contacto",
+            "Teléfono"
         };
         public string SelectedSortOption { get; set; }
         public ICommand SortCommand { get; }
@@ -110,9 +110,9 @@ namespace DentalClinicWPF.ViewModels.Supplier
 
             IEnumerable<Models.Supplier> sortedSuppliers = SelectedSortOption switch
             {
-                "Company Name" => Suppliers.OrderBy(s => s.CompanyName),
-                "Contact Name" => Suppliers.OrderBy(s => s.ContactName),
-                "Phone Number" => Suppliers.OrderBy(s => s.PhoneNumber),
+                "Nombre de la Empresa" => Suppliers.OrderBy(s => s.CompanyName),
+                "Nombre de Contacto" => Suppliers.OrderBy(s => s.ContactName),
+                "Teléfono" => Suppliers.OrderBy(s => s.PhoneNumber),
                 _ => Suppliers
             };
 
