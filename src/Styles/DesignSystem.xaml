@@ -1,0 +1,302 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:system="clr-namespace:System;assembly=mscorlib">
+
+    <!-- ============================================================
+         PALETA CLARA - basada en #14B8A6 (teal)
+         ============================================================ -->
+
+    <Color x:Key="Color.Background">#F1F5F9</Color>
+    <Color x:Key="Color.Surface">#FFFFFF</Color>
+    <Color x:Key="Color.SurfaceAlt">#F8FAFC</Color>
+    <Color x:Key="Color.Hover">#F1F5F9</Color>
+    <Color x:Key="Color.Pressed">#E2E8F0</Color>
+
+    <Color x:Key="Color.Border">#E2E8F0</Color>
+    <Color x:Key="Color.BorderStrong">#CBD5E1</Color>
+
+    <Color x:Key="Color.TextPrimary">#0F172A</Color>
+    <Color x:Key="Color.TextSecondary">#475569</Color>
+    <Color x:Key="Color.TextMuted">#94A3B8</Color>
+    <Color x:Key="Color.TextOnPrimary">#FFFFFF</Color>
+
+    <Color x:Key="Color.Primary">#14B8A6</Color>
+    <Color x:Key="Color.PrimaryHover">#0D9488</Color>
+    <Color x:Key="Color.PrimaryPressed">#0F766E</Color>
+    <Color x:Key="Color.PrimarySoft">#CCFBF1</Color>
+
+    <Color x:Key="Color.Success">#22C55E</Color>
+    <Color x:Key="Color.SuccessSoft">#DCFCE7</Color>
+    <Color x:Key="Color.Warning">#F59E0B</Color>
+    <Color x:Key="Color.WarningSoft">#FEF3C7</Color>
+    <Color x:Key="Color.Error">#EF4444</Color>
+    <Color x:Key="Color.ErrorSoft">#FEE2E2</Color>
+    <Color x:Key="Color.Info">#3B82F6</Color>
+    <Color x:Key="Color.InfoSoft">#DBEAFE</Color>
+
+    <!-- BRUSHES -->
+    <SolidColorBrush x:Key="Brush.Background" Color="{StaticResource Color.Background}" />
+    <SolidColorBrush x:Key="Brush.Surface" Color="{StaticResource Color.Surface}" />
+    <SolidColorBrush x:Key="Brush.SurfaceAlt" Color="{StaticResource Color.SurfaceAlt}" />
+    <SolidColorBrush x:Key="Brush.Hover" Color="{StaticResource Color.Hover}" />
+    <SolidColorBrush x:Key="Brush.Pressed" Color="{StaticResource Color.Pressed}" />
+
+    <SolidColorBrush x:Key="Brush.Border" Color="{StaticResource Color.Border}" />
+    <SolidColorBrush x:Key="Brush.BorderStrong" Color="{StaticResource Color.BorderStrong}" />
+
+    <SolidColorBrush x:Key="Brush.TextPrimary" Color="{StaticResource Color.TextPrimary}" />
+    <SolidColorBrush x:Key="Brush.TextSecondary" Color="{StaticResource Color.TextSecondary}" />
+    <SolidColorBrush x:Key="Brush.TextMuted" Color="{StaticResource Color.TextMuted}" />
+    <SolidColorBrush x:Key="Brush.TextOnPrimary" Color="{StaticResource Color.TextOnPrimary}" />
+
+    <SolidColorBrush x:Key="Brush.Primary" Color="{StaticResource Color.Primary}" />
+    <SolidColorBrush x:Key="Brush.PrimaryHover" Color="{StaticResource Color.PrimaryHover}" />
+    <SolidColorBrush x:Key="Brush.PrimaryPressed" Color="{StaticResource Color.PrimaryPressed}" />
+    <SolidColorBrush x:Key="Brush.PrimarySoft" Color="{StaticResource Color.PrimarySoft}" />
+
+    <SolidColorBrush x:Key="Brush.Success" Color="{StaticResource Color.Success}" />
+    <SolidColorBrush x:Key="Brush.SuccessSoft" Color="{StaticResource Color.SuccessSoft}" />
+    <SolidColorBrush x:Key="Brush.Warning" Color="{StaticResource Color.Warning}" />
+    <SolidColorBrush x:Key="Brush.WarningSoft" Color="{StaticResource Color.WarningSoft}" />
+    <SolidColorBrush x:Key="Brush.Error" Color="{StaticResource Color.Error}" />
+    <SolidColorBrush x:Key="Brush.ErrorSoft" Color="{StaticResource Color.ErrorSoft}" />
+    <SolidColorBrush x:Key="Brush.Info" Color="{StaticResource Color.Info}" />
+    <SolidColorBrush x:Key="Brush.InfoSoft" Color="{StaticResource Color.InfoSoft}" />
+
+    <!-- TIPOGRAFIA -->
+    <FontFamily x:Key="Font.Primary">Segoe UI Variable Text, Segoe UI</FontFamily>
+    <FontFamily x:Key="Font.Icons">FontAwesome</FontFamily>
+
+    <system:Double x:Key="FontSize.PageTitle">28</system:Double>
+    <system:Double x:Key="FontSize.SectionTitle">18</system:Double>
+    <system:Double x:Key="FontSize.Subtitle">16</system:Double>
+    <system:Double x:Key="FontSize.Body">14</system:Double>
+    <system:Double x:Key="FontSize.Small">12</system:Double>
+    <system:Double x:Key="FontSize.Button">13</system:Double>
+
+    <!-- ESPACIADO -->
+    <Thickness x:Key="Padding.Page">24</Thickness>
+    <Thickness x:Key="Padding.Card">20</Thickness>
+    <Thickness x:Key="Padding.Input">12,8</Thickness>
+    <Thickness x:Key="Padding.Button">16,0</Thickness>
+
+    <CornerRadius x:Key="Radius.Card">12</CornerRadius>
+    <CornerRadius x:Key="Radius.Input">8</CornerRadius>
+    <CornerRadius x:Key="Radius.Button">8</CornerRadius>
+    <CornerRadius x:Key="Radius.Small">6</CornerRadius>
+
+    <system:Double x:Key="Height.Button">38</system:Double>
+    <system:Double x:Key="Height.Input">38</system:Double>
+    <system:Double x:Key="Height.SidebarItem">42</system:Double>
+
+    <!-- ============================================================
+         ESTILOS MODERNOS
+         ============================================================ -->
+
+    <!-- Texto de titulo de pagina -->
+    <Style x:Key="Modern.PageTitle" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="{StaticResource Font.Primary}" />
+        <Setter Property="FontSize" Value="{StaticResource FontSize.PageTitle}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{StaticResource Brush.TextPrimary}" />
+        <Setter Property="Margin" Value="0,0,0,20" />
+    </Style>
+
+    <!-- Texto de seccion -->
+    <Style x:Key="Modern.SectionTitle" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="{StaticResource Font.Primary}" />
+        <Setter Property="FontSize" Value="{StaticResource FontSize.SectionTitle}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{StaticResource Brush.TextPrimary}" />
+    </Style>
+
+    <!-- Texto cuerpo -->
+    <Style x:Key="Modern.Body" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="{StaticResource Font.Primary}" />
+        <Setter Property="FontSize" Value="{StaticResource FontSize.Body}" />
+        <Setter Property="Foreground" Value="{StaticResource Brush.TextPrimary}" />
+    </Style>
+
+    <!-- Boton primario (teal) -->
+    <Style x:Key="Modern.Button.Primary" TargetType="Button">
+        <Setter Property="FontFamily" Value="{StaticResource Font.Primary}" />
+        <Setter Property="FontSize" Value="{StaticResource FontSize.Button}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{StaticResource Brush.TextOnPrimary}" />
+        <Setter Property="Background" Value="{StaticResource Brush.Primary}" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="{StaticResource Padding.Button}" />
+        <Setter Property="Height" Value="{StaticResource Height.Button}" />
+        <Setter Property="MinWidth" Value="100" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="Bd"
+                            Background="{TemplateBinding Background}"
+                            CornerRadius="{StaticResource Radius.Button}"
+                            Padding="{TemplateBinding Padding}">
+                        <ContentPresenter HorizontalAlignment="Center"
+                                          VerticalAlignment="Center" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Bd" Property="Background"
+                                    Value="{StaticResource Brush.PrimaryHover}" />
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="Bd" Property="Background"
+                                    Value="{StaticResource Brush.PrimaryPressed}" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="Bd" Property="Opacity" Value="0.5" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Boton secundario (blanco con borde) -->
+    <Style x:Key="Modern.Button.Secondary" TargetType="Button">
+        <Setter Property="FontFamily" Value="{StaticResource Font.Primary}" />
+        <Setter Property="FontSize" Value="{StaticResource FontSize.Button}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{StaticResource Brush.TextPrimary}" />
+        <Setter Property="Background" Value="{StaticResource Brush.Surface}" />
+        <Setter Property="BorderBrush" Value="{StaticResource Brush.Border}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Padding" Value="{StaticResource Padding.Button}" />
+        <Setter Property="Height" Value="{StaticResource Height.Button}" />
+        <Setter Property="MinWidth" Value="100" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="Bd"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="{StaticResource Radius.Button}"
+                            Padding="{TemplateBinding Padding}">
+                        <ContentPresenter HorizontalAlignment="Center"
+                                          VerticalAlignment="Center" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Bd" Property="Background"
+                                    Value="{StaticResource Brush.Hover}" />
+                            <Setter TargetName="Bd" Property="BorderBrush"
+                                    Value="{StaticResource Brush.BorderStrong}" />
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="Bd" Property="Background"
+                                    Value="{StaticResource Brush.Pressed}" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="Bd" Property="Opacity" Value="0.5" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Boton de peligro (rojo) -->
+    <Style x:Key="Modern.Button.Danger" TargetType="Button">
+        <Setter Property="FontFamily" Value="{StaticResource Font.Primary}" />
+        <Setter Property="FontSize" Value="{StaticResource FontSize.Button}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{StaticResource Brush.TextOnPrimary}" />
+        <Setter Property="Background" Value="{StaticResource Brush.Error}" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="{StaticResource Padding.Button}" />
+        <Setter Property="Height" Value="{StaticResource Height.Button}" />
+        <Setter Property="MinWidth" Value="100" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="Bd"
+                            Background="{TemplateBinding Background}"
+                            CornerRadius="{StaticResource Radius.Button}"
+                            Padding="{TemplateBinding Padding}">
+                        <ContentPresenter HorizontalAlignment="Center"
+                                          VerticalAlignment="Center" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Bd" Property="Opacity" Value="0.9" />
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="Bd" Property="Opacity" Value="0.8" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- ============================================================
+         SIDEBAR ITEM — boton con icono + texto + estado activo
+         ============================================================ -->
+    <Style x:Key="Modern.SidebarItem" TargetType="Button">
+        <Setter Property="FontFamily" Value="{StaticResource Font.Primary}" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="Foreground" Value="{StaticResource Brush.TextSecondary}" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Height" Value="{StaticResource Height.SidebarItem}" />
+        <Setter Property="Margin" Value="8,2" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="HorizontalContentAlignment" Value="Left" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Grid>
+                        <Border x:Name="Bg"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="{StaticResource Radius.Button}" />
+                        <Border x:Name="ActiveBar"
+                                Width="3" Height="20"
+                                Background="{StaticResource Brush.Primary}"
+                                HorizontalAlignment="Left"
+                                CornerRadius="2"
+                                Visibility="Collapsed" />
+                        <ContentPresenter x:Name="Cp"
+                                          Margin="14,0,12,0"
+                                          HorizontalAlignment="Left"
+                                          VerticalAlignment="Center" />
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Bg" Property="Background"
+                                    Value="{StaticResource Brush.Hover}" />
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="Bg" Property="Background"
+                                    Value="{StaticResource Brush.Pressed}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Variante "activo" que se aplica con DataTrigger desde MainWindow -->
+    <Style x:Key="Modern.SidebarItemActive" TargetType="Button"
+           BasedOn="{StaticResource Modern.SidebarItem}">
+        <Setter Property="Background" Value="{StaticResource Brush.PrimarySoft}" />
+        <Setter Property="Foreground" Value="{StaticResource Brush.PrimaryPressed}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+
+    <!-- Texto pequeño gris para subtítulos -->
+    <Style x:Key="Modern.Caption" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="{StaticResource Font.Primary}" />
+        <Setter Property="FontSize" Value="{StaticResource FontSize.Small}" />
+        <Setter Property="Foreground" Value="{StaticResource Brush.TextMuted}" />
+    </Style>
+
+</ResourceDictionary>
