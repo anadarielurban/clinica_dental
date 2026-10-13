@@ -1,2 +1,73 @@
-# clinica_dental
-Sistema de gestión clínica dental. C# 12, .NET 8, WPF, MVVM, Entity Framework Core 9, SQLite. Arquitectura en capas. Agenda, expedientes, facturación con PDF, dashboard con LiveCharts y exportación a Excel.
+# Clínica Dental
+
+Aplicación de escritorio para la gestión integral de una clínica dental. Centraliza la operación clínica, administrativa y financiera del consultorio en un solo sistema.
+
+## Stack tecnológico
+
+| Componente | Tecnología |
+|---|---|
+| Lenguaje | C# 12 |
+| Framework | .NET 8 |
+| Interfaz | WPF |
+| Patrón de presentación | MVVM |
+| ORM | Entity Framework Core 9 |
+| Base de datos | SQLite |
+| Gráficos | LiveCharts |
+| PDF | iText7, PdfSharpCore, MigraDocCore |
+| Excel | ClosedXML |
+| Tema visual | MahApps.Metro |
+| Iconografía | FontAwesome |
+| MVVM helpers | CommunityToolkit.Mvvm |
+
+## Arquitectura
+src/
+├── Data/ # DbContext, configuración EF Core, seeding
+├── Models/ # Entidades del dominio y anotaciones
+├── ViewModels/ # Lógica de presentación (MVVM), comandos, validación
+├── Views/ # Vistas XAML por módulo
+├── Converters/ # IValueConverter para bindings
+├── Helpers/ # Utilidades (TabItemViewModel, etc.)
+└── Styles/ # Estilos, plantillas y recursos compartidos
+
+text
+
+- **Persistencia:** SQLite en un archivo local (`clinica-dental.db`), creado automáticamente con `EnsureCreated()` al primer arranque.
+- **Acceso a datos:** un `DbContext` único (`DentalClinicContext`) con `DbSet<>` por entidad.
+- **Navegación:** sistema de pestañas dinámicas administrado por `MainViewModel` con `OpenTab(string, BaseViewModel)`.
+- **Validación:** implementación de `INotifyDataErrorInfo` en los ViewModels de formularios.
+
+## Módulos funcionales
+
+**Clínicos**
+- Pacientes con expediente completo y adjuntos
+- Citas con agenda semanal por dentista
+- Tratamientos y planes de tratamiento
+- Recetas médicas
+- Órdenes de laboratorio
+
+**Administrativos**
+- Dentistas, empleados y asignaciones
+- Consultorios y equipos
+- Horarios por dentista
+- Inventario y proveedores
+
+**Financieros**
+- Facturación con generación de PDF
+- Panel (dashboard) con estadísticas en tiempo real
+- Ingresos por dentista (gráfico de columnas con LiveCharts)
+- Exportación de reportes a PDF y Excel
+
+## Características técnicas
+
+- Funcionamiento 100% local, sin dependencia de red
+- Interfaz completamente en español
+- Tema oscuro personalizado
+- Base de datos portable en archivo único
+- Navegación multi-pestaña con cierre individual
+- Exportación a Excel (ClosedXML) y PDF (iText7 / PdfSharpCore)
+- Gráficos analíticos con LiveCharts
+
+## Requisitos
+
+- Windows 10 o superior
+- .NET 8 Desktop Runtime (o SDK para desarrollo)
