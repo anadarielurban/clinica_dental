@@ -18,16 +18,16 @@
             <TextBox Width="300" 
                      Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" 
                      VerticalAlignment="Center" 
-                     ToolTip="Search prescriptions by patient, dentist, or medication" 
+                     ToolTip="Buscar recetas por paciente, dentista o medicamento" 
                      Margin="0,0,10,0" />
-            <Button Content="Search" Command="{Binding SearchCommand}" Margin="0,0,10,0" Width="100" />
-            <Button Content="Reload" Command="{Binding ReloadPrescriptionsCommand}" Margin="0,0,10,0" Width="100" />
-            <Button Content="Add Prescription" Command="{Binding AddPrescriptionCommand}" Width="150" Margin="0,0,10,0" />
-            <Button Content="Edit Prescription" Command="{Binding EditPrescriptionCommand}" 
+            <Button Content="Buscar" Command="{Binding SearchCommand}" Margin="0,0,10,0" Width="100" />
+            <Button Content="Recargar" Command="{Binding ReloadPrescriptionsCommand}" Margin="0,0,10,0" Width="100" />
+            <Button Content="Agregar Receta" Command="{Binding AddPrescriptionCommand}" Width="150" Margin="0,0,10,0" />
+            <Button Content="Editar Receta" Command="{Binding EditPrescriptionCommand}" 
                     Width="150" 
                     Margin="0,0,10,0" 
                     IsEnabled="{Binding SelectedPrescription, Converter={StaticResource NullToBoolConverter}}" />
-            <Button Content="View Details" Command="{Binding OpenPrescriptionDetailCommand}" 
+            <Button Content="Ver Detalles" Command="{Binding OpenPrescriptionDetailCommand}" 
                     Width="150" 
                     Margin="0,0,10,0" 
                     IsEnabled="{Binding SelectedPrescription, Converter={StaticResource NullToBoolConverter}}" />
@@ -37,9 +37,9 @@
         <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="0,0,0,10">
             <ComboBox Width="150" ItemsSource="{Binding SortOptions}" 
                       SelectedItem="{Binding SelectedSortOption}" 
-                      ToolTip="Select sorting criterion" 
+                      ToolTip="Seleccionar criterio de ordenamiento" 
                       Margin="0,0,10,0" />
-            <Button Content="Sort" Command="{Binding SortCommand}" Width="100" />
+            <Button Content="Ordenar" Command="{Binding SortCommand}" Width="100" />
         </StackPanel>
 
         <!-- Prescription List -->
@@ -50,12 +50,12 @@
                   SelectionMode="Single" 
                   Margin="0,0,0,10">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Patient Name" Binding="{Binding Patient.DisplayInfo}" Width="200" />
-                <DataGridTextColumn Header="Dentist Name" Binding="{Binding Dentist.DisplayInfo}" Width="200" />
-                <DataGridTextColumn Header="Date Issued" Binding="{Binding DateIssued, StringFormat=yyyy-MM-dd}" Width="150" />
-                <DataGridTextColumn Header="Medication" Binding="{Binding Medication}" Width="*" />
-                <DataGridTextColumn Header="Dosage" Binding="{Binding Dosage}" Width="100" />
-                <DataGridTextColumn Header="Instructions" Binding="{Binding Instructions}" Width="250" />
+                <DataGridTextColumn Header="Paciente" Binding="{Binding Patient.DisplayInfo}" Width="200" />
+                <DataGridTextColumn Header="Dentista" Binding="{Binding Dentist.DisplayInfo}" Width="200" />
+                <DataGridTextColumn Header="Fecha de Emisión" Binding="{Binding DateIssued, StringFormat=yyyy-MM-dd}" Width="150" />
+                <DataGridTextColumn Header="Medicamento" Binding="{Binding Medication}" Width="*" />
+                <DataGridTextColumn Header="Dosis" Binding="{Binding Dosage}" Width="100" />
+                <DataGridTextColumn Header="Instrucciones" Binding="{Binding Instructions}" Width="250" />
             </DataGrid.Columns>
         </DataGrid>
     </Grid>

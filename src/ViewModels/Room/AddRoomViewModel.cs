@@ -34,26 +34,26 @@ namespace DentalClinicWPF.ViewModels.Room
             {
                 if (string.IsNullOrWhiteSpace(Room.RoomNumber))
                 {
-                    MessageBox.Show("Room Number is required.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show("El número de consultorio es obligatorio.", "Error de Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
                 
                 var exists = _context.Room.Any(r => r.RoomNumber == Room.RoomNumber);
                 if (exists)
                 {
-                    MessageBox.Show("Room Number already exists.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show("El número de consultorio ya existe.", "Error de Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
 
                 _context.Room.Add(Room);
                 _context.SaveChanges();
 
-                MessageBox.Show("Room added successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("¡Consultorio agregado correctamente!", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
                 CloseWindow(true);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error while saving room: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error al guardar el consultorio: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

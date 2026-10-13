@@ -40,9 +40,9 @@ namespace DentalClinicWPF.ViewModels.Prescription
         // Właściwości do sortowania
         public ObservableCollection<string> SortOptions { get; } = new ObservableCollection<string>
         {
-            "Patient Name",
-            "Dentist Name",
-            "Date Issued",
+            "Paciente",
+            "Dentista",
+            "Fecha de Emisión",
             "Medication"
         };
         public string SelectedSortOption { get; set; }
@@ -108,9 +108,9 @@ namespace DentalClinicWPF.ViewModels.Prescription
 
             IEnumerable<Models.Prescription> sortedPrescriptions = SelectedSortOption switch
             {
-                "Patient Name" => Prescriptions.OrderBy(p => p.Patient.LastName).ThenBy(p => p.Patient.FirstName),
-                "Dentist Name" => Prescriptions.OrderBy(p => p.Dentist.LastName).ThenBy(p => p.Dentist.FirstName),
-                "Date Issued" => Prescriptions.OrderBy(p => p.DateIssued),
+                "Paciente" => Prescriptions.OrderBy(p => p.Patient.LastName).ThenBy(p => p.Patient.FirstName),
+                "Dentista" => Prescriptions.OrderBy(p => p.Dentist.LastName).ThenBy(p => p.Dentist.FirstName),
+                "Fecha de Emisión" => Prescriptions.OrderBy(p => p.DateIssued),
                 "Medication" => Prescriptions.OrderBy(p => p.Medication),
                 _ => Prescriptions
             };

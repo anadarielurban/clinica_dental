@@ -54,9 +54,9 @@ namespace DentalClinicWPF.ViewModels.Schedule
         public ObservableCollection<string> SortOptions { get; } = new ObservableCollection<string>
         {
             "Dentist",
-            "Start Date",
-            "End Date",
-            "Day Off"
+            "Fecha de Inicio",
+            "Fecha de Fin",
+            "Día Libre"
         };
         public string SelectedSortOption { get; set; }
         public ICommand SortCommand { get; }
@@ -95,7 +95,7 @@ namespace DentalClinicWPF.ViewModels.Schedule
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error loading schedules: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error al cargar los horarios: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -121,14 +121,14 @@ namespace DentalClinicWPF.ViewModels.Schedule
                         (s.EndDate.ToString("yyyy-MM-dd").Contains(SearchText)) ||
                         (s.StartTime.ToString(@"hh\:mm").Contains(SearchText)) ||
                         (s.EndTime.ToString(@"hh\:mm").Contains(SearchText)) ||
-                        (s.IsDayOff && "Day Off".Contains(SearchText, StringComparison.OrdinalIgnoreCase)))
+                        (s.IsDayOff && "Día Libre".Contains(SearchText, StringComparison.OrdinalIgnoreCase)))
                     .ToList();
 
                 Schedules = new ObservableCollection<Models.Schedule>(filteredSchedules);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error searching schedules: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error al buscar horarios: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -141,9 +141,9 @@ namespace DentalClinicWPF.ViewModels.Schedule
             IEnumerable<Models.Schedule> sortedSchedules = SelectedSortOption switch
             {
                 "Dentist" => Schedules.OrderBy(s => s.Dentist.LastName).ThenBy(s => s.Dentist.FirstName),
-                "Start Date" => Schedules.OrderBy(s => s.StartDate),
-                "End Date" => Schedules.OrderBy(s => s.EndDate),
-                "Day Off" => Schedules.OrderBy(s => s.IsDayOff),
+                "Fecha de Inicio" => Schedules.OrderBy(s => s.StartDate),
+                "Fecha de Fin" => Schedules.OrderBy(s => s.EndDate),
+                "Día Libre" => Schedules.OrderBy(s => s.IsDayOff),
                 _ => Schedules
             };
 

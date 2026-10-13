@@ -19,12 +19,12 @@
             <TextBox Width="300" 
                      Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" 
                      VerticalAlignment="Center" 
-                     ToolTip="Search by Room Number" 
+                     ToolTip="Buscar por número de consultorio" 
                      Margin="0,0,10,0" />
-            <Button Content="Search" Command="{Binding SearchCommand}" Margin="0,0,10,0" Width="100" />
-            <Button Content="Reload" Command="{Binding ReloadCommand}" Margin="0,0,10,0" Width="100" />
-            <Button Content="Add Room" Command="{Binding AddRoomCommand}" Width="150" Margin="0,0,10,0" />
-            <Button Content="Edit Room" Command="{Binding EditRoomCommand}" 
+            <Button Content="Buscar" Command="{Binding SearchCommand}" Margin="0,0,10,0" Width="100" />
+            <Button Content="Recargar" Command="{Binding ReloadCommand}" Margin="0,0,10,0" Width="100" />
+            <Button Content="Agregar Consultorio" Command="{Binding AddRoomCommand}" Width="150" Margin="0,0,10,0" />
+            <Button Content="Editar Consultorio" Command="{Binding EditRoomCommand}" 
                     Width="150" 
                     Margin="0,0,10,0" 
                     IsEnabled="{Binding SelectedRoom, Converter={StaticResource NullToBoolConverter}}" />
@@ -34,9 +34,9 @@
         <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="0,0,0,10">
             <ComboBox Width="150" ItemsSource="{Binding SortOptions}" 
                       SelectedItem="{Binding SelectedSortOption}" 
-                      ToolTip="Select sorting criterion" 
+                      ToolTip="Seleccionar criterio de ordenamiento" 
                       Margin="0,0,10,0" />
-            <Button Content="Sort" Command="{Binding SortCommand}" Width="100" />
+            <Button Content="Ordenar" Command="{Binding SortCommand}" Width="100" />
         </StackPanel>
 
         <!-- Room List -->
@@ -47,9 +47,9 @@
                   SelectionMode="Single" 
                   Margin="0,0,0,10">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Room Number" Binding="{Binding RoomNumber}" Width="*" />
-                <DataGridCheckBoxColumn Header="Available" Binding="{Binding IsAvailable}" Width="*" />
-                <DataGridTextColumn Header="Equipment Count" Binding="{Binding Equipments.Count}" Width="*" />
+                <DataGridTextColumn Header="Número" Binding="{Binding RoomNumber}" Width="*" />
+                <DataGridCheckBoxColumn Header="Disponible" Binding="{Binding IsAvailable}" Width="*" />
+                <DataGridTextColumn Header="Equipos" Binding="{Binding Equipments.Count}" Width="*" />
             </DataGrid.Columns>
         </DataGrid>
     </Grid>

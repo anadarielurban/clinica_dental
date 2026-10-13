@@ -4,19 +4,19 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         mc:Ignorable="d"
-        Title="Edit Room" Height="300" Width="400" WindowStartupLocation="CenterOwner">
+        Title="Editar Consultorio" Height="300" Width="400" WindowStartupLocation="CenterOwner">
     <Grid Margin="10">
         <StackPanel>
-            <Label Content="Room Number:" />
+            <Label Content="Número de Consultorio:" />
             <TextBox Text="{Binding EditingRoom.RoomNumber, UpdateSourceTrigger=PropertyChanged}" Margin="0,5" />
 
-            <Label Content="Available:" />
+            <Label Content="Disponible:" />
             <CheckBox IsChecked="{Binding EditingRoom.IsAvailable}" Margin="0,5" />
 
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
-                <Button Content="Cancel" Command="{Binding CancelCommand}" Width="100" Margin="5" />
-                <Button Content="Save" Command="{Binding SaveCommand}" Width="100" Margin="5" />
-                <Button Content="Delete" Command="{Binding DeleteCommand}" Width="100" Margin="5" />
+                <Button Content="Cancelar" Command="{Binding CancelCommand}" Width="100" Margin="5" />
+                <Button Content="Guardar" Command="{Binding SaveCommand}" Width="100" Margin="5" />
+                <Button Content="Eliminar" Command="{Binding DeleteCommand}" Width="100" Margin="5" />
             </StackPanel>
         </StackPanel>
     </Grid>
