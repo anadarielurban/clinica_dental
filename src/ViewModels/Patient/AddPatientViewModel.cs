@@ -131,7 +131,7 @@ namespace DentalClinicWPF.ViewModels.Patient
         {
             if (!CanSave())
             {
-                MessageBox.Show("Please fix the validation errors before saving.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Corrige los errores de validación antes de guardar.", "Error de Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
@@ -151,12 +151,12 @@ namespace DentalClinicWPF.ViewModels.Patient
                 _context.Patient.Add(patient);
                 _context.SaveChanges();
 
-                MessageBox.Show("Patient added successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("¡Paciente agregado correctamente!", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
                 CloseWindow(true);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error while saving patient: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error al guardar el paciente: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -170,38 +170,38 @@ namespace DentalClinicWPF.ViewModels.Patient
             {
                 case nameof(FirstName):
                     if (string.IsNullOrWhiteSpace(FirstName))
-                        AddError(propertyName, "First Name is required.");
+                        AddError(propertyName, "El nombre es obligatorio.");
                     else if (!StartsWithUppercase(FirstName))
-                        AddError(propertyName, "First Name must start with an uppercase letter.");
+                        AddError(propertyName, "El nombre debe comenzar con mayúscula.");
                     break;
 
                 case nameof(LastName):
                     if (string.IsNullOrWhiteSpace(LastName))
-                        AddError(propertyName, "Last Name is required.");
+                        AddError(propertyName, "El apellido es obligatorio.");
                     else if (!StartsWithUppercase(LastName))
-                        AddError(propertyName, "Last Name must start with an uppercase letter.");
+                        AddError(propertyName, "El apellido debe comenzar con mayúscula.");
                     break;
 
                 case nameof(PhoneNumber):
                     if (string.IsNullOrWhiteSpace(PhoneNumber))
-                        AddError(propertyName, "Phone Number is required.");
+                        AddError(propertyName, "El teléfono es obligatorio.");
                     else if (!Regex.IsMatch(PhoneNumber, @"^[\d\s\+\-\(\)]{7,}$"))
-                        AddError(propertyName, "Phone Number must contain at least 7 digits, spaces, +, -, (, ) are allowed.");
+                        AddError(propertyName, "El teléfono debe contener al menos 7 dígitos. Se permiten espacios, +, -, (, ).");
                     break;
 
                 case nameof(Email):
                     if (!string.IsNullOrWhiteSpace(Email) && !Regex.IsMatch(Email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
-                        AddError(propertyName, "Invalid Email Address.");
+                        AddError(propertyName, "Correo electrónico inválido.");
                     break;
 
                 case nameof(DateOfBirth):
                     if (CalculateAge(DateOfBirth) < 18)
-                        AddError(propertyName, "Patient must be at least 18 years old.");
+                        AddError(propertyName, "El paciente debe tener al menos 18 años.");
                     break;
 
                 case nameof(Address):
                     if (!ValidateAddress(Address))
-                        AddError(propertyName, "Address is required.");
+                        AddError(propertyName, "La dirección es obligatoria.");
                     break;
             }
         }

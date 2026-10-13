@@ -240,7 +240,7 @@ namespace DentalClinicWPF.ViewModels.Patient.PatientDetail
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error loading patient data: {ex.Message}",
+                MessageBox.Show($"Error al cargar los datos del paciente: {ex.Message}",
                                 "Error",
                                 MessageBoxButton.OK,
                                 MessageBoxImage.Error);
@@ -359,8 +359,8 @@ namespace DentalClinicWPF.ViewModels.Patient.PatientDetail
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Filter error: {ex.Message}",
-                                "Filter Error",
+                MessageBox.Show($"Error de filtro: {ex.Message}",
+                                "Error de Filtro",
                                 MessageBoxButton.OK,
                                 MessageBoxImage.Error);
             }
@@ -377,8 +377,8 @@ namespace DentalClinicWPF.ViewModels.Patient.PatientDetail
                 // Let user pick a save location
                 var dialog = new SaveFileDialog
                 {
-                    Title = "Save PDF file",
-                    Filter = "PDF Files|*.pdf",
+                    Title = "Guardar archivo PDF",
+                    Filter = "Archivos PDF|*.pdf",
                     FileName = "Patient_" + Patient.FullName.Replace(" ", "_") + ".pdf"
                 };
                 if (dialog.ShowDialog() == true)
@@ -386,18 +386,18 @@ namespace DentalClinicWPF.ViewModels.Patient.PatientDetail
                     string path = dialog.FileName;
 
                     // TODO: Actually generate a real PDF. For now, just create a dummy file:
-                    File.WriteAllText(path, "This is a dummy PDF content for demonstration.");
+                    File.WriteAllText(path, "Este es un PDF de demostración.");
 
-                    MessageBox.Show($"PDF saved successfully at:\n{path}",
-                                    "Export PDF",
+                    MessageBox.Show($"PDF guardado correctamente en:\n{path}",
+                                    "Exportar PDF",
                                     MessageBoxButton.OK,
                                     MessageBoxImage.Information);
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Export PDF error: {ex.Message}",
-                                "Export Error",
+                MessageBox.Show($"Error al exportar PDF: {ex.Message}",
+                                "Error de Exportación",
                                 MessageBoxButton.OK,
                                 MessageBoxImage.Error);
             }
@@ -417,9 +417,9 @@ namespace DentalClinicWPF.ViewModels.Patient.PatientDetail
         {
             if (appt == null) return;
 
-            PreviewTitle = "Appointment Preview";
+            PreviewTitle = "Vista Previa de Cita";
             PreviewContent =
-                $"Appointment ID: {appt.AppointmentID}\n" +
+                $"ID de Cita: {appt.AppointmentID}\n" +
                 $"Date: {appt.AppointmentDate:yyyy-MM-dd}\n" +
                 $"Time: {appt.StartTime:hh\\:mm}\n\n" +
                 $"Patient: {Patient.FullName} (DOB: {Patient.DateOfBirth:yyyy-MM-dd})\n" +
@@ -435,10 +435,10 @@ namespace DentalClinicWPF.ViewModels.Patient.PatientDetail
         {
             if (prescription == null) return;
 
-            PreviewTitle = "Prescription Preview";
+            PreviewTitle = "Vista Previa de Receta";
             PreviewContent =
-                $"Prescription ID: {prescription.PrescriptionID}\n" +
-                $"Date Issued: {prescription.DateIssued:yyyy-MM-dd}\n\n" +
+                $"ID de Receta: {prescription.PrescriptionID}\n" +
+                $"Fecha de Emisión: {prescription.DateIssued:yyyy-MM-dd}\n\n" +
                 $"Patient: {Patient.FullName} (DOB: {Patient.DateOfBirth:yyyy-MM-dd})\n" +
                 $"Dentist: {prescription.Dentist?.DisplayInfo}\n\n" +
                 $"Medication: {prescription.Medication}\n" +
@@ -454,10 +454,10 @@ namespace DentalClinicWPF.ViewModels.Patient.PatientDetail
         {
             if (plan == null) return;
 
-            PreviewTitle = "Treatment Plan Preview";
+            PreviewTitle = "Vista Previa de Plan de Tratamiento";
             PreviewContent =
-                $"Plan ID: {plan.TreatmentPlanID}\n" +
-                $"Creation Date: {plan.CreationDate:yyyy-MM-dd}\n\n" +
+                $"ID de Plan: {plan.TreatmentPlanID}\n" +
+                $"Fecha de Creación: {plan.CreationDate:yyyy-MM-dd}\n\n" +
                 $"Patient: {Patient.FullName} (DOB: {Patient.DateOfBirth:yyyy-MM-dd})\n" +
                 $"Dentist: {plan.Dentist?.DisplayInfo}\n\n" +
                 $"Details:\n{plan.Details ?? ""}";
@@ -470,14 +470,14 @@ namespace DentalClinicWPF.ViewModels.Patient.PatientDetail
         {
             if (invoice == null) return;
 
-            PreviewTitle = "Invoice Preview";
+            PreviewTitle = "Vista Previa de Factura";
             PreviewContent =
-                $"Invoice ID: {invoice.InvoiceID}\n" +
-                $"Invoice Date: {invoice.InvoiceDate:yyyy-MM-dd}\n\n" +
+                $"ID de Factura: {invoice.InvoiceID}\n" +
+                $"Fecha de Factura: {invoice.InvoiceDate:yyyy-MM-dd}\n\n" +
                 $"Patient: {Patient.FullName} (DOB: {Patient.DateOfBirth:yyyy-MM-dd})\n" +
                 $"Amount: {invoice.TotalAmount:C}\n" +
                 $"Paid: {invoice.IsPaid}\n\n" +
-                $"Linked Appointment: {(invoice.Appointment?.DisplayInfo ?? "N/A")}";
+                $"Cita Vinculada: {(invoice.Appointment?.DisplayInfo ?? "N/A")}";
 
             IsPreviewOpen = true;
         }
@@ -487,9 +487,9 @@ namespace DentalClinicWPF.ViewModels.Patient.PatientDetail
         {
             if (record == null) return;
 
-            PreviewTitle = "Medical Record Preview";
+            PreviewTitle = "Vista Previa de Expediente";
             PreviewContent =
-                $"Record ID: {record.RecordID}\n" +
+                $"ID de Registro: {record.RecordID}\n" +
                 $"Date: {record.Date:yyyy-MM-dd}\n\n" +
                 $"Patient: {Patient.FullName} (DOB: {Patient.DateOfBirth:yyyy-MM-dd})\n" +
                 $"Dentist: {record.Dentist?.DisplayInfo}\n\n" +
@@ -615,8 +615,8 @@ namespace DentalClinicWPF.ViewModels.Patient.PatientDetail
         private void DownloadAttachment(Models.MedicalRecord rec)
         {
             if (rec == null) return;
-            MessageBox.Show($"Downloading attachment for record {rec.RecordID}...",
-                            "Download Attachment",
+            MessageBox.Show($"Descargando adjunto del registro {rec.RecordID}...",
+                            "Descargar Adjunto",
                             MessageBoxButton.OK,
                             MessageBoxImage.Information);
         }
