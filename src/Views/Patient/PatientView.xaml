@@ -17,14 +17,14 @@
         <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,10">
             <TextBox Width="300" 
                      Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" 
-                     ToolTip="Search by patient details (e.g., name, email, phone)" />
-            <Button Content="Search" Command="{Binding SearchCommand}" Margin="10,0,0,0" Width="100" />
-            <Button Content="Reload" Command="{Binding ReloadCommand}" Margin="10,0,0,0" Width="100" />
-            <Button Content="Add Patient" Command="{Binding OpenAddPatientCommand}" Width="150" Margin="10,0,0,0" />
-            <Button Content="Edit Patient" Command="{Binding OpenEditPatientCommand}" 
+                     ToolTip="Buscar por datos del paciente (ej: nombre, correo, teléfono)" />
+            <Button Content="Buscar" Command="{Binding SearchCommand}" Margin="10,0,0,0" Width="100" />
+            <Button Content="Recargar" Command="{Binding ReloadCommand}" Margin="10,0,0,0" Width="100" />
+            <Button Content="Agregar Paciente" Command="{Binding OpenAddPatientCommand}" Width="150" Margin="10,0,0,0" />
+            <Button Content="Editar Paciente" Command="{Binding OpenEditPatientCommand}" 
                     Width="150" Margin="10,0,0,0" 
                     IsEnabled="{Binding SelectedPatient, Converter={StaticResource NullToBoolConverter}}" />
-            <Button Content="View Details" Command="{Binding OpenPatientDetailCommand}" 
+            <Button Content="Ver Detalles" Command="{Binding OpenPatientDetailCommand}" 
                     Width="150" Margin="10,0,0,0" 
                     IsEnabled="{Binding SelectedPatient, Converter={StaticResource NullToBoolConverter}}" />
         </StackPanel>
@@ -33,8 +33,8 @@
         <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="0,0,0,10">
             <ComboBox Width="150" ItemsSource="{Binding SortOptions}" 
                       SelectedItem="{Binding SelectedSortOption}" 
-                      ToolTip="Select sorting criterion" />
-            <Button Content="Sort" Command="{Binding SortCommand}" Width="100" />
+                      ToolTip="Seleccionar criterio de ordenamiento" />
+            <Button Content="Ordenar" Command="{Binding SortCommand}" Width="100" />
         </StackPanel>
 
         <!-- Patient List -->
@@ -42,11 +42,11 @@
                   SelectedItem="{Binding SelectedPatient, Mode=TwoWay}" 
                   IsReadOnly="True" SelectionMode="Single">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="First Name" Binding="{Binding FirstName}" Width="*" />
-                <DataGridTextColumn Header="Last Name" Binding="{Binding LastName}" Width="*" />
-                <DataGridTextColumn Header="Phone" Binding="{Binding PhoneNumber}" Width="150" />
-                <DataGridTextColumn Header="Email" Binding="{Binding Email}" Width="150" />
-                <DataGridTextColumn Header="Date of Birth" Binding="{Binding DateOfBirth, StringFormat=d}" Width="150" />
+                <DataGridTextColumn Header="Nombre" Binding="{Binding FirstName}" Width="*" />
+                <DataGridTextColumn Header="Apellido" Binding="{Binding LastName}" Width="*" />
+                <DataGridTextColumn Header="Teléfono" Binding="{Binding PhoneNumber}" Width="150" />
+                <DataGridTextColumn Header="Correo" Binding="{Binding Email}" Width="150" />
+                <DataGridTextColumn Header="Fecha de Nacimiento" Binding="{Binding DateOfBirth, StringFormat=d}" Width="150" />
             </DataGrid.Columns>
         </DataGrid>
     </Grid>
