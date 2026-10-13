@@ -5,59 +5,284 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:viewModels="clr-namespace:DentalClinicWPF.ViewModels"
         mc:Ignorable="d"
-        Title="Gestión de Clínica Dental" Height="800" Width="1200"
-        Background="#121212" Foreground="#E0E0E0">
+        Title="Clínica Dental"
+        Height="800" Width="1280"
+        MinHeight="600" MinWidth="1000"
+        WindowStartupLocation="CenterScreen"
+        Background="{StaticResource Brush.Background}"
+        FontFamily="{StaticResource Font.Primary}">
     <Window.DataContext>
         <viewModels:MainViewModel />
     </Window.DataContext>
 
     <DockPanel>
-        <!-- Sidebar -->
-        <Border DockPanel.Dock="Left" Width="250" Background="#1C1C1C" BorderBrush="#2C2C2C" BorderThickness="0,0,1,0">
-            <ScrollViewer VerticalScrollBarVisibility="Auto">
-            <StackPanel>
-                <!-- Header -->
-                <TextBlock Text="Clínica Dental" FontSize="20" FontWeight="Bold" Foreground="#FFFFFF"
-                           Margin="20,20,20,30" TextAlignment="Center" />
 
-                <!-- Buttons -->
-                <Button Content="Inicio" Command="{Binding ShowDashboardCommand}" Style="{StaticResource SidebarButtonStyle}" />
-                <Button Content="Pacientes" Command="{Binding ShowPatientsCommand}" Style="{StaticResource SidebarButtonStyle}" />
-                <Button Content="Citas" Command="{Binding ShowAppointmentsCommand}" Style="{StaticResource SidebarButtonStyle}" />
-                <Button Content="Dentistas" Command="{Binding ShowDentistsCommand}" Style="{StaticResource SidebarButtonStyle}" />
-                <Button Content="Tratamientos" Command="{Binding ShowTreatmentsCommand}" Style="{StaticResource SidebarButtonStyle}" />
-                <Button Content="Facturas" Command="{Binding ShowInvoicesCommand}" Style="{StaticResource SidebarButtonStyle}" />
-                <Button Content="Planes de Tratamiento" Command="{Binding ShowTreatmentPlansCommand}" Style="{StaticResource SidebarButtonStyle}" />
-                <Button Content="Expedientes" Command="{Binding ShowMedicalRecordsCommand}" Style="{StaticResource SidebarButtonStyle}" />
-                <Button Content="Recetas" Command="{Binding ShowPrescriptionsCommand}" Style="{StaticResource SidebarButtonStyle}" />
-                <Button Content="Horarios" Command="{Binding ShowSchedulesCommand}" Style="{StaticResource SidebarButtonStyle}" />
-                <Button Content="Inventario" Command="{Binding ShowInventoryCommand}" Style="{StaticResource SidebarButtonStyle}" />
-                <Button Content="Proveedores" Command="{Binding ShowSuppliersCommand}" Style="{StaticResource SidebarButtonStyle}" />
-                <Button Content="Equipos" Command="{Binding ShowEquipmentCommand}" Style="{StaticResource SidebarButtonStyle}" />
-                <Button Content="Órdenes de Laboratorio" Command="{Binding ShowLabOrdersCommand}" Style="{StaticResource SidebarButtonStyle}" />
-                <Button Content="Empleados" Command="{Binding ShowEmployeesCommand}" Style="{StaticResource SidebarButtonStyle}" />
-                <Button Content="Consultorios" Command="{Binding ShowRoomsCommand}" Style="{StaticResource SidebarButtonStyle}" />
-            </StackPanel>
-        </ScrollViewer></Border>
+        <!-- ===================== SIDEBAR ===================== -->
+        <Border DockPanel.Dock="Left"
+                Width="260"
+                Background="{StaticResource Brush.Surface}"
+                BorderBrush="{StaticResource Brush.Border}"
+                BorderThickness="0,0,1,0">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
 
-        <!-- Main Content Area -->
-        <TabControl ItemsSource="{Binding OpenTabs}" SelectedItem="{Binding SelectedTab}" BorderThickness="0">
+                <!-- Header con logo -->
+                <StackPanel Grid.Row="0" Margin="20,24,20,20">
+                    <StackPanel Orientation="Horizontal">
+                        <Border Width="36" Height="36"
+                                Background="{StaticResource Brush.Primary}"
+                                CornerRadius="10"
+                                Margin="0,0,12,0">
+                            <TextBlock Text="&#xE77B;"
+                                       FontFamily="Segoe MDL2 Assets"
+                                       FontSize="20"
+                                       Foreground="White"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center" />
+                        </Border>
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock Text="Clínica Dental"
+                                       FontSize="16"
+                                       FontWeight="Bold"
+                                       Foreground="{StaticResource Brush.TextPrimary}" />
+                            <TextBlock Text="Sistema de gestión"
+                                       FontSize="11"
+                                       Foreground="{StaticResource Brush.TextMuted}" />
+                        </StackPanel>
+                    </StackPanel>
+                </StackPanel>
+
+                <!-- Menu items -->
+                <ScrollViewer Grid.Row="1"
+                              VerticalScrollBarVisibility="Auto"
+                              HorizontalScrollBarVisibility="Disabled"
+                              Padding="0,0,0,10">
+                    <StackPanel>
+
+                        <TextBlock Text="PRINCIPAL"
+                                   Style="{StaticResource Modern.Caption}"
+                                   Margin="20,10,20,6" />
+
+                        <Button Tag="Inicio" Command="{Binding ShowDashboardCommand}"
+                                Style="{StaticResource Modern.SidebarItem}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="&#xE80F;" FontFamily="Segoe MDL2 Assets" Width="20" VerticalAlignment="Center"/>
+                                <TextBlock Text="Inicio" Margin="8,0,0,0"/>
+                            </StackPanel>
+                        </Button>
+
+                        <TextBlock Text="CLÍNICA"
+                                   Style="{StaticResource Modern.Caption}"
+                                   Margin="20,18,20,6" />
+
+                        <Button Tag="Pacientes" Command="{Binding ShowPatientsCommand}"
+                                Style="{StaticResource Modern.SidebarItem}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="&#xE77B;" FontFamily="Segoe MDL2 Assets" Width="20" VerticalAlignment="Center"/>
+                                <TextBlock Text="Pacientes" Margin="8,0,0,0"/>
+                            </StackPanel>
+                        </Button>
+                        <Button Tag="Citas" Command="{Binding ShowAppointmentsCommand}"
+                                Style="{StaticResource Modern.SidebarItem}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="&#xE787;" FontFamily="Segoe MDL2 Assets" Width="20" VerticalAlignment="Center"/>
+                                <TextBlock Text="Citas" Margin="8,0,0,0"/>
+                            </StackPanel>
+                        </Button>
+                        <Button Tag="Dentistas" Command="{Binding ShowDentistsCommand}"
+                                Style="{StaticResource Modern.SidebarItem}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="&#xE77B;" FontFamily="Segoe MDL2 Assets" Width="20" VerticalAlignment="Center"/>
+                                <TextBlock Text="Dentistas" Margin="8,0,0,0"/>
+                            </StackPanel>
+                        </Button>
+                        <Button Tag="Tratamientos" Command="{Binding ShowTreatmentsCommand}"
+                                Style="{StaticResource Modern.SidebarItem}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="&#xE95E;" FontFamily="Segoe MDL2 Assets" Width="20" VerticalAlignment="Center"/>
+                                <TextBlock Text="Tratamientos" Margin="8,0,0,0"/>
+                            </StackPanel>
+                        </Button>
+                        <Button Tag="Expedientes" Command="{Binding ShowMedicalRecordsCommand}"
+                                Style="{StaticResource Modern.SidebarItem}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="&#xE8A5;" FontFamily="Segoe MDL2 Assets" Width="20" VerticalAlignment="Center"/>
+                                <TextBlock Text="Expedientes" Margin="8,0,0,0"/>
+                            </StackPanel>
+                        </Button>
+                        <Button Tag="Recetas" Command="{Binding ShowPrescriptionsCommand}"
+                                Style="{StaticResource Modern.SidebarItem}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="&#xE8A5;" FontFamily="Segoe MDL2 Assets" Width="20" VerticalAlignment="Center"/>
+                                <TextBlock Text="Recetas" Margin="8,0,0,0"/>
+                            </StackPanel>
+                        </Button>
+                        <Button Tag="Planes de Tratamiento" Command="{Binding ShowTreatmentPlansCommand}"
+                                Style="{StaticResource Modern.SidebarItem}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="&#xE8FD;" FontFamily="Segoe MDL2 Assets" Width="20" VerticalAlignment="Center"/>
+                                <TextBlock Text="Planes de Tratamiento" Margin="8,0,0,0"/>
+                            </StackPanel>
+                        </Button>
+                        <Button Tag="Órdenes de Laboratorio" Command="{Binding ShowLabOrdersCommand}"
+                                Style="{StaticResource Modern.SidebarItem}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="&#xE9D9;" FontFamily="Segoe MDL2 Assets" Width="20" VerticalAlignment="Center"/>
+                                <TextBlock Text="Órdenes de Laboratorio" Margin="8,0,0,0"/>
+                            </StackPanel>
+                        </Button>
+
+                        <TextBlock Text="FINANCIERO"
+                                   Style="{StaticResource Modern.Caption}"
+                                   Margin="20,18,20,6" />
+
+                        <Button Tag="Facturas" Command="{Binding ShowInvoicesCommand}"
+                                Style="{StaticResource Modern.SidebarItem}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="&#xE8C7;" FontFamily="Segoe MDL2 Assets" Width="20" VerticalAlignment="Center"/>
+                                <TextBlock Text="Facturas" Margin="8,0,0,0"/>
+                            </StackPanel>
+                        </Button>
+
+                        <TextBlock Text="ADMINISTRACIÓN"
+                                   Style="{StaticResource Modern.Caption}"
+                                   Margin="20,18,20,6" />
+
+                        <Button Tag="Horarios" Command="{Binding ShowSchedulesCommand}"
+                                Style="{StaticResource Modern.SidebarItem}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="&#xE823;" FontFamily="Segoe MDL2 Assets" Width="20" VerticalAlignment="Center"/>
+                                <TextBlock Text="Horarios" Margin="8,0,0,0"/>
+                            </StackPanel>
+                        </Button>
+                        <Button Tag="Inventario" Command="{Binding ShowInventoryCommand}"
+                                Style="{StaticResource Modern.SidebarItem}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="&#xE7B8;" FontFamily="Segoe MDL2 Assets" Width="20" VerticalAlignment="Center"/>
+                                <TextBlock Text="Inventario" Margin="8,0,0,0"/>
+                            </StackPanel>
+                        </Button>
+                        <Button Tag="Proveedores" Command="{Binding ShowSuppliersCommand}"
+                                Style="{StaticResource Modern.SidebarItem}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="&#xE7B8;" FontFamily="Segoe MDL2 Assets" Width="20" VerticalAlignment="Center"/>
+                                <TextBlock Text="Proveedores" Margin="8,0,0,0"/>
+                            </StackPanel>
+                        </Button>
+                        <Button Tag="Equipos" Command="{Binding ShowEquipmentCommand}"
+                                Style="{StaticResource Modern.SidebarItem}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="&#xE713;" FontFamily="Segoe MDL2 Assets" Width="20" VerticalAlignment="Center"/>
+                                <TextBlock Text="Equipos" Margin="8,0,0,0"/>
+                            </StackPanel>
+                        </Button>
+                        <Button Tag="Empleados" Command="{Binding ShowEmployeesCommand}"
+                                Style="{StaticResource Modern.SidebarItem}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="&#xE716;" FontFamily="Segoe MDL2 Assets" Width="20" VerticalAlignment="Center"/>
+                                <TextBlock Text="Empleados" Margin="8,0,0,0"/>
+                            </StackPanel>
+                        </Button>
+                        <Button Tag="Consultorios" Command="{Binding ShowRoomsCommand}"
+                                Style="{StaticResource Modern.SidebarItem}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="&#xE716;" FontFamily="Segoe MDL2 Assets" Width="20" VerticalAlignment="Center"/>
+                                <TextBlock Text="Consultorios" Margin="8,0,0,0"/>
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </ScrollViewer>
+
+                <!-- Footer -->
+                <Border Grid.Row="2"
+                        BorderBrush="{StaticResource Brush.Border}"
+                        BorderThickness="0,1,0,0"
+                        Padding="20,12">
+                    <TextBlock Text="v1.0"
+                               Style="{StaticResource Modern.Caption}"
+                               HorizontalAlignment="Center" />
+                </Border>
+            </Grid>
+        </Border>
+
+        <!-- ===================== AREA PRINCIPAL ===================== -->
+        <!-- TabControl directamente como último hijo del DockPanel => ocupa todo el espacio restante -->
+        <TabControl ItemsSource="{Binding OpenTabs}"
+                    SelectedItem="{Binding SelectedTab}"
+                    Background="{StaticResource Brush.Background}"
+                    BorderThickness="0"
+                    Padding="0">
+            <TabControl.Resources>
+                <Style TargetType="TabItem">
+                    <Setter Property="FontFamily" Value="{StaticResource Font.Primary}" />
+                    <Setter Property="FontSize" Value="13" />
+                    <Setter Property="Foreground" Value="{StaticResource Brush.TextSecondary}" />
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="TabItem">
+                                <Border x:Name="Bd"
+                                        Background="Transparent"
+                                        CornerRadius="8,8,0,0"
+                                        Padding="16,10"
+                                        Margin="4,6,0,0"
+                                        BorderThickness="0,0,0,2"
+                                        BorderBrush="Transparent">
+                                    <ContentPresenter ContentSource="Header"
+                                                      HorizontalAlignment="Center"
+                                                      VerticalAlignment="Center"/>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter TargetName="Bd" Property="BorderBrush"
+                                                Value="{StaticResource Brush.Primary}" />
+                                        <Setter Property="Foreground"
+                                                Value="{StaticResource Brush.TextPrimary}" />
+                                        <Setter Property="FontWeight" Value="SemiBold" />
+                                    </Trigger>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="Bd" Property="Background"
+                                                Value="{StaticResource Brush.Hover}" />
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </TabControl.Resources>
+
             <TabControl.ItemTemplate>
                 <DataTemplate>
-                    <StackPanel Orientation="Horizontal" Background="#2C2C2C" Margin="0,0,10,0">
-                        <TextBlock Text="{Binding Header}" Margin="5,0,10,0" Foreground="#E0E0E0" />
-                        <Button Content="×" Command="{Binding CloseCommand}" Width="25" Height="25" 
-                                Background="#E74C3C" Foreground="#FFFFFF" BorderBrush="Transparent" 
-                                FontWeight="Bold" />
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding Header}" VerticalAlignment="Center"/>
+                        <Button Content="&#xE711;"
+                                FontFamily="Segoe MDL2 Assets"
+                                Command="{Binding CloseCommand}"
+                                Width="20" Height="20"
+                                FontSize="10"
+                                Margin="10,0,0,0"
+                                Padding="0"
+                                Background="Transparent"
+                                BorderThickness="0"
+                                Foreground="{StaticResource Brush.TextMuted}"
+                                Cursor="Hand" />
                     </StackPanel>
                 </DataTemplate>
             </TabControl.ItemTemplate>
+
             <TabControl.ContentTemplate>
                 <DataTemplate>
-                    <ContentControl Content="{Binding Content}" />
+                    <ScrollViewer VerticalScrollBarVisibility="Auto"
+                                  HorizontalScrollBarVisibility="Disabled"
+                                  Background="{StaticResource Brush.Background}">
+                        <ContentControl Content="{Binding Content}" />
+                    </ScrollViewer>
                 </DataTemplate>
             </TabControl.ContentTemplate>
         </TabControl>
+
     </DockPanel>
 </Window>
-

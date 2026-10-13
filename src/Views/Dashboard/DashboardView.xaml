@@ -5,147 +5,353 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:wpf="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
              mc:Ignorable="d"
-             d:DesignHeight="800" d:DesignWidth="1200">
+             d:DesignHeight="900" d:DesignWidth="1200"
+             Background="{StaticResource Brush.Background}">
 
-    <UserControl.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/Styles/DashboardStyles.xaml"/>
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
-    </UserControl.Resources>
+    <StackPanel Margin="28">
 
-    <Grid Margin="10">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/> <!-- Header -->
-            <RowDefinition Height="2*"/>   <!-- Appointments, Financial Stats, Revenue per Dentist -->
-            <RowDefinition Height="2*"/>   <!-- Charts -->
-            <RowDefinition Height="Auto"/> <!-- Export buttons -->
-            <RowDefinition Height="Auto"/> <!-- Add buttons -->
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="2*"/>
-            <ColumnDefinition Width="1.5*"/>
-            <ColumnDefinition Width="1.5*"/> <!-- Column for Revenue per Dentist -->
-        </Grid.ColumnDefinitions>
-
-        <!-- Header -->
+        <!-- Encabezado -->
         <TextBlock Text="Inicio"
-                   FontSize="24"
-                   FontWeight="Bold"
-                   Grid.Row="0"
-                   Margin="0,0,0,10"
-                   Style="{StaticResource DashboardTextBlockStyle}"/>
+                   FontSize="28" FontWeight="Bold"
+                   Foreground="{StaticResource Brush.TextPrimary}"
+                   Margin="0,0,0,4"/>
+        <TextBlock Text="Resumen general de la clínica"
+                   FontSize="14"
+                   Foreground="{StaticResource Brush.TextSecondary}"
+                   Margin="0,0,0,20"/>
 
-        <!-- Appointments, Financial Stats, Revenue per Dentist -->
-        <Grid Grid.Row="1" Grid.ColumnSpan="3" Margin="0,0,0,10">
+        <!-- =================== ACCIONES RÁPIDAS (ARRIBA) =================== -->
+        <Border Background="{StaticResource Brush.Surface}"
+                CornerRadius="12" Padding="20" Margin="0,0,0,24">
+            <StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,14">
+                    <TextBlock Text="&#xE945;"
+                               FontFamily="Segoe MDL2 Assets"
+                               FontSize="16"
+                               Foreground="{StaticResource Brush.Primary}"
+                               VerticalAlignment="Center"/>
+                    <TextBlock Text="Acciones Rápidas"
+                               Margin="8,0,0,0"
+                               FontSize="15" FontWeight="SemiBold"
+                               Foreground="{StaticResource Brush.TextPrimary}"
+                               VerticalAlignment="Center"/>
+                </StackPanel>
+                <WrapPanel Orientation="Horizontal">
+                    <Button Content="+ Agregar Cita"
+                            Command="{Binding AddAppointmentCommand}"
+                            Style="{StaticResource Modern.Button.Primary}"
+                            Margin="0,0,10,10"/>
+                    <Button Content="+ Agregar Paciente"
+                            Command="{Binding RegisterPatientCommand}"
+                            Style="{StaticResource Modern.Button.Secondary}"
+                            Margin="0,0,10,10"/>
+                    <Button Content="Exportar a PDF"
+                            Command="{Binding ExportReportCommand}"
+                            Style="{StaticResource Modern.Button.Secondary}"
+                            Margin="0,0,10,10"/>
+                    <Button Content="Exportar a Excel"
+                            Command="{Binding ExportToExcelCommand}"
+                            Style="{StaticResource Modern.Button.Secondary}"
+                            Margin="0,0,10,10"/>
+                </WrapPanel>
+            </StackPanel>
+        </Border>
+
+        <!-- =================== KPI CARDS =================== -->
+        <Grid Margin="0,0,0,24">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="2*"/>
-                <ColumnDefinition Width="1.5*"/>
-                <ColumnDefinition Width="1.5*"/> <!-- Column for Revenue per Dentist -->
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <!-- Upcoming Appointments -->
-            <GroupBox Header="Próximas Citas" Grid.Column="0" Margin="0,0,10,0" Style="{StaticResource DashboardGroupBoxStyle}">
-                <DataGrid ItemsSource="{Binding UpcomingAppointments}"
-                          AutoGenerateColumns="False"
-                          IsReadOnly="True"
-                          Style="{StaticResource DashboardDataGridStyle}">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="Fecha" Binding="{Binding AppointmentDate, StringFormat=d}" Width="*" />
-                        <DataGridTextColumn Header="Hora" Binding="{Binding AppointmentTime}" Width="*" />
-                        <DataGridTextColumn Header="Paciente" Binding="{Binding PatientName}" Width="*" />
-                        <DataGridTextColumn Header="Dentista" Binding="{Binding DentistName}" Width="*" />
-                    </DataGrid.Columns>
-                </DataGrid>
-            </GroupBox>
+            <Border Grid.Column="0"
+                    Background="{StaticResource Brush.Surface}"
+                    CornerRadius="12" Padding="18" Margin="0,0,12,0">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Border Width="48" Height="48"
+                            Background="#DCFCE7" CornerRadius="10"
+                            VerticalAlignment="Center">
+                        <TextBlock Text="&#xE8C7;"
+                                   FontFamily="Segoe MDL2 Assets"
+                                   FontSize="22" Foreground="#16A34A"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"/>
+                    </Border>
+                    <StackPanel Grid.Column="1" Margin="14,0,0,0" VerticalAlignment="Center">
+                        <TextBlock Text="Ingresos Totales"
+                                   FontSize="12"
+                                   Foreground="{StaticResource Brush.TextMuted}"/>
+                        <TextBlock Text="{Binding TotalRevenue, StringFormat={}{0:C}}"
+                                   FontSize="22" FontWeight="Bold"
+                                   Foreground="{StaticResource Brush.TextPrimary}"
+                                   Margin="0,4,0,0"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
 
-            <!-- Financial Statistics -->
-            <GroupBox Header="Estadísticas Financieras" Grid.Column="1" Style="{StaticResource DashboardGroupBoxStyle}">
-                <StackPanel>
-                    <TextBlock Text="{Binding TotalRevenue, StringFormat='Ingresos Totales: {0:C}'}"
-                               Margin="0,5"
-                               Style="{StaticResource DashboardTextBlockStyle}"/>
-                    <TextBlock Text="{Binding UnpaidInvoices, StringFormat='Facturas sin Pagar: {0}'}"
-                               Margin="0,5"
-                               Style="{StaticResource DashboardTextBlockStyle}"/>
-                </StackPanel>
-            </GroupBox>
+            <Border Grid.Column="1"
+                    Background="{StaticResource Brush.Surface}"
+                    CornerRadius="12" Padding="18" Margin="0,0,12,0">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Border Width="48" Height="48"
+                            Background="#FEF3C7" CornerRadius="10"
+                            VerticalAlignment="Center">
+                        <TextBlock Text="&#xE7BA;"
+                                   FontFamily="Segoe MDL2 Assets"
+                                   FontSize="22" Foreground="#D97706"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"/>
+                    </Border>
+                    <StackPanel Grid.Column="1" Margin="14,0,0,0" VerticalAlignment="Center">
+                        <TextBlock Text="Facturas sin Pagar"
+                                   FontSize="12"
+                                   Foreground="{StaticResource Brush.TextMuted}"/>
+                        <TextBlock Text="{Binding UnpaidInvoices}"
+                                   FontSize="22" FontWeight="Bold"
+                                   Foreground="{StaticResource Brush.TextPrimary}"
+                                   Margin="0,4,0,0"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
 
-            <!-- Revenue per Dentist -->
-            <GroupBox Header="Ingresos por Dentista" Grid.Column="2" Margin="10,0,0,0" Style="{StaticResource DashboardGroupBoxStyle}">
-                <DataGrid ItemsSource="{Binding DentistRevenue}"
-                          AutoGenerateColumns="False"
-                          IsReadOnly="True"
-                          Style="{StaticResource DashboardDataGridStyle}">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="Dentista" Binding="{Binding DentistName}" Width="*" />
-                        <DataGridTextColumn Header="Ingresos" Binding="{Binding Revenue, StringFormat=C}" Width="*" />
-                    </DataGrid.Columns>
-                </DataGrid>
-            </GroupBox>
+            <Border Grid.Column="2"
+                    Background="{StaticResource Brush.Surface}"
+                    CornerRadius="12" Padding="18" Margin="0,0,12,0">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Border Width="48" Height="48"
+                            Background="#CCFBF1" CornerRadius="10"
+                            VerticalAlignment="Center">
+                        <TextBlock Text="&#xE787;"
+                                   FontFamily="Segoe MDL2 Assets"
+                                   FontSize="22" Foreground="#0D9488"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"/>
+                    </Border>
+                    <StackPanel Grid.Column="1" Margin="14,0,0,0" VerticalAlignment="Center">
+                        <TextBlock Text="Próximas Citas"
+                                   FontSize="12"
+                                   Foreground="{StaticResource Brush.TextMuted}"/>
+                        <TextBlock Text="{Binding UpcomingAppointments.Count}"
+                                   FontSize="22" FontWeight="Bold"
+                                   Foreground="{StaticResource Brush.TextPrimary}"
+                                   Margin="0,4,0,0"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <Border Grid.Column="3"
+                    Background="{StaticResource Brush.Surface}"
+                    CornerRadius="12" Padding="18">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Border Width="48" Height="48"
+                            Background="#DBEAFE" CornerRadius="10"
+                            VerticalAlignment="Center">
+                        <TextBlock Text="&#xE716;"
+                                   FontFamily="Segoe MDL2 Assets"
+                                   FontSize="22" Foreground="#2563EB"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"/>
+                    </Border>
+                    <StackPanel Grid.Column="1" Margin="14,0,0,0" VerticalAlignment="Center">
+                        <TextBlock Text="Dentistas Activos"
+                                   FontSize="12"
+                                   Foreground="{StaticResource Brush.TextMuted}"/>
+                        <TextBlock Text="{Binding DentistRevenue.Count}"
+                                   FontSize="22" FontWeight="Bold"
+                                   Foreground="{StaticResource Brush.TextPrimary}"
+                                   Margin="0,4,0,0"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
         </Grid>
 
-        <!-- Revenue Over Time Chart -->
-        <GroupBox Header="Ingresos en el Tiempo" Grid.Row="2" Grid.ColumnSpan="3" Style="{StaticResource DashboardGroupBoxStyle}" Margin="0,10,0,0">
-            <wpf:CartesianChart Series="{Binding RevenueSeries}">
-                <wpf:CartesianChart.AxisX>
-                    <wpf:Axis Title="Mes" Labels="{Binding RevenueLabels}"/>
-                </wpf:CartesianChart.AxisX>
-                <wpf:CartesianChart.AxisY>
-                    <wpf:Axis Title="Ingresos" LabelFormatter="{Binding YFormatter}"/>
-                </wpf:CartesianChart.AxisY>
-            </wpf:CartesianChart>
-        </GroupBox>
+        <!-- =================== CITAS + INGRESOS =================== -->
+        <Grid Margin="0,0,0,24">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
 
-        <!-- Kontener na wszystkie przyciski -->
-        <StackPanel Grid.Row="4"
-                    Grid.ColumnSpan="3"
-                    Orientation="Vertical"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Bottom"
-                    Margin="0,20">
+            <Border Grid.Column="0"
+                    Background="{StaticResource Brush.Surface}"
+                    CornerRadius="12" Padding="0" Margin="0,0,12,0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <StackPanel Orientation="Horizontal" Margin="20,16,20,8">
+                        <TextBlock Text="&#xE787;"
+                                   FontFamily="Segoe MDL2 Assets"
+                                   FontSize="16"
+                                   Foreground="{StaticResource Brush.Primary}"
+                                   VerticalAlignment="Center"/>
+                        <TextBlock Text="Próximas Citas"
+                                   Margin="8,0,0,0"
+                                   FontSize="15" FontWeight="SemiBold"
+                                   Foreground="{StaticResource Brush.TextPrimary}"
+                                   VerticalAlignment="Center"/>
+                    </StackPanel>
+                    <DataGrid Grid.Row="1"
+                              ItemsSource="{Binding UpcomingAppointments}"
+                              AutoGenerateColumns="False"
+                              IsReadOnly="True"
+                              BorderThickness="0"
+                              Background="Transparent"
+                              RowBackground="Transparent"
+                              AlternatingRowBackground="#F8FAFC"
+                              HeadersVisibility="Column"
+                              GridLinesVisibility="Horizontal"
+                              HorizontalGridLinesBrush="{StaticResource Brush.Border}"
+                              MinHeight="200"
+                              Margin="12,0,12,12">
+                        <DataGrid.ColumnHeaderStyle>
+                            <Style TargetType="DataGridColumnHeader">
+                                <Setter Property="Background" Value="Transparent"/>
+                                <Setter Property="Foreground" Value="{StaticResource Brush.TextSecondary}"/>
+                                <Setter Property="FontWeight" Value="SemiBold"/>
+                                <Setter Property="FontSize" Value="12"/>
+                                <Setter Property="Padding" Value="8,8"/>
+                                <Setter Property="BorderThickness" Value="0,0,0,1"/>
+                                <Setter Property="BorderBrush" Value="{StaticResource Brush.Border}"/>
+                                <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                            </Style>
+                        </DataGrid.ColumnHeaderStyle>
+                        <DataGrid.CellStyle>
+                            <Style TargetType="DataGridCell">
+                                <Setter Property="BorderThickness" Value="0"/>
+                                <Setter Property="Padding" Value="8,6"/>
+                                <Setter Property="Foreground" Value="{StaticResource Brush.TextPrimary}"/>
+                            </Style>
+                        </DataGrid.CellStyle>
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Fecha" Binding="{Binding AppointmentDate, StringFormat=d}" Width="*"/>
+                            <DataGridTextColumn Header="Hora" Binding="{Binding AppointmentTime}" Width="*"/>
+                            <DataGridTextColumn Header="Paciente" Binding="{Binding PatientName}" Width="*"/>
+                            <DataGridTextColumn Header="Dentista" Binding="{Binding DentistName}" Width="*"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </Border>
 
-            <!-- Nagłówek dla sekcji eksportu -->
-            <TextBlock Text="Exportar Panel"
-                       FontSize="16"
-                       FontWeight="Bold"
-                       Margin="0,0,0,10"
-                       Style="{StaticResource DashboardTextBlockStyle}"
-                       HorizontalAlignment="Center"/>
+            <Border Grid.Column="1"
+                    Background="{StaticResource Brush.Surface}"
+                    CornerRadius="12" Padding="0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <StackPanel Orientation="Horizontal" Margin="20,16,20,8">
+                        <TextBlock Text="&#xE8C7;"
+                                   FontFamily="Segoe MDL2 Assets"
+                                   FontSize="16"
+                                   Foreground="{StaticResource Brush.Primary}"
+                                   VerticalAlignment="Center"/>
+                        <TextBlock Text="Ingresos por Dentista"
+                                   Margin="8,0,0,0"
+                                   FontSize="15" FontWeight="SemiBold"
+                                   Foreground="{StaticResource Brush.TextPrimary}"
+                                   VerticalAlignment="Center"/>
+                    </StackPanel>
+                    <DataGrid Grid.Row="1"
+                              ItemsSource="{Binding DentistRevenue}"
+                              AutoGenerateColumns="False"
+                              IsReadOnly="True"
+                              BorderThickness="0"
+                              Background="Transparent"
+                              RowBackground="Transparent"
+                              AlternatingRowBackground="#F8FAFC"
+                              HeadersVisibility="Column"
+                              GridLinesVisibility="Horizontal"
+                              HorizontalGridLinesBrush="{StaticResource Brush.Border}"
+                              MinHeight="200"
+                              Margin="12,0,12,12">
+                        <DataGrid.ColumnHeaderStyle>
+                            <Style TargetType="DataGridColumnHeader">
+                                <Setter Property="Background" Value="Transparent"/>
+                                <Setter Property="Foreground" Value="{StaticResource Brush.TextSecondary}"/>
+                                <Setter Property="FontWeight" Value="SemiBold"/>
+                                <Setter Property="FontSize" Value="12"/>
+                                <Setter Property="Padding" Value="8,8"/>
+                                <Setter Property="BorderThickness" Value="0,0,0,1"/>
+                                <Setter Property="BorderBrush" Value="{StaticResource Brush.Border}"/>
+                                <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                            </Style>
+                        </DataGrid.ColumnHeaderStyle>
+                        <DataGrid.CellStyle>
+                            <Style TargetType="DataGridCell">
+                                <Setter Property="BorderThickness" Value="0"/>
+                                <Setter Property="Padding" Value="8,6"/>
+                                <Setter Property="Foreground" Value="{StaticResource Brush.TextPrimary}"/>
+                            </Style>
+                        </DataGrid.CellStyle>
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Dentista" Binding="{Binding DentistName}" Width="*"/>
+                            <DataGridTextColumn Header="Ingresos" Binding="{Binding Revenue, StringFormat=C}" Width="*"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </Border>
+        </Grid>
 
-            <!-- Przyciski eksportu -->
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                <Button Content="Exportar a PDF"
-                        Command="{Binding ExportReportCommand}"
-                        Width="200"
-                        Height="40"
-                        Style="{StaticResource DashboardButtonStyle}"
-                        Margin="10,0"/>
-                <Button Content="Exportar a Excel"
-                        Command="{Binding ExportToExcelCommand}"
-                        Width="200"
-                        Height="40"
-                        Style="{StaticResource DashboardButtonStyle}"
-                        Margin="10,0"/>
-            </StackPanel>
+        <!-- =================== GRÁFICO =================== -->
+        <Border Background="{StaticResource Brush.Surface}"
+                CornerRadius="12" Padding="20" Margin="0,0,0,16">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
+                    <TextBlock Text="&#xE9D2;"
+                               FontFamily="Segoe MDL2 Assets"
+                               FontSize="16"
+                               Foreground="{StaticResource Brush.Primary}"
+                               VerticalAlignment="Center"/>
+                    <TextBlock Text="Ingresos en el Tiempo"
+                               Margin="8,0,0,0"
+                               FontSize="15" FontWeight="SemiBold"
+                               Foreground="{StaticResource Brush.TextPrimary}"
+                               VerticalAlignment="Center"/>
+                </StackPanel>
+                <wpf:CartesianChart Grid.Row="1"
+                                    Height="280"
+                                    Series="{Binding RevenueSeries}"
+                                    Foreground="{StaticResource Brush.TextSecondary}">
+                    <wpf:CartesianChart.AxisX>
+                        <wpf:Axis Title="Mes"
+                                  Labels="{Binding RevenueLabels}"
+                                  Foreground="{StaticResource Brush.TextSecondary}"
+                                  FontSize="12"/>
+                    </wpf:CartesianChart.AxisX>
+                    <wpf:CartesianChart.AxisY>
+                        <wpf:Axis Title="Ingresos"
+                                  LabelFormatter="{Binding YFormatter}"
+                                  Foreground="{StaticResource Brush.TextSecondary}"
+                                  FontSize="12"/>
+                    </wpf:CartesianChart.AxisY>
+                </wpf:CartesianChart>
+            </Grid>
+        </Border>
 
-            <!-- Przyciski dodawania -->
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10">
-                <Button Content="Agregar Cita"
-                        Command="{Binding AddAppointmentCommand}"
-                        Width="150"
-                        Height="40"
-                        Margin="10,0"/>
-                <Button Content="Agregar Paciente"
-                        Command="{Binding RegisterPatientCommand}"
-                        Width="150"
-                        Height="40"
-                        Margin="10,0"/>
-            </StackPanel>
-
-        </StackPanel>
-
-
-    </Grid>
+    </StackPanel>
 </UserControl>

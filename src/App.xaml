@@ -44,6 +44,7 @@
         <ResourceDictionary>
             <!-- Merge Style Dictionaries -->
             <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Styles/DesignSystem.xaml" />
                 <ResourceDictionary Source="Styles/ButtonStyles.xaml" />
                 <ResourceDictionary Source="Styles/CommonStyles.xaml" />
                 <ResourceDictionary Source="Styles/TextBoxStyles.xaml" />
@@ -54,6 +55,8 @@
 
             <!-- Converters -->
             <converters:NullToBoolConverter x:Key="NullToBoolConverter" />
+            <converters:EqualityConverter x:Key="EqualityConverter" />
+            <converters:ZeroToVisibleConverter x:Key="ZeroToVisibleConverter" />
             <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
             <converters:TimeSpanToStringConverter x:Key="TimeSpanToStringConverter" />
             <converters:StatusToColorConverter x:Key="StatusToColorConverter" />

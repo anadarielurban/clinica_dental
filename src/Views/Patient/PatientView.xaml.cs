@@ -1,5 +1,4 @@
-﻿// Views/Patient/PatientView.xaml.cs
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using DentalClinicWPF.ViewModels.Patient;
 
@@ -12,12 +11,12 @@ namespace DentalClinicWPF.Views.Patient
             InitializeComponent();
         }
 
-        private void DataGrid_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        private void ClearSearch_Click(object sender, RoutedEventArgs e)
         {
-            var viewModel = DataContext as PatientViewModel;
-            if (viewModel?.OpenPatientDetailCommand.CanExecute(null) == true)
+            if (DataContext is PatientViewModel vm)
             {
-                viewModel.OpenPatientDetailCommand.Execute(null);
+                // Solo actualizamos el texto; el timer interno se encarga del resto
+                vm.SearchText = string.Empty;
             }
         }
     }
