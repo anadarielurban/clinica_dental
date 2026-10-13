@@ -1,4 +1,4 @@
-$readme = @'
+
 # Clínica Dental
 
 Aplicación de escritorio para la gestión integral de una clínica dental. Centraliza la operación clínica, administrativa y financiera del consultorio en un solo sistema.
