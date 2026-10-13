@@ -20,7 +20,7 @@ namespace DentalClinicWPF.Models
         public decimal Price { get; set; }
 
         [NotMapped] 
-        public string PriceFormatted => $"{Price} PLN";
+        public string PriceFormatted => $"{Price} MXN";
 
         [Required]
         public TimeSpan Duration { get; set; }

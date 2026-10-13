@@ -13,11 +13,11 @@
         <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,10">
             <TextBox Width="300" 
                      Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" 
-                     ToolTip="Search by Name or Description" />
-            <Button Content="Search" Command="{Binding SearchCommand}" Margin="10,0,0,0" Width="100" />
-            <Button Content="Reload" Command="{Binding ReloadCommand}" Margin="10,0,0,0" Width="100" />
-            <Button Content="Add Treatment" Command="{Binding AddTreatmentCommand}" Width="150" Margin="10,0,0,0" />
-            <Button Content="Edit Treatment" Command="{Binding EditTreatmentCommand}" 
+                     ToolTip="Buscar por nombre o descripción" />
+            <Button Content="Buscar" Command="{Binding SearchCommand}" Margin="10,0,0,0" Width="100" />
+            <Button Content="Recargar" Command="{Binding ReloadCommand}" Margin="10,0,0,0" Width="100" />
+            <Button Content="Agregar Tratamiento" Command="{Binding AddTreatmentCommand}" Width="150" Margin="10,0,0,0" />
+            <Button Content="Editar Tratamiento" Command="{Binding EditTreatmentCommand}" 
                     Width="150" Margin="10,0,0,0" 
                     IsEnabled="{Binding SelectedTreatment, Converter={StaticResource NullToBoolConverter}}" />
         </StackPanel>
@@ -26,8 +26,8 @@
         <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="0,0,0,10">
             <ComboBox Width="150" ItemsSource="{Binding SortOptions}" 
                       SelectedItem="{Binding SelectedSortOption}" 
-                      ToolTip="Select sorting criterion" />
-            <Button Content="Sort" Command="{Binding SortCommand}" Width="100" Margin="10,0,0,0" />
+                      ToolTip="Seleccionar criterio de ordenamiento" />
+            <Button Content="Ordenar" Command="{Binding SortCommand}" Width="100" Margin="10,0,0,0" />
         </StackPanel>
 
         <!-- Treatment List -->
@@ -36,10 +36,10 @@
                   SelectedItem="{Binding SelectedTreatment, Mode=TwoWay}" IsReadOnly="True" 
                   SelectionMode="Single" Margin="0,0,0,10">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*" />
-                <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="2*" />
-                <DataGridTextColumn Header="Price" Binding="{Binding PriceFormatted}" Width="Auto" />
-                <DataGridTextColumn Header="Duration (min)" Binding="{Binding Duration.TotalMinutes}" Width="Auto" />
+                <DataGridTextColumn Header="Nombre" Binding="{Binding Name}" Width="*" />
+                <DataGridTextColumn Header="Descripción" Binding="{Binding Description}" Width="2*" />
+                <DataGridTextColumn Header="Precio" Binding="{Binding PriceFormatted}" Width="Auto" />
+                <DataGridTextColumn Header="Duración (min)" Binding="{Binding Duration.TotalMinutes}" Width="Auto" />
             </DataGrid.Columns>
         </DataGrid>
     </Grid>
