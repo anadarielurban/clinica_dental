@@ -35,10 +35,10 @@ namespace DentalClinicWPF.ViewModels.Appointment
         // Nowe właściwości do sortowania
         public ObservableCollection<string> SortOptions { get; } = new ObservableCollection<string>
         {
-            "Patient Name",
-            "Dentist Name",
-            "Treatment Name",
-            "Appointment Date"
+            "Nombre del Paciente",
+            "Nombre del Dentista",
+            "Nombre del Tratamiento",
+            "Fecha de Cita"
         };
         public string SelectedSortOption { get; set; }
         public ICommand SortCommand { get; }
@@ -87,7 +87,7 @@ namespace DentalClinicWPF.ViewModels.Appointment
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error loading appointments: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error al cargar las citas: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -98,10 +98,10 @@ namespace DentalClinicWPF.ViewModels.Appointment
 
             IEnumerable<Models.Appointment> sortedAppointments = SelectedSortOption switch
             {
-                "Patient Name" => Appointments.OrderBy(a => a.Patient.LastName).ThenBy(a => a.Patient.FirstName),
-                "Dentist Name" => Appointments.OrderBy(a => a.Dentist.LastName).ThenBy(a => a.Dentist.FirstName),
-                "Treatment Name" => Appointments.OrderBy(a => a.Treatment.Name),
-                "Appointment Date" => Appointments.OrderBy(a => a.AppointmentDate),
+                "Nombre del Paciente" => Appointments.OrderBy(a => a.Patient.LastName).ThenBy(a => a.Patient.FirstName),
+                "Nombre del Dentista" => Appointments.OrderBy(a => a.Dentist.LastName).ThenBy(a => a.Dentist.FirstName),
+                "Nombre del Tratamiento" => Appointments.OrderBy(a => a.Treatment.Name),
+                "Fecha de Cita" => Appointments.OrderBy(a => a.AppointmentDate),
                 _ => Appointments
             };
 
@@ -131,7 +131,7 @@ namespace DentalClinicWPF.ViewModels.Appointment
         {
             if (SelectedAppointment == null)
             {
-                MessageBox.Show("Please select an appointment to edit.", "No Selection", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Selecciona una cita para editar.", "Sin Selección", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
@@ -150,13 +150,13 @@ namespace DentalClinicWPF.ViewModels.Appointment
         {
             if (SelectedAppointment == null)
             {
-                MessageBox.Show("Please select an appointment to delete.", "No Selection", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Selecciona una cita para eliminar.", "Sin Selección", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
             var result = MessageBox.Show(
-                "Are you sure you want to delete this appointment?",
-                "Delete Confirmation",
+                "¿Seguro que quieres eliminar esta cita?",
+                "Confirmar Eliminación",
                 MessageBoxButton.YesNo,
                 MessageBoxImage.Warning);
 
@@ -167,11 +167,11 @@ namespace DentalClinicWPF.ViewModels.Appointment
                     _context.Appointment.Remove(SelectedAppointment);
                     _context.SaveChanges();
                     LoadAppointments();
-                    MessageBox.Show("Appointment deleted successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                    MessageBox.Show("¡Cita eliminada correctamente!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Error deleting appointment: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show($"Error al eliminar la cita: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }
