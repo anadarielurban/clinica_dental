@@ -35,8 +35,8 @@ namespace DentalClinicWPF.ViewModels.Employee
         // Właściwości do sortowania
         public ObservableCollection<string> SortOptions { get; } = new ObservableCollection<string>
         {
-            "First Name",
-            "Last Name",
+            "Nombre",
+            "Apellido",
             "Position"
         };
         public string SelectedSortOption { get; set; }
@@ -90,8 +90,8 @@ namespace DentalClinicWPF.ViewModels.Employee
 
             IEnumerable<Models.Employee> sortedEmployees = SelectedSortOption switch
             {
-                "First Name" => Employees.OrderBy(e => e.FirstName),
-                "Last Name" => Employees.OrderBy(e => e.LastName),
+                "Nombre" => Employees.OrderBy(e => e.FirstName),
+                "Apellido" => Employees.OrderBy(e => e.LastName),
                 "Position" => Employees.OrderBy(e => e.Position),
                 _ => Employees
             };

@@ -153,51 +153,51 @@ namespace DentalClinicWPF.ViewModels.Employee
             {
                 case nameof(FirstName):
                     if (string.IsNullOrWhiteSpace(FirstName))
-                        AddError(propertyName, "First Name is required.");
+                        AddError(propertyName, "El nombre es obligatorio.");
                     else if (FirstName.Length > 50)
-                        AddError(propertyName, "First Name cannot exceed 50 characters.");
+                        AddError(propertyName, "El nombre no puede superar 50 caracteres.");
                     else
                         ClearErrors(propertyName);
                     break;
 
                 case nameof(LastName):
                     if (string.IsNullOrWhiteSpace(LastName))
-                        AddError(propertyName, "Last Name is required.");
+                        AddError(propertyName, "El apellido es obligatorio.");
                     else if (LastName.Length > 50)
-                        AddError(propertyName, "Last Name cannot exceed 50 characters.");
+                        AddError(propertyName, "El apellido no puede superar 50 caracteres.");
                     else
                         ClearErrors(propertyName);
                     break;
 
                 case nameof(Position):
                     if (string.IsNullOrWhiteSpace(Position))
-                        AddError(propertyName, "Position is required.");
+                        AddError(propertyName, "El puesto es obligatorio.");
                     else
                         ClearErrors(propertyName);
                     break;
 
                 case nameof(PhoneNumber):
                     if (string.IsNullOrWhiteSpace(PhoneNumber))
-                        AddError(propertyName, "Phone Number is required.");
+                        AddError(propertyName, "El teléfono es obligatorio.");
                     else if (!Regex.IsMatch(PhoneNumber, @"^[\d\s\+\-\(\)]{7,}$"))
-                        AddError(propertyName, "Phone Number must contain at least 7 digits, spaces, +, -, (, ) are allowed.");
+                        AddError(propertyName, "El teléfono debe contener al menos 7 dígitos. Se permiten espacios, +, -, (, ).");
                     else
                         ClearErrors(propertyName);
                     break;
 
                 case nameof(Email):
                     if (string.IsNullOrWhiteSpace(Email))
-                        AddError(propertyName, "Email is required.");
+                        AddError(propertyName, "El correo es obligatorio.");
                     else if (!Regex.IsMatch(Email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
-                        AddError(propertyName, "Invalid Email Address.");
+                        AddError(propertyName, "Correo electrónico inválido.");
                     else
                         ClearErrors(propertyName);
                     break;
 
                 case nameof(DentistID):
                     // Jeśli pozycja to Dental Assistant, wymagamy wybrania dentysty (wartość > 0)
-                    if (Position.Equals("Dental Assistant", StringComparison.OrdinalIgnoreCase) && DentistID == 0)
-                        AddError(propertyName, "Dentist selection is required for Dental Assistant.");
+                    if (Position.Equals("Asistente Dental", StringComparison.OrdinalIgnoreCase) && DentistID == 0)
+                        AddError(propertyName, "La selección del dentista es obligatoria para Asistente Dental.");
                     else
                         ClearErrors(propertyName);
                     break;
@@ -213,15 +213,15 @@ namespace DentalClinicWPF.ViewModels.Employee
                    Regex.IsMatch(PhoneNumber, @"^[\d\s\+\-\(\)]{7,}$") &&
                    Regex.IsMatch(Email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$") &&
                    // Jeśli pozycja to Dental Assistant, wymagamy wyboru dentysty.
-                   (!Position.Equals("Dental Assistant", StringComparison.OrdinalIgnoreCase) || DentistID > 0);
+                   (!Position.Equals("Asistente Dental", StringComparison.OrdinalIgnoreCase) || DentistID > 0);
         }
 
         private void Save()
         {
             if (!CanSave())
             {
-                MessageBox.Show("Please fix validation errors before saving.",
-                                "Validation Error",
+                MessageBox.Show("Corrige los errores de validación antes de guardar.",
+                                "Error de Validación",
                                 MessageBoxButton.OK,
                                 MessageBoxImage.Warning);
                 return;
@@ -235,20 +235,20 @@ namespace DentalClinicWPF.ViewModels.Employee
                 OriginalEmployee.Position = Position;
                 OriginalEmployee.PhoneNumber = PhoneNumber;
                 OriginalEmployee.Email = Email;
-                OriginalEmployee.DentistID = Position.Equals("Dental Assistant", StringComparison.OrdinalIgnoreCase) ? DentistID : (int?)null;
+                OriginalEmployee.DentistID = Position.Equals("Asistente Dental", StringComparison.OrdinalIgnoreCase) ? DentistID : (int?)null;
 
                 _context.Employee.Update(OriginalEmployee);
                 _context.SaveChanges();
 
-                MessageBox.Show("Employee updated successfully!",
-                                "Success",
+                MessageBox.Show("¡Empleado actualizado correctamente!",
+                                "Éxito",
                                 MessageBoxButton.OK,
                                 MessageBoxImage.Information);
                 CloseWindow(true);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error while updating employee: {ex.Message}",
+                MessageBox.Show($"Error al actualizar el empleado: {ex.Message}",
                                 "Error",
                                 MessageBoxButton.OK,
                                 MessageBoxImage.Error);
@@ -265,8 +265,8 @@ namespace DentalClinicWPF.ViewModels.Employee
             try
             {
                 var result = MessageBox.Show(
-                    "Are you sure you want to delete this employee?",
-                    "Delete Confirmation",
+                    "¿Seguro que quieres eliminar este empleado?",
+                    "Confirmar Eliminación",
                     MessageBoxButton.YesNo,
                     MessageBoxImage.Warning);
 
@@ -275,13 +275,13 @@ namespace DentalClinicWPF.ViewModels.Employee
                     _context.Employee.Remove(OriginalEmployee);
                     _context.SaveChanges();
 
-                    MessageBox.Show("Employee deleted successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                    MessageBox.Show("¡Empleado eliminado correctamente!", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
                     CloseWindow(true);
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error while deleting employee: {ex.Message}",
+                MessageBox.Show($"Error al eliminar el empleado: {ex.Message}",
                                 "Error",
                                 MessageBoxButton.OK,
                                 MessageBoxImage.Error);
