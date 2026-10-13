@@ -136,7 +136,7 @@ namespace DentalClinicWPF.ViewModels.Appointment
             // Pobranie najnowszej wersji Appointment z bazy danych
             Appointment = _context.Appointment
                 .FirstOrDefault(a => a.AppointmentID == appointment.AppointmentID) 
-                ?? throw new ArgumentException("Appointment not found in the database.");
+                ?? throw new ArgumentException("Cita no encontrada en la base de datos.");
 
             // Inicjalizacja kolekcji
             Patients = new ObservableCollection<Models.Patient>(_context.Patient.ToList());
@@ -165,7 +165,7 @@ namespace DentalClinicWPF.ViewModels.Appointment
         {
             if (!CanSave())
             {
-                MessageBox.Show("Please fix validation errors before saving.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Corrige los errores de validación antes de guardar.", "Error de Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
@@ -184,12 +184,12 @@ namespace DentalClinicWPF.ViewModels.Appointment
                 _context.Appointment.Update(Appointment);
                 _context.SaveChanges();
 
-                MessageBox.Show("Appointment updated successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("¡Cita actualizada correctamente!", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
                 CloseWindow(true);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error while saving appointment: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error al guardar la cita: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -203,8 +203,8 @@ namespace DentalClinicWPF.ViewModels.Appointment
             try
             {
                 var result = MessageBox.Show(
-                    "Are you sure you want to delete this appointment?",
-                    "Delete Confirmation",
+                    "¿Seguro que quieres eliminar esta cita?",
+                    "Confirmar Eliminación",
                     MessageBoxButton.YesNo,
                     MessageBoxImage.Warning);
 
@@ -213,13 +213,13 @@ namespace DentalClinicWPF.ViewModels.Appointment
                     _context.Appointment.Remove(Appointment);
                     _context.SaveChanges();
 
-                    MessageBox.Show("Appointment deleted successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                    MessageBox.Show("¡Cita eliminada correctamente!", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
                     CloseWindow(true);
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error while deleting appointment: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error al eliminar la cita: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -245,28 +245,28 @@ namespace DentalClinicWPF.ViewModels.Appointment
             {
                 case nameof(PatientID):
                     if (PatientID == 0)
-                        AddError(propertyName, "Patient is required.");
+                        AddError(propertyName, "El paciente es obligatorio.");
                     else
                         ClearErrors(propertyName);
                     break;
 
                 case nameof(DentistID):
                     if (DentistID == 0)
-                        AddError(propertyName, "Dentist is required.");
+                        AddError(propertyName, "El dentista es obligatorio.");
                     else
                         ClearErrors(propertyName);
                     break;
 
                 case nameof(TreatmentID):
                     if (TreatmentID == 0)
-                        AddError(propertyName, "Treatment is required.");
+                        AddError(propertyName, "El tratamiento es obligatorio.");
                     else
                         ClearErrors(propertyName);
                     break;
 
                 case nameof(AppointmentDate):
                     if (AppointmentDate.Date < DateTime.Today)
-                        AddError(propertyName, "Appointment date cannot be in the past.");
+                        AddError(propertyName, "La fecha de la cita no puede ser en el pasado.");
                     else
                         ClearErrors(propertyName);
                     break;
@@ -278,7 +278,7 @@ namespace DentalClinicWPF.ViewModels.Appointment
 
                 case nameof(Notes):
                     if (string.IsNullOrWhiteSpace(Notes))
-                        AddError(propertyName, "Notes are required.");
+                        AddError(propertyName, "Las notas son obligatorias.");
                     else
                         ClearErrors(propertyName);
                     break;
@@ -291,11 +291,11 @@ namespace DentalClinicWPF.ViewModels.Appointment
 
             if (!TimeSpan.TryParse(time, out var parsedTime))
             {
-                AddError(propertyName, "Invalid time format. Use HH:mm.");
+                AddError(propertyName, "Formato de hora inválido. Use HH:mm.");
             }
             else if (parsedTime < TimeSpan.FromHours(9) || parsedTime > TimeSpan.FromHours(18))
             {
-                AddError(propertyName, "Time must be between 09:00 and 18:00.");
+                AddError(propertyName, "La hora debe estar entre 09:00 y 18:00.");
             }
             else
             {
@@ -307,7 +307,7 @@ namespace DentalClinicWPF.ViewModels.Appointment
             {
                 if (start >= end)
                 {
-                    AddError(nameof(StartTime), "Start time must be earlier than end time.");
+                    AddError(nameof(StartTime), "La hora de inicio debe ser anterior a la hora de fin.");
                 }
                 else
                 {

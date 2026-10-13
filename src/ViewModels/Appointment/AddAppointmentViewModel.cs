@@ -141,22 +141,22 @@ namespace DentalClinicWPF.ViewModels.Appointment
             {
                 case nameof(PatientID):
                     if (PatientID == 0)
-                        AddError(propertyName, "Patient is required.");
+                        AddError(propertyName, "El paciente es obligatorio.");
                     break;
 
                 case nameof(DentistID):
                     if (DentistID == 0)
-                        AddError(propertyName, "Dentist is required.");
+                        AddError(propertyName, "El dentista es obligatorio.");
                     break;
 
                 case nameof(TreatmentID):
                     if (TreatmentID == 0)
-                        AddError(propertyName, "Treatment is required.");
+                        AddError(propertyName, "El tratamiento es obligatorio.");
                     break;
 
                 case nameof(AppointmentDate):
                     if (AppointmentDate.Date < DateTime.Today)
-                        AddError(propertyName, "Appointment date cannot be in the past.");
+                        AddError(propertyName, "La fecha de la cita no puede ser en el pasado.");
                     break;
 
                 case nameof(StartTime):
@@ -166,7 +166,7 @@ namespace DentalClinicWPF.ViewModels.Appointment
 
                 case nameof(Notes):
                     if (string.IsNullOrWhiteSpace(Notes))
-                        AddError(propertyName, "Notes are required.");
+                        AddError(propertyName, "Las notas son obligatorias.");
                     break;
             }
         }
@@ -176,12 +176,12 @@ namespace DentalClinicWPF.ViewModels.Appointment
             var time = propertyName == nameof(StartTime) ? StartTime : EndTime;
 
             if (!TimeSpan.TryParse(time, out var parsedTime))
-                AddError(propertyName, "Invalid time format. Use HH:mm.");
+                AddError(propertyName, "Formato de hora inválido. Use HH:mm.");
             else if (parsedTime < TimeSpan.FromHours(9) || parsedTime > TimeSpan.FromHours(18))
-                AddError(propertyName, "Time must be between 09:00 and 18:00.");
+                AddError(propertyName, "La hora debe estar entre 09:00 y 18:00.");
 
             if (TimeSpan.TryParse(StartTime, out var start) && TimeSpan.TryParse(EndTime, out var end) && start >= end)
-                AddError(nameof(StartTime), "Start time must be earlier than end time.");
+                AddError(nameof(StartTime), "La hora de inicio debe ser anterior a la hora de fin.");
         }
 
         private bool CanSave()
@@ -200,7 +200,7 @@ namespace DentalClinicWPF.ViewModels.Appointment
         {
             if (!CanSave())
             {
-                MessageBox.Show("Please fix validation errors before saving.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Corrige los errores de validación antes de guardar.", "Error de Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
@@ -220,12 +220,12 @@ namespace DentalClinicWPF.ViewModels.Appointment
                 _context.Appointment.Add(appointment);
                 _context.SaveChanges();
 
-                MessageBox.Show("Appointment added successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("¡Cita agregada correctamente!", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
                 CloseWindow(true);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error while saving appointment: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error al guardar la cita: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
