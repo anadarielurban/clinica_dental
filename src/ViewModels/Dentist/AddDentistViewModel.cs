@@ -128,7 +128,7 @@ namespace DentalClinicWPF.ViewModels.Dentist
         {
             if (!CanSave())
             {
-                MessageBox.Show("Please fix the validation errors before saving.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Corrige los errores de validación antes de guardar.", "Error de Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
@@ -147,12 +147,12 @@ namespace DentalClinicWPF.ViewModels.Dentist
                 _context.Dentist.Add(dentist);
                 _context.SaveChanges();
 
-                MessageBox.Show("Dentist added successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("¡Dentista agregado correctamente!", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
                 CloseWindow(true);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error while saving dentist: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error al guardar el dentista: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -166,36 +166,36 @@ namespace DentalClinicWPF.ViewModels.Dentist
             {
                 case nameof(FirstName):
                     if (string.IsNullOrWhiteSpace(FirstName))
-                        AddError(propertyName, "First Name is required.");
+                        AddError(propertyName, "El nombre es obligatorio.");
                     else if (FirstName.Length > 50)
-                        AddError(propertyName, "First Name cannot exceed 50 characters.");
+                        AddError(propertyName, "El nombre no puede superar 50 caracteres.");
                     break;
 
                 case nameof(LastName):
                     if (string.IsNullOrWhiteSpace(LastName))
-                        AddError(propertyName, "Last Name is required.");
+                        AddError(propertyName, "El apellido es obligatorio.");
                     else if (LastName.Length > 50)
-                        AddError(propertyName, "Last Name cannot exceed 50 characters.");
+                        AddError(propertyName, "El apellido no puede superar 50 caracteres.");
                     break;
 
                 case nameof(Specialization):
                     if (string.IsNullOrWhiteSpace(Specialization))
-                        AddError(propertyName, "Specialization is required.");
+                        AddError(propertyName, "La especialización es obligatoria.");
                     break;
 
                 case nameof(PhoneNumber):
                     if (!Regex.IsMatch(PhoneNumber, @"^[\d\s\+\-\(\)]{7,}$"))
-                        AddError(propertyName, "Phone Number must contain at least 7 digits, spaces, +, -, (, ) are allowed.");
+                        AddError(propertyName, "El teléfono debe contener al menos 7 dígitos. Se permiten espacios, +, -, (, ).");
                     break;
 
                 case nameof(Email):
                     if (!string.IsNullOrWhiteSpace(Email) && !Regex.IsMatch(Email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
-                        AddError(propertyName, "Invalid email format.");
+                        AddError(propertyName, "Formato de correo inválido.");
                     break;
 
                 case nameof(RoomID):
                     if (RoomID == 0)
-                        AddError(propertyName, "Please select a room.");
+                        AddError(propertyName, "Selecciona un consultorio.");
                     break;
             }
         }

@@ -17,11 +17,11 @@
         <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,10">
             <TextBox Width="300" 
                      Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" 
-                     ToolTip="Search by Patient or Dentist Name" />
-            <Button Content="Search" Command="{Binding SearchCommand}" Margin="10,0,0,0" Width="100" />
-            <Button Content="Reload" Command="{Binding ReloadTreatmentPlansCommand}" Margin="10,0,0,0" Width="100" />
-            <Button Content="Add Treatment Plan" Command="{Binding AddTreatmentPlanCommand}" Width="150" Margin="10,0,0,0" />
-            <Button Content="Edit Treatment Plan" Command="{Binding EditTreatmentPlanCommand}" 
+                     ToolTip="Buscar por paciente o dentista" />
+            <Button Content="Buscar" Command="{Binding SearchCommand}" Margin="10,0,0,0" Width="100" />
+            <Button Content="Recargar" Command="{Binding ReloadTreatmentPlansCommand}" Margin="10,0,0,0" Width="100" />
+            <Button Content="Agregar Plan de Tratamiento" Command="{Binding AddTreatmentPlanCommand}" Width="150" Margin="10,0,0,0" />
+            <Button Content="Editar Plan de Tratamiento" Command="{Binding EditTreatmentPlanCommand}" 
                     Width="150" Margin="10,0,0,0" 
                     IsEnabled="{Binding SelectedTreatmentPlan, Converter={StaticResource NullToBoolConverter}}" />
         </StackPanel>
@@ -30,18 +30,18 @@
         <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="0,0,0,10">
             <ComboBox Width="150" ItemsSource="{Binding SortOptions}" 
                       SelectedItem="{Binding SelectedSortOption}" 
-                      ToolTip="Select sorting criterion" />
-            <Button Content="Sort" Command="{Binding SortCommand}" Width="100" />
+                      ToolTip="Seleccionar criterio de ordenamiento" />
+            <Button Content="Ordenar" Command="{Binding SortCommand}" Width="100" />
         </StackPanel>
 
         <!-- Treatment Plan List -->
         <DataGrid Grid.Row="2" ItemsSource="{Binding TreatmentPlans}" AutoGenerateColumns="False"
                   SelectedItem="{Binding SelectedTreatmentPlan, Mode=TwoWay}" IsReadOnly="True" SelectionMode="Single">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Patient" Binding="{Binding Patient.DisplayInfo}" Width="*" />
-                <DataGridTextColumn Header="Dentist" Binding="{Binding Dentist.DisplayInfo}" Width="*" />
-                <DataGridTextColumn Header="Creation Date" Binding="{Binding CreationDate, StringFormat=d}" Width="150" />
-                <DataGridTextColumn Header="Details" Binding="{Binding Details}" Width="2*" />
+                <DataGridTextColumn Header="Paciente" Binding="{Binding Patient.DisplayInfo}" Width="*" />
+                <DataGridTextColumn Header="Dentista" Binding="{Binding Dentist.DisplayInfo}" Width="*" />
+                <DataGridTextColumn Header="Fecha de Creación" Binding="{Binding CreationDate, StringFormat=d}" Width="150" />
+                <DataGridTextColumn Header="Detalles" Binding="{Binding Details}" Width="2*" />
             </DataGrid.Columns>
         </DataGrid>
     </Grid>

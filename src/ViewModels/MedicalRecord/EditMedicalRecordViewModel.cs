@@ -42,7 +42,7 @@ namespace DentalClinicWPF.ViewModels.MedicalRecord
         {
             if (MedicalRecord.PatientID == 0 || MedicalRecord.DentistID == 0)
             {
-                MessageBox.Show("Please select both a patient and a dentist.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Selecciona un paciente y un dentista.", "Error de Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
@@ -51,12 +51,12 @@ namespace DentalClinicWPF.ViewModels.MedicalRecord
                 _context.MedicalRecord.Update(MedicalRecord);
                 _context.SaveChanges();
 
-                MessageBox.Show("Medical record updated successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Expediente actualizado correctamente.", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
                 CloseWindow(true);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error updating medical record: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error al actualizar el expediente: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -79,14 +79,14 @@ namespace DentalClinicWPF.ViewModels.MedicalRecord
         {
             var openFileDialog = new OpenFileDialog
             {
-                Title = "Select Attachment",
-                Filter = "All Files (*.*)|*.*"
+                Title = "Seleccionar Adjunto",
+                Filter = "Todos los Archivos (*.*)|*.*"
             };
 
             if (openFileDialog.ShowDialog() == true)
             {
                 MedicalRecord.Attachments = System.IO.File.ReadAllBytes(openFileDialog.FileName);
-                MessageBox.Show("Attachment uploaded successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Adjunto subido correctamente.", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
 
@@ -94,7 +94,7 @@ namespace DentalClinicWPF.ViewModels.MedicalRecord
         {
             if (MedicalRecord.Attachments == null || MedicalRecord.Attachments.Length == 0)
             {
-                MessageBox.Show("No attachment available for this record.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("No hay adjunto disponible para este registro.", "Información", MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
             }
 
@@ -111,7 +111,7 @@ namespace DentalClinicWPF.ViewModels.MedicalRecord
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error opening attachment: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error al abrir el adjunto: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }

@@ -46,7 +46,7 @@ namespace DentalClinicWPF.ViewModels.MedicalRecord
         {
             if (MedicalRecord.PatientID == 0 || MedicalRecord.DentistID == 0)
             {
-                MessageBox.Show("Please select both a patient and a dentist.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Selecciona un paciente y un dentista.", "Error de Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
@@ -55,12 +55,12 @@ namespace DentalClinicWPF.ViewModels.MedicalRecord
                 _context.MedicalRecord.Add(MedicalRecord);
                 _context.SaveChanges();
 
-                MessageBox.Show("Medical record saved successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Expediente guardado correctamente.", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
                 CloseWindow(true);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error saving medical record: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error al guardar el expediente: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -83,14 +83,14 @@ namespace DentalClinicWPF.ViewModels.MedicalRecord
         {
             var openFileDialog = new OpenFileDialog
             {
-                Title = "Select Attachment",
-                Filter = "All Files (*.*)|*.*"
+                Title = "Seleccionar Adjunto",
+                Filter = "Todos los Archivos (*.*)|*.*"
             };
 
             if (openFileDialog.ShowDialog() == true)
             {
                 MedicalRecord.Attachments = System.IO.File.ReadAllBytes(openFileDialog.FileName);
-                MessageBox.Show("Attachment uploaded successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Adjunto subido correctamente.", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
     }

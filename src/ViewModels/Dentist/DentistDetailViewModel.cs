@@ -128,7 +128,7 @@ namespace DentalClinicWPF.ViewModels.Dentist
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error loading appointments: {ex.Message}",
+                MessageBox.Show($"Error al cargar las citas: {ex.Message}",
                                 "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
@@ -150,14 +150,14 @@ namespace DentalClinicWPF.ViewModels.Dentist
         {
             if (appointment == null) return;
 
-            string msg = $"Appointment details:\n" +
+            string msg = $"Detalles de la cita:\n" +
                          $"Patient: {appointment.Patient?.FullName}\n" +
                          $"Procedure: {appointment.Treatment?.Name}\n" +
                          $"Date: {appointment.AppointmentDate:dd/MM/yyyy}\n" +
                          $"Time: {appointment.StartTime:HH\\:mm} - {appointment.EndTime:HH\\:mm}\n" +
                          $"Notes: {appointment.Notes}\n";
 
-            MessageBox.Show(msg, "Appointment Details",
+            MessageBox.Show(msg, "Detalles de la Cita",
                             MessageBoxButton.OK, MessageBoxImage.Information);
         }
     }

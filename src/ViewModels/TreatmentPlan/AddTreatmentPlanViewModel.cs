@@ -39,13 +39,13 @@ namespace DentalClinicWPF.ViewModels.TreatmentPlan
             {
                 if (TreatmentPlan.PatientID == 0 || TreatmentPlan.DentistID == 0)
                 {
-                    MessageBox.Show("Please select both a patient and a dentist.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show("Selecciona un paciente y un dentista.", "Error de Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
 
                 _context.TreatmentPlan.Add(TreatmentPlan);
                 _context.SaveChanges();
-                MessageBox.Show("Treatment Plan added successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("¡Plan de tratamiento agregado correctamente!", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
                 CloseWindow();
             }
             catch (Exception ex)

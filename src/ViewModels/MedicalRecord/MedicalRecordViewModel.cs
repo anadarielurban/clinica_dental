@@ -44,10 +44,10 @@ namespace DentalClinicWPF.ViewModels.MedicalRecord
         // Właściwości do sortowania
         public ObservableCollection<string> SortOptions { get; } = new ObservableCollection<string>
         {
-            "Record ID",
-            "Patient",
-            "Dentist",
-            "Date"
+            "ID Registro",
+            "Paciente",
+            "Dentista",
+            "Fecha"
         };
         public string SelectedSortOption { get; set; }
         public ICommand SortCommand { get; }
@@ -87,18 +87,18 @@ namespace DentalClinicWPF.ViewModels.MedicalRecord
                         Patient = mr.Patient ?? new Models.Patient
                         {
                             FirstName = "Unknown",
-                            LastName = "Patient",
+                            LastName = "Paciente",
                             DateOfBirth = DateTime.MinValue
                         },
                         DentistID = mr.DentistID,
                         Dentist = mr.Dentist ?? new Models.Dentist
                         {
                             FirstName = "Unknown",
-                            LastName = "Dentist",
+                            LastName = "Dentista",
                             Specialization = "N/A"
                         },
                         Date = mr.Date,
-                        Notes = string.IsNullOrEmpty(mr.Notes) ? "No notes available" : mr.Notes,
+                        Notes = string.IsNullOrEmpty(mr.Notes) ? "Sin notas disponibles" : mr.Notes,
                         Attachments = mr.Attachments ?? Array.Empty<byte>()
                     })
                 );
@@ -107,7 +107,7 @@ namespace DentalClinicWPF.ViewModels.MedicalRecord
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error loading medical records: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error al cargar los expedientes: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -118,12 +118,12 @@ namespace DentalClinicWPF.ViewModels.MedicalRecord
 
             IEnumerable<Models.MedicalRecord> sortedRecords = SelectedSortOption switch
             {
-                "Record ID" => MedicalRecords.OrderBy(mr => mr.RecordID),
-                "Patient" => MedicalRecords.OrderBy(mr => mr.Patient.LastName)
+                "ID Registro" => MedicalRecords.OrderBy(mr => mr.RecordID),
+                "Paciente" => MedicalRecords.OrderBy(mr => mr.Patient.LastName)
                                            .ThenBy(mr => mr.Patient.FirstName),
-                "Dentist" => MedicalRecords.OrderBy(mr => mr.Dentist.LastName)
+                "Dentista" => MedicalRecords.OrderBy(mr => mr.Dentist.LastName)
                                            .ThenBy(mr => mr.Dentist.FirstName),
-                "Date" => MedicalRecords.OrderBy(mr => mr.Date),
+                "Fecha" => MedicalRecords.OrderBy(mr => mr.Date),
                 _ => MedicalRecords
             };
 
@@ -189,11 +189,11 @@ namespace DentalClinicWPF.ViewModels.MedicalRecord
                     Patient = mr.Patient ?? new Models.Patient
                     {
                         FirstName = "Unknown",
-                        LastName = "Patient",
+                        LastName = "Paciente",
                         DateOfBirth = DateTime.MinValue
                     },
                     Date = mr.Date,
-                    Notes = mr.Notes ?? "No notes available",
+                    Notes = mr.Notes ?? "Sin notas disponibles",
                     Attachments = mr.Attachments ?? Array.Empty<byte>()
                 }));
 
@@ -201,7 +201,7 @@ namespace DentalClinicWPF.ViewModels.MedicalRecord
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error during search: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error durante la búsqueda: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }

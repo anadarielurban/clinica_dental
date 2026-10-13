@@ -52,7 +52,7 @@ namespace DentalClinicWPF.ViewModels.TreatmentPlan
             {
                 if (TreatmentPlan.PatientID == 0 || TreatmentPlan.DentistID == 0)
                 {
-                    MessageBox.Show("Please select both a patient and a dentist.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show("Selecciona un paciente y un dentista.", "Error de Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
 
@@ -64,20 +64,20 @@ namespace DentalClinicWPF.ViewModels.TreatmentPlan
                 _context.TreatmentPlan.Update(OriginalTreatmentPlan);
                 _context.SaveChanges();
 
-                MessageBox.Show("Treatment Plan updated successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("¡Plan de tratamiento actualizado!", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
                 CloseWindow(true);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error while saving treatment plan: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error al guardar el plan: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
         private void Delete()
         {
             var result = MessageBox.Show(
-                "Are you sure you want to delete this treatment plan? This action cannot be undone.",
-                "Confirm Delete",
+                "¿Seguro que quieres eliminar este plan de tratamiento? Esta acción no se puede deshacer.",
+                "Confirmar Eliminación",
                 MessageBoxButton.YesNo,
                 MessageBoxImage.Warning);
 
@@ -88,12 +88,12 @@ namespace DentalClinicWPF.ViewModels.TreatmentPlan
                     _context.TreatmentPlan.Remove(OriginalTreatmentPlan);
                     _context.SaveChanges();
 
-                    MessageBox.Show("Treatment Plan deleted successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                    MessageBox.Show("¡Plan de tratamiento eliminado!", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
                     CloseWindow(true);
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Error while deleting treatment plan: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show($"Error al eliminar el plan: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }

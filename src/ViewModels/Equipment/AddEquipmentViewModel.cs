@@ -67,24 +67,24 @@ namespace DentalClinicWPF.ViewModels.Equipment
             {
                 case nameof(Equipment.Name):
                     if (string.IsNullOrWhiteSpace(Equipment.Name))
-                        AddError(propertyName, "Name is required.");
+                        AddError(propertyName, "El nombre es obligatorio.");
                     break;
                 case nameof(Equipment.Model):
                     if (string.IsNullOrWhiteSpace(Equipment.Model))
-                        AddError(propertyName, "Model is required.");
+                        AddError(propertyName, "El modelo es obligatorio.");
                     break;
                 case nameof(Equipment.SerialNumber):
                     if (!string.IsNullOrWhiteSpace(Equipment.SerialNumber) &&
                         !Regex.IsMatch(Equipment.SerialNumber, @"^[a-zA-Z0-9-]+$"))
-                        AddError(propertyName, "Serial Number must contain only alphanumeric characters or dashes.");
+                        AddError(propertyName, "El número de serie solo puede contener caracteres alfanuméricos o guiones.");
                     break;
                 case nameof(Equipment.PurchaseDate):
                     if (Equipment.PurchaseDate > DateTime.Now)
-                        AddError(propertyName, "Purchase Date cannot be in the future.");
+                        AddError(propertyName, "La fecha de compra no puede ser futura.");
                     break;
                 case nameof(Equipment.LastServiceDate):
                     if (Equipment.LastServiceDate > DateTime.Now)
-                        AddError(propertyName, "Last Service Date cannot be in the future.");
+                        AddError(propertyName, "La fecha del último servicio no puede ser futura.");
                     break;
             }
 
@@ -106,7 +106,7 @@ namespace DentalClinicWPF.ViewModels.Equipment
         {
             if (HasErrors)
             {
-                MessageBox.Show("Please fix validation errors before saving.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Corrige los errores de validación antes de guardar.", "Error de Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
@@ -117,12 +117,12 @@ namespace DentalClinicWPF.ViewModels.Equipment
                 _context.Equipment.Add(Equipment);
                 _context.SaveChanges();
 
-                MessageBox.Show("Equipment added successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("¡Equipo agregado correctamente!", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
                 CloseWindow();
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error while saving equipment: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error al guardar el equipo: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

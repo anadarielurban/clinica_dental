@@ -36,9 +36,9 @@ namespace DentalClinicWPF.ViewModels.Equipment
         {
             "Name",
             "Model",
-            "Serial Number",
-            "Purchase Date",
-            "Last Service Date"
+            "Número de Serie",
+            "Fecha de Compra",
+            "Último Servicio"
         };
         public string SelectedSortOption { get; set; }
         public ICommand SortCommand { get; }
@@ -81,7 +81,7 @@ namespace DentalClinicWPF.ViewModels.Equipment
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error loading equipment: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error al cargar los equipos: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -104,7 +104,7 @@ namespace DentalClinicWPF.ViewModels.Equipment
         {
             if (SelectedEquipment == null)
             {
-                MessageBox.Show("Please select equipment to edit.", "No Selection", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Selecciona un equipo para editar.", "Sin Selección", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
@@ -130,9 +130,9 @@ namespace DentalClinicWPF.ViewModels.Equipment
             {
                 "Name" => EquipmentList.OrderBy(e => e.Name),
                 "Model" => EquipmentList.OrderBy(e => e.Model),
-                "Serial Number" => EquipmentList.OrderBy(e => e.SerialNumber),
-                "Purchase Date" => EquipmentList.OrderBy(e => e.PurchaseDate),
-                "Last Service Date" => EquipmentList.OrderBy(e => e.LastServiceDate),
+                "Número de Serie" => EquipmentList.OrderBy(e => e.SerialNumber),
+                "Fecha de Compra" => EquipmentList.OrderBy(e => e.PurchaseDate),
+                "Último Servicio" => EquipmentList.OrderBy(e => e.LastServiceDate),
                 _ => EquipmentList
             };
 

@@ -167,7 +167,7 @@ namespace DentalClinicWPF.ViewModels.Appointment
                     _context.Appointment.Remove(SelectedAppointment);
                     _context.SaveChanges();
                     LoadAppointments();
-                    MessageBox.Show("¡Cita eliminada correctamente!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                    MessageBox.Show("¡Cita eliminada correctamente!", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 catch (Exception ex)
                 {

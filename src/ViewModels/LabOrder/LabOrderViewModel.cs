@@ -35,9 +35,9 @@ namespace DentalClinicWPF.ViewModels.LabOrder
         // Właściwości do sortowania
         public ObservableCollection<string> SortOptions { get; } = new ObservableCollection<string>
         {
-            "Patient",
-            "Dentist",
-            "Order Date",
+            "Paciente",
+            "Dentista",
+            "Fecha de Orden",
             "Status"
         };
         public string SelectedSortOption { get; set; }
@@ -73,7 +73,7 @@ namespace DentalClinicWPF.ViewModels.LabOrder
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error loading lab orders: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error al cargar las órdenes: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -125,7 +125,7 @@ namespace DentalClinicWPF.ViewModels.LabOrder
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error during search: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error durante la búsqueda: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -136,9 +136,9 @@ namespace DentalClinicWPF.ViewModels.LabOrder
 
             IEnumerable<Models.LabOrder> sortedOrders = SelectedSortOption switch
             {
-                "Patient" => LabOrders.OrderBy(lo => lo.Patient.LastName).ThenBy(lo => lo.Patient.FirstName),
-                "Dentist" => LabOrders.OrderBy(lo => lo.Dentist.LastName).ThenBy(lo => lo.Dentist.FirstName),
-                "Order Date" => LabOrders.OrderBy(lo => lo.OrderDate),
+                "Paciente" => LabOrders.OrderBy(lo => lo.Patient.LastName).ThenBy(lo => lo.Patient.FirstName),
+                "Dentista" => LabOrders.OrderBy(lo => lo.Dentist.LastName).ThenBy(lo => lo.Dentist.FirstName),
+                "Fecha de Orden" => LabOrders.OrderBy(lo => lo.OrderDate),
                 "Status" => LabOrders.OrderBy(lo => lo.Status),
                 _ => LabOrders
             };
