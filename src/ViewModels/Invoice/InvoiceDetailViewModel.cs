@@ -55,7 +55,7 @@ namespace DentalClinicWPF.ViewModels.Invoice
                     FontSize = 16,
                     FontWeight = FontWeights.Bold
                 };
-                headerParagraph.Inlines.Add("Dental Clinic XYZ\n");
+                headerParagraph.Inlines.Add("Clínica Dental XYZ\n");
                 headerParagraph.Inlines.Add(new Run("123 Main Street, City, Country\n")
                 {
                     FontWeight = FontWeights.Normal,
@@ -81,19 +81,19 @@ namespace DentalClinicWPF.ViewModels.Invoice
                     TextAlignment = TextAlignment.Center,
                     Margin = new Thickness(0, 20, 0, 20)
                 };
-                titleParagraph.Inlines.Add("Invoice Preview");
+                titleParagraph.Inlines.Add("Vista Previa de Factura");
                 doc.Blocks.Add(titleParagraph);
 
                 // (4) Invoice details
                 var infoParagraph = new Paragraph();
-                infoParagraph.Inlines.Add(new Run($"Invoice ID: {Invoice.InvoiceID}\n"));
+                infoParagraph.Inlines.Add(new Run($"ID de Factura: {Invoice.InvoiceID}\n"));
                 infoParagraph.Inlines.Add(new Run($"Patient: {Invoice.Appointment.Patient.DisplayInfo}\n"));
                 infoParagraph.Inlines.Add(new Run($"Dentist: {Invoice.Appointment.Dentist.DisplayInfo}\n"));
                 infoParagraph.Inlines.Add(new Run($"Treatment: {Invoice.Appointment.Treatment.Name}\n"));
-                infoParagraph.Inlines.Add(new Run($"Appointment Date: {Invoice.Appointment.AppointmentDate:yyyy-MM-dd}\n"));
-                infoParagraph.Inlines.Add(new Run($"Total Amount: {Invoice.TotalAmount:C}\n"));
+                infoParagraph.Inlines.Add(new Run($"Fecha de Cita: {Invoice.Appointment.AppointmentDate:yyyy-MM-dd}\n"));
+                infoParagraph.Inlines.Add(new Run($"Monto Total: {Invoice.TotalAmount:C}\n"));
                 infoParagraph.Inlines.Add(new Run($"Paid: {(Invoice.IsPaid ? "Yes" : "No")}\n"));
-                infoParagraph.Inlines.Add(new Run($"Bank Number: {BankNumber}\n"));
+                infoParagraph.Inlines.Add(new Run($"Número de Cuenta: {BankNumber}\n"));
                 doc.Blocks.Add(infoParagraph);
 
                 // (5) Signatures (clinic + client) – lines
@@ -116,7 +116,7 @@ namespace DentalClinicWPF.ViewModels.Invoice
                     FontStyle = FontStyles.Italic
                 };
                 disclaimerParagraph.Inlines.Add(
-                    "Please review the invoice details carefully. Contact the clinic if you have any questions."
+                    "Revisa los detalles de la factura. Contacta a la clínica si tienes alguna pregunta."
                 );
                 doc.Blocks.Add(disclaimerParagraph);
 
@@ -126,13 +126,13 @@ namespace DentalClinicWPF.ViewModels.Invoice
                 if (printResult == true)
                 {
                     IDocumentPaginatorSource idpSource = doc;
-                    printDialog.PrintDocument(idpSource.DocumentPaginator, "Printing Invoice");
+                    printDialog.PrintDocument(idpSource.DocumentPaginator, "Imprimiendo Factura");
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"An error occurred while printing:\n{ex.Message}",
-                                "Print Error",
+                MessageBox.Show($"Ocurrió un error al imprimir:\n{ex.Message}",
+                                "Error de Impresión",
                                 MessageBoxButton.OK,
                                 MessageBoxImage.Error);
             }
@@ -146,7 +146,7 @@ namespace DentalClinicWPF.ViewModels.Invoice
                 {
                     FileName = $"Invoice_{Invoice.InvoiceID}",
                     DefaultExt = ".pdf",
-                    Filter = "PDF Documents (.pdf)|*.pdf"
+                    Filter = "Documentos PDF (.pdf)|*.pdf"
                 };
 
                 bool? result = saveFileDialog.ShowDialog();
@@ -156,7 +156,7 @@ namespace DentalClinicWPF.ViewModels.Invoice
 
                 using (var pdfDocument = new PdfDocument())
                 {
-                    pdfDocument.Info.Title = "Invoice Export";
+                    pdfDocument.Info.Title = "Exportar Factura";
                     var page = pdfDocument.AddPage();
                     var gfx = XGraphics.FromPdfPage(page);
 
@@ -181,7 +181,7 @@ namespace DentalClinicWPF.ViewModels.Invoice
                     // ----------------------------------
                     // (3) Invoice title
                     // ----------------------------------
-                    gfx.DrawString("Invoice Details", fontTitle, XBrushes.Black,
+                    gfx.DrawString("Detalles de la Factura", fontTitle, XBrushes.Black,
                         new XRect(xPos, yPos, page.Width - 2 * xPos, 40),
                         PdfSharpCore.Drawing.XStringFormats.TopCenter);
                     yPos += 50;
@@ -189,7 +189,7 @@ namespace DentalClinicWPF.ViewModels.Invoice
                     // ----------------------------------
                     // (4) Invoice details
                     // ----------------------------------
-                    gfx.DrawString("Invoice ID:", fontBold, XBrushes.Black, xPos, yPos);
+                    gfx.DrawString("ID de Factura:", fontBold, XBrushes.Black, xPos, yPos);
                     gfx.DrawString($"{Invoice.InvoiceID}", fontRegular, XBrushes.Black, xPos + 150, yPos);
                     yPos += lineSpacing;
 
@@ -205,11 +205,11 @@ namespace DentalClinicWPF.ViewModels.Invoice
                     gfx.DrawString($"{Invoice.Appointment.Treatment.Name}", fontRegular, XBrushes.Black, xPos + 150, yPos);
                     yPos += lineSpacing;
 
-                    gfx.DrawString("Total Amount:", fontBold, XBrushes.Black, xPos, yPos);
+                    gfx.DrawString("Monto Total:", fontBold, XBrushes.Black, xPos, yPos);
                     gfx.DrawString($"{Invoice.TotalAmount:C}", fontRegular, XBrushes.Black, xPos + 150, yPos);
                     yPos += lineSpacing;
 
-                    gfx.DrawString("Bank Number:", fontBold, XBrushes.Black, xPos, yPos);
+                    gfx.DrawString("Número de Cuenta:", fontBold, XBrushes.Black, xPos, yPos);
                     gfx.DrawString($"{BankNumber}", fontRegular, XBrushes.Black, xPos + 150, yPos);
                     yPos += (lineSpacing * 2);
 
@@ -228,14 +228,14 @@ namespace DentalClinicWPF.ViewModels.Invoice
                     try
                     {
                         pdfDocument.Save(fileName);
-                        MessageBox.Show($"PDF exported successfully:\n{fileName}",
-                                        "Export to PDF",
+                        MessageBox.Show($"PDF exportado correctamente:\n{fileName}",
+                                        "Exportar a PDF",
                                         MessageBoxButton.OK,
                                         MessageBoxImage.Information);
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show($"Error saving PDF:\n{ex.Message}",
+                        MessageBox.Show($"Error al guardar el PDF:\n{ex.Message}",
                                         "Error",
                                         MessageBoxButton.OK,
                                         MessageBoxImage.Error);
@@ -244,8 +244,8 @@ namespace DentalClinicWPF.ViewModels.Invoice
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"An error occurred while exporting to PDF:\n{ex.Message}",
-                                "Export PDF Error",
+                MessageBox.Show($"Ocurrió un error al exportar a PDF:\n{ex.Message}",
+                                "Error al Exportar PDF",
                                 MessageBoxButton.OK,
                                 MessageBoxImage.Error);
             }
@@ -260,8 +260,8 @@ namespace DentalClinicWPF.ViewModels.Invoice
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"An error occurred while opening the preview window:\n{ex.Message}",
-                                "Preview Error",
+                MessageBox.Show($"Ocurrió un error al abrir la vista previa:\n{ex.Message}",
+                                "Error de Vista Previa",
                                 MessageBoxButton.OK,
                                 MessageBoxImage.Error);
             }

@@ -48,19 +48,19 @@ namespace DentalClinicWPF.ViewModels.Invoice
             {
                 if (!IsInvoiceDataValid())
                 {
-                    MessageBox.Show("Please select an appointment and provide a valid amount.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show("Selecciona una cita y proporciona un monto válido.", "Error de Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
 
                 _context.Invoice.Add(Invoice);
                 _context.SaveChanges();
 
-                MessageBox.Show("Invoice created successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("¡Factura creada correctamente!", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
                 CloseWindow(true);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error while creating invoice: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error al crear la factura: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -86,13 +86,13 @@ namespace DentalClinicWPF.ViewModels.Invoice
         {
             if (Invoice.AppointmentID == 0)
             {
-                MessageBox.Show("Please select an Appointment.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Selecciona una cita.", "Error de Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return false;
             }
 
             if (Invoice.TotalAmount <= 0)
             {
-                MessageBox.Show("Total Amount must be greater than zero.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("El monto total debe ser mayor a cero.", "Error de Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return false;
             }
 

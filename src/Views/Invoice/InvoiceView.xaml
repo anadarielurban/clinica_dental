@@ -19,14 +19,14 @@
                      Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" 
                      VerticalAlignment="Center" 
                      Margin="0,0,10,0" 
-                     ToolTip="Search by patient, dentist, treatment, or invoice ID" />
-            <Button Content="Search" Command="{Binding SearchCommand}" Margin="0,0,10,0" Width="100" />
-            <Button Content="Reload" Command="{Binding ReloadCommand}" Margin="0,0,10,0" Width="100" />
-            <Button Content="Add Invoice" Command="{Binding AddInvoiceCommand}" Width="150" Margin="0,0,10,0" />
-            <Button Content="Edit Invoice" Command="{Binding EditInvoiceCommand}" 
+                     ToolTip="Buscar por paciente, dentista, tratamiento o ID de factura" />
+            <Button Content="Buscar" Command="{Binding SearchCommand}" Margin="0,0,10,0" Width="100" />
+            <Button Content="Recargar" Command="{Binding ReloadCommand}" Margin="0,0,10,0" Width="100" />
+            <Button Content="Agregar Factura" Command="{Binding AddInvoiceCommand}" Width="150" Margin="0,0,10,0" />
+            <Button Content="Editar Factura" Command="{Binding EditInvoiceCommand}" 
                     Width="150" Margin="0,0,10,0" 
                     IsEnabled="{Binding SelectedInvoice, Converter={StaticResource NullToBoolConverter}}" />
-            <Button Content="View Details" Command="{Binding OpenInvoiceDetailCommand}" 
+            <Button Content="Ver Detalles" Command="{Binding OpenInvoiceDetailCommand}" 
                     Width="150" Margin="0,0,10,0" 
                     IsEnabled="{Binding SelectedInvoice, Converter={StaticResource NullToBoolConverter}}" />
         </StackPanel>
@@ -35,9 +35,9 @@
         <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="0,0,0,10">
             <ComboBox Width="150" ItemsSource="{Binding SortOptions}" 
                       SelectedItem="{Binding SelectedSortOption}" 
-                      ToolTip="Select sorting criterion" 
+                      ToolTip="Seleccionar criterio de ordenamiento" 
                       Margin="0,0,10,0" />
-            <Button Content="Sort" Command="{Binding SortCommand}" Width="100" />
+            <Button Content="Ordenar" Command="{Binding SortCommand}" Width="100" />
         </StackPanel>
 
         <!-- Invoice List -->
@@ -48,13 +48,13 @@
                   SelectionMode="Single" 
                   Margin="0,0,0,10">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Invoice ID" Binding="{Binding InvoiceID}" Width="Auto" />
-                <DataGridTextColumn Header="Patient" Binding="{Binding Appointment.Patient.DisplayInfo}" Width="*" />
-                <DataGridTextColumn Header="Dentist" Binding="{Binding Appointment.Dentist.DisplayInfo}" Width="*" />
-                <DataGridTextColumn Header="Treatment" Binding="{Binding Appointment.Treatment.Name}" Width="*" />
-                <DataGridTextColumn Header="Appointment Date" Binding="{Binding Appointment.AppointmentDate, StringFormat=yyyy-MM-dd}" Width="Auto" />
-                <DataGridTextColumn Header="Total Amount" Binding="{Binding TotalAmount, StringFormat=C}" Width="Auto" />
-                <DataGridCheckBoxColumn Header="Paid" Binding="{Binding IsPaid}" Width="Auto" />
+                <DataGridTextColumn Header="ID Factura" Binding="{Binding InvoiceID}" Width="Auto" />
+                <DataGridTextColumn Header="Paciente" Binding="{Binding Appointment.Patient.DisplayInfo}" Width="*" />
+                <DataGridTextColumn Header="Dentista" Binding="{Binding Appointment.Dentist.DisplayInfo}" Width="*" />
+                <DataGridTextColumn Header="Tratamiento" Binding="{Binding Appointment.Treatment.Name}" Width="*" />
+                <DataGridTextColumn Header="Fecha de Cita" Binding="{Binding Appointment.AppointmentDate, StringFormat=yyyy-MM-dd}" Width="Auto" />
+                <DataGridTextColumn Header="Monto Total" Binding="{Binding TotalAmount, StringFormat=C}" Width="Auto" />
+                <DataGridCheckBoxColumn Header="Pagada" Binding="{Binding IsPaid}" Width="Auto" />
             </DataGrid.Columns>
         </DataGrid>
     </Grid>
