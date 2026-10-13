@@ -1,11 +1,16 @@
-﻿using System.Windows.Controls;
+﻿using System.Windows;
+using System.Windows.Controls;
+using DentalClinicWPF.ViewModels.Appointment;
 
-namespace DentalClinicWPF.Views.Appointment;
-
-public partial class AppointmentView : UserControl
+namespace DentalClinicWPF.Views.Appointment
 {
-    public AppointmentView()
+    public partial class AppointmentView : UserControl
     {
-        InitializeComponent();
+        public AppointmentView() { InitializeComponent(); }
+
+        private void ClearSearch_Click(object sender, RoutedEventArgs e)
+        {
+            if (DataContext is AppointmentViewModel vm) vm.SearchText = string.Empty;
+        }
     }
 }

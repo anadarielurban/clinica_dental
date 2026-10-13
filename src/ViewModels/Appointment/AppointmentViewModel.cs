@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Threading;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.EntityFrameworkCore;
 using DentalClinicWPF.Data;
@@ -15,8 +16,29 @@ namespace DentalClinicWPF.ViewModels.Appointment
     public class AppointmentViewModel : BaseViewModel
     {
         private readonly DentalClinicContext _context;
+        private readonly DispatcherTimer _searchTimer;
 
-        public ObservableCollection<Models.Appointment> Appointments { get; set; }
+        public ObservableCollection<Models.Appointment> Appointments { get; private set; }
+
+        private string _searchText;
+        public string SearchText
+        {
+            get => _searchText;
+            set
+            {
+                if (_searchText != value)
+                {
+                    _searchText = value;
+                    OnPropertyChanged();
+                    _searchTimer.Stop();
+                    _searchTimer.Start();
+                }
+            }
+        }
+
+        private string _resultsLabel = string.Empty;
+        public string ResultsLabel { get => _resultsLabel; set { _resultsLabel = value; OnPropertyChanged(); } }
+
         private Models.Appointment _selectedAppointment;
         public Models.Appointment SelectedAppointment
         {
@@ -30,19 +52,27 @@ namespace DentalClinicWPF.ViewModels.Appointment
             }
         }
 
-        public string SearchText { get; set; }
-
-        // Nowe właściwości do sortowania
         public ObservableCollection<string> SortOptions { get; } = new ObservableCollection<string>
         {
-            "Nombre del Paciente",
-            "Nombre del Dentista",
-            "Nombre del Tratamiento",
-            "Fecha de Cita"
+            "Nombre del Paciente", "Nombre del Dentista", "Nombre del Tratamiento", "Fecha de Cita"
         };
-        public string SelectedSortOption { get; set; }
-        public ICommand SortCommand { get; }
 
+        private string _selectedSortOption;
+        public string SelectedSortOption
+        {
+            get => _selectedSortOption;
+            set
+            {
+                if (_selectedSortOption != value)
+                {
+                    _selectedSortOption = value;
+                    OnPropertyChanged();
+                    SortAppointments();
+                }
+            }
+        }
+
+        public ICommand SortCommand { get; }
         public ICommand AddAppointmentCommand { get; }
         public ICommand EditAppointmentCommand { get; }
         public ICommand DeleteAppointmentCommand { get; }
@@ -52,38 +82,33 @@ namespace DentalClinicWPF.ViewModels.Appointment
         public AppointmentViewModel(DentalClinicContext context)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
+            Appointments = new ObservableCollection<Models.Appointment>();
 
-            LoadAppointments();
+            _searchTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(300) };
+            _searchTimer.Tick += (s, e) => { _searchTimer.Stop(); SearchAppointments(); };
 
             AddAppointmentCommand = new RelayCommand(OpenAddAppointmentView);
-            EditAppointmentCommand = new RelayCommand(OpenEditAppointmentView, CanEditOrDeleteAppointment);
-            DeleteAppointmentCommand = new RelayCommand(DeleteAppointment, CanEditOrDeleteAppointment);
-            ReloadCommand = new RelayCommand(LoadAppointments);
+            EditAppointmentCommand = new RelayCommand(OpenEditAppointmentView, CanEditOrDelete);
+            DeleteAppointmentCommand = new RelayCommand(DeleteAppointment, CanEditOrDelete);
+            ReloadCommand = new RelayCommand(ReloadAll);
             SearchCommand = new RelayCommand(SearchAppointments);
-            SortCommand = new RelayCommand(SortAppointments); // Nowa komenda
+            SortCommand = new RelayCommand(SortAppointments);
+
+            LoadAppointments();
         }
 
         private void LoadAppointments()
         {
             try
             {
-                var appointmentsQuery = _context.Appointment
+                var list = _context.Appointment
                     .Include(a => a.Patient)
                     .Include(a => a.Dentist)
                     .Include(a => a.Treatment)
-                    .AsQueryable();
-
-                if (!string.IsNullOrWhiteSpace(SearchText))
-                {
-                    appointmentsQuery = appointmentsQuery.Where(a =>
-                        a.Patient.FirstName.Contains(SearchText) ||
-                        a.Patient.LastName.Contains(SearchText) ||
-                        a.Treatment.Name.Contains(SearchText));
-                }
-
-                var appointments = appointmentsQuery.ToList();
-                Appointments = new ObservableCollection<Models.Appointment>(appointments);
-                OnPropertyChanged(nameof(Appointments));
+                    .ToList();
+                Appointments.Clear();
+                foreach (var a in list) Appointments.Add(a);
+                UpdateResultsLabel(list.Count, false);
             }
             catch (Exception ex)
             {
@@ -91,75 +116,55 @@ namespace DentalClinicWPF.ViewModels.Appointment
             }
         }
 
+        private void ReloadAll()
+        {
+            _searchTimer.Stop();
+            _searchText = string.Empty;
+            OnPropertyChanged(nameof(SearchText));
+            LoadAppointments();
+        }
+
+        private void UpdateResultsLabel(int count, bool filtered)
+        {
+            if (count == 0) ResultsLabel = "Sin resultados";
+            else if (count == 1) ResultsLabel = filtered ? "1 resultado" : "1 cita";
+            else ResultsLabel = filtered ? $"{count} resultados" : $"{count} citas";
+        }
+
         private void SortAppointments()
         {
-            if (string.IsNullOrEmpty(SelectedSortOption) || Appointments == null)
-                return;
-
-            IEnumerable<Models.Appointment> sortedAppointments = SelectedSortOption switch
+            if (string.IsNullOrEmpty(SelectedSortOption)) return;
+            var sorted = SelectedSortOption switch
             {
-                "Nombre del Paciente" => Appointments.OrderBy(a => a.Patient.LastName).ThenBy(a => a.Patient.FirstName),
-                "Nombre del Dentista" => Appointments.OrderBy(a => a.Dentist.LastName).ThenBy(a => a.Dentist.FirstName),
-                "Nombre del Tratamiento" => Appointments.OrderBy(a => a.Treatment.Name),
-                "Fecha de Cita" => Appointments.OrderBy(a => a.AppointmentDate),
-                _ => Appointments
+                "Nombre del Paciente" => Appointments.OrderBy(a => a.Patient?.LastName).ThenBy(a => a.Patient?.FirstName).ToList(),
+                "Nombre del Dentista" => Appointments.OrderBy(a => a.Dentist?.LastName).ThenBy(a => a.Dentist?.FirstName).ToList(),
+                "Nombre del Tratamiento" => Appointments.OrderBy(a => a.Treatment?.Name).ToList(),
+                "Fecha de Cita" => Appointments.OrderBy(a => a.AppointmentDate).ToList(),
+                _ => Appointments.ToList()
             };
-
-            Appointments = new ObservableCollection<Models.Appointment>(sortedAppointments);
-            OnPropertyChanged(nameof(Appointments));
+            Appointments.Clear();
+            foreach (var a in sorted) Appointments.Add(a);
         }
 
-        private bool CanEditOrDeleteAppointment()
-        {
-            return SelectedAppointment != null;
-        }
+        private bool CanEditOrDelete() => SelectedAppointment != null;
 
         private void OpenAddAppointmentView()
         {
-            var addAppointmentWindow = new AddAppointmentView
-            {
-                DataContext = new AddAppointmentViewModel(_context)
-            };
-
-            if (addAppointmentWindow.ShowDialog() == true)
-            {
-                LoadAppointments();
-            }
+            var w = new AddAppointmentView { DataContext = new AddAppointmentViewModel(_context) };
+            if (w.ShowDialog() == true) LoadAppointments();
         }
 
         private void OpenEditAppointmentView()
         {
-            if (SelectedAppointment == null)
-            {
-                MessageBox.Show("Selecciona una cita para editar.", "Sin Selección", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-
-            var editAppointmentWindow = new EditAppointmentView
-            {
-                DataContext = new EditAppointmentViewModel(_context, SelectedAppointment)
-            };
-
-            if (editAppointmentWindow.ShowDialog() == true)
-            {
-                LoadAppointments();
-            }
+            if (SelectedAppointment == null) return;
+            var w = new EditAppointmentView { DataContext = new EditAppointmentViewModel(_context, SelectedAppointment) };
+            if (w.ShowDialog() == true) LoadAppointments();
         }
 
         private void DeleteAppointment()
         {
-            if (SelectedAppointment == null)
-            {
-                MessageBox.Show("Selecciona una cita para eliminar.", "Sin Selección", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-
-            var result = MessageBox.Show(
-                "¿Seguro que quieres eliminar esta cita?",
-                "Confirmar Eliminación",
-                MessageBoxButton.YesNo,
-                MessageBoxImage.Warning);
-
+            if (SelectedAppointment == null) return;
+            var result = MessageBox.Show("¿Seguro que quieres eliminar esta cita?", "Confirmar Eliminación", MessageBoxButton.YesNo, MessageBoxImage.Warning);
             if (result == MessageBoxResult.Yes)
             {
                 try
@@ -167,7 +172,6 @@ namespace DentalClinicWPF.ViewModels.Appointment
                     _context.Appointment.Remove(SelectedAppointment);
                     _context.SaveChanges();
                     LoadAppointments();
-                    MessageBox.Show("¡Cita eliminada correctamente!", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 catch (Exception ex)
                 {
@@ -178,7 +182,23 @@ namespace DentalClinicWPF.ViewModels.Appointment
 
         private void SearchAppointments()
         {
-            LoadAppointments();
+            if (string.IsNullOrWhiteSpace(SearchText)) { LoadAppointments(); return; }
+            var term = SearchText.Trim().ToLower();
+            var filtered = _context.Appointment
+                .Include(a => a.Patient)
+                .Include(a => a.Dentist)
+                .Include(a => a.Treatment)
+                .ToList()
+                .Where(a =>
+                    (a.Patient?.FirstName?.ToLower().Contains(term) ?? false) ||
+                    (a.Patient?.LastName?.ToLower().Contains(term) ?? false) ||
+                    (a.Dentist?.FirstName?.ToLower().Contains(term) ?? false) ||
+                    (a.Dentist?.LastName?.ToLower().Contains(term) ?? false) ||
+                    (a.Treatment?.Name?.ToLower().Contains(term) ?? false))
+                .ToList();
+            Appointments.Clear();
+            foreach (var a in filtered) Appointments.Add(a);
+            UpdateResultsLabel(filtered.Count, true);
         }
     }
 }

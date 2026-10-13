@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Threading;
 using CommunityToolkit.Mvvm.Input;
 using DentalClinicWPF.Data;
 using DentalClinicWPF.Models;
@@ -15,9 +16,29 @@ namespace DentalClinicWPF.ViewModels.Dentist
     public class DentistViewModel : BaseViewModel
     {
         private readonly DentalClinicContext _context;
-        private readonly Action<string, BaseViewModel> _openTabAction;  // Akcja otwierająca zakładkę
+        private readonly Action<string, BaseViewModel> _openTabAction;
+        private readonly DispatcherTimer _searchTimer;
 
         public ObservableCollection<Models.Dentist> Dentists { get; private set; }
+
+        private string _searchText;
+        public string SearchText
+        {
+            get => _searchText;
+            set
+            {
+                if (_searchText != value)
+                {
+                    _searchText = value;
+                    OnPropertyChanged();
+                    _searchTimer.Stop();
+                    _searchTimer.Start();
+                }
+            }
+        }
+
+        private string _resultsLabel = string.Empty;
+        public string ResultsLabel { get => _resultsLabel; set { _resultsLabel = value; OnPropertyChanged(); } }
 
         private Models.Dentist _selectedDentist;
         public Models.Dentist SelectedDentist
@@ -32,40 +53,45 @@ namespace DentalClinicWPF.ViewModels.Dentist
             }
         }
 
-        private string _searchText = string.Empty;
-        public string SearchText
-        {
-            get => _searchText;
-            set { _searchText = value; OnPropertyChanged(); }
-        }
-
-        // Właściwości do sortowania
         public ObservableCollection<string> SortOptions { get; } = new ObservableCollection<string>
         {
-            "Nombre",
-            "Apellido",
-            "Specialization"
+            "Nombre", "Apellido", "Especialización"
         };
-        public string SelectedSortOption { get; set; }
-        public ICommand SortCommand { get; }
 
+        private string _selectedSortOption;
+        public string SelectedSortOption
+        {
+            get => _selectedSortOption;
+            set
+            {
+                if (_selectedSortOption != value)
+                {
+                    _selectedSortOption = value;
+                    OnPropertyChanged();
+                    SortDentists();
+                }
+            }
+        }
+
+        public ICommand SortCommand { get; }
         public ICommand AddDentistCommand { get; }
         public ICommand EditDentistCommand { get; }
         public ICommand ReloadCommand { get; }
         public ICommand SearchCommand { get; }
-
-        // Komenda otwierania szczegółów dentysty
         public ICommand OpenDentistDetailCommand { get; }
 
-        // Konstruktor przyjmuje dodatkowo Action<string, BaseViewModel> openTabAction
         public DentistViewModel(DentalClinicContext context, Action<string, BaseViewModel> openTabAction)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _openTabAction = openTabAction ?? throw new ArgumentNullException(nameof(openTabAction));
+            Dentists = new ObservableCollection<Models.Dentist>();
+
+            _searchTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(300) };
+            _searchTimer.Tick += (s, e) => { _searchTimer.Stop(); SearchDentists(); };
 
             AddDentistCommand = new RelayCommand(OpenAddDentist);
             EditDentistCommand = new RelayCommand(OpenEditDentist, CanEditDentist);
-            ReloadCommand = new RelayCommand(LoadDentists);
+            ReloadCommand = new RelayCommand(ReloadAll);
             SearchCommand = new RelayCommand(SearchDentists);
             SortCommand = new RelayCommand(SortDentists);
             OpenDentistDetailCommand = new RelayCommand(OpenDentistDetail, CanOpenDentistDetail);
@@ -77,11 +103,10 @@ namespace DentalClinicWPF.ViewModels.Dentist
         {
             try
             {
-                var dentists = _context.Dentist
-                    .Include(d => d.Room)
-                    .ToList();
-                Dentists = new ObservableCollection<Models.Dentist>(dentists);
-                OnPropertyChanged(nameof(Dentists));
+                var list = _context.Dentist.Include(d => d.Room).ToList();
+                Dentists.Clear();
+                foreach (var d in list) Dentists.Add(d);
+                UpdateResultsLabel(list.Count, false);
             }
             catch (Exception ex)
             {
@@ -89,85 +114,70 @@ namespace DentalClinicWPF.ViewModels.Dentist
             }
         }
 
-        private bool CanEditDentist() => SelectedDentist != null;
-
-        private void OpenAddDentist()
+        private void ReloadAll()
         {
-            var addDentistWindow = new AddDentistWindow
-            {
-                DataContext = new AddDentistViewModel(_context),
-                Owner = Application.Current.MainWindow
-            };
-            if (addDentistWindow.ShowDialog() == true)
-            {
-                LoadDentists();
-            }
+            _searchTimer.Stop();
+            _searchText = string.Empty;
+            OnPropertyChanged(nameof(SearchText));
+            LoadDentists();
         }
 
-        private void OpenEditDentist()
+        private void UpdateResultsLabel(int count, bool filtered)
         {
-            if (SelectedDentist == null)
-            {
-                MessageBox.Show("Selecciona un dentista para editar.", "Sin Selección", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-            var editDentistWindow = new EditDentistWindow
-            {
-                DataContext = new EditDentistViewModel(SelectedDentist, _context),
-                Owner = Application.Current.MainWindow
-            };
-            if (editDentistWindow.ShowDialog() == true)
-            {
-                LoadDentists();
-            }
+            if (count == 0) ResultsLabel = "Sin resultados";
+            else if (count == 1) ResultsLabel = filtered ? "1 resultado" : "1 dentista";
+            else ResultsLabel = filtered ? $"{count} resultados" : $"{count} dentistas";
         }
 
         private void SearchDentists()
         {
-            try
-            {
-                if (string.IsNullOrWhiteSpace(SearchText))
-                {
-                    LoadDentists();
-                    return;
-                }
-                var filtered = _context.Dentist
-                    .Include(d => d.Room)
-                    .Where(d => d.FirstName.Contains(SearchText) ||
-                                d.LastName.Contains(SearchText) ||
-                                d.Specialization.Contains(SearchText))
-                    .ToList();
-                Dentists = new ObservableCollection<Models.Dentist>(filtered);
-                OnPropertyChanged(nameof(Dentists));
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error durante la búsqueda: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+            if (string.IsNullOrWhiteSpace(SearchText)) { LoadDentists(); return; }
+            var term = SearchText.Trim().ToLower();
+            var filtered = _context.Dentist.Include(d => d.Room).ToList()
+                .Where(d =>
+                    (d.FirstName?.ToLower().Contains(term) ?? false) ||
+                    (d.LastName?.ToLower().Contains(term) ?? false) ||
+                    (d.Specialization?.ToLower().Contains(term) ?? false))
+                .ToList();
+            Dentists.Clear();
+            foreach (var d in filtered) Dentists.Add(d);
+            UpdateResultsLabel(filtered.Count, true);
         }
 
         private void SortDentists()
         {
-            if (string.IsNullOrEmpty(SelectedSortOption) || Dentists == null)
-                return;
-            IEnumerable<Models.Dentist> sortedDentists = SelectedSortOption switch
+            if (string.IsNullOrEmpty(SelectedSortOption)) return;
+            var sorted = SelectedSortOption switch
             {
-                "Nombre" => Dentists.OrderBy(d => d.FirstName),
-                "Apellido" => Dentists.OrderBy(d => d.LastName),
-                "Specialization" => Dentists.OrderBy(d => d.Specialization),
-                _ => Dentists
+                "Nombre" => Dentists.OrderBy(d => d.FirstName).ToList(),
+                "Apellido" => Dentists.OrderBy(d => d.LastName).ToList(),
+                "Especialización" => Dentists.OrderBy(d => d.Specialization).ToList(),
+                _ => Dentists.ToList()
             };
-            Dentists = new ObservableCollection<Models.Dentist>(sortedDentists);
-            OnPropertyChanged(nameof(Dentists));
+            Dentists.Clear();
+            foreach (var d in sorted) Dentists.Add(d);
         }
 
-        // Metoda otwierająca widok szczegółów dentysty jako zakładka
+        private bool CanEditDentist() => SelectedDentist != null;
+
+        private void OpenAddDentist()
+        {
+            var w = new AddDentistWindow { DataContext = new AddDentistViewModel(_context), Owner = Application.Current.MainWindow };
+            if (w.ShowDialog() == true) LoadDentists();
+        }
+
+        private void OpenEditDentist()
+        {
+            if (SelectedDentist == null) return;
+            var w = new EditDentistWindow { DataContext = new EditDentistViewModel(SelectedDentist, _context), Owner = Application.Current.MainWindow };
+            if (w.ShowDialog() == true) LoadDentists();
+        }
+
         private void OpenDentistDetail()
         {
-            if (SelectedDentist == null)
-                return;
-            var detailViewModel = new DentalClinicWPF.ViewModels.Dentist.DentistDetailViewModel(_context, SelectedDentist);
-            _openTabAction.Invoke($"Dentist: {SelectedDentist.FirstName} {SelectedDentist.LastName}", detailViewModel);
+            if (SelectedDentist == null) return;
+            var detailVm = new DentistDetailViewModel(_context, SelectedDentist);
+            _openTabAction.Invoke($"Dentist: {SelectedDentist.FirstName} {SelectedDentist.LastName}", detailVm);
         }
 
         private bool CanOpenDentistDetail() => SelectedDentist != null;
