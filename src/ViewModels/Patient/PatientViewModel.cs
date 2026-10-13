@@ -37,9 +37,9 @@ namespace DentalClinicWPF.ViewModels.Patient
         // Nowe właściwości do sortowania
         public ObservableCollection<string> SortOptions { get; } = new ObservableCollection<string>
         {
-            "First Name",
-            "Last Name",
-            "Date of Birth"
+            "Nombre",
+            "Apellido",
+            "Fecha de Nacimiento"
         };
 
         public string SelectedSortOption { get; set; }
@@ -108,9 +108,9 @@ namespace DentalClinicWPF.ViewModels.Patient
 
             IEnumerable<Models.Patient> sortedPatients = SelectedSortOption switch
             {
-                "First Name" => Patients.OrderBy(p => p.FirstName),
-                "Last Name" => Patients.OrderBy(p => p.LastName),
-                "Date of Birth" => Patients.OrderBy(p => p.DateOfBirth),
+                "Nombre" => Patients.OrderBy(p => p.FirstName),
+                "Apellido" => Patients.OrderBy(p => p.LastName),
+                "Fecha de Nacimiento" => Patients.OrderBy(p => p.DateOfBirth),
                 _ => Patients
             };
 
