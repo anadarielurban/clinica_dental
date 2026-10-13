@@ -42,47 +42,47 @@
                                FontSize="18" FontWeight="Bold"
                                Margin="0,0,0,10"/>
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="DOB: " FontWeight="Bold"/>
+                        <TextBlock Text="Fecha Nac: " FontWeight="Bold"/>
                         <TextBlock Text="{Binding Patient.DateOfBirth, StringFormat='yyyy-MM-dd'}"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="Phone: " FontWeight="Bold"/>
+                        <TextBlock Text="Teléfono: " FontWeight="Bold"/>
                         <TextBlock Text="{Binding Patient.PhoneNumber}"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="Email: " FontWeight="Bold"/>
+                        <TextBlock Text="Correo: " FontWeight="Bold"/>
                         <TextBlock Text="{Binding Patient.Email}"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="Address: " FontWeight="Bold"/>
+                        <TextBlock Text="Dirección: " FontWeight="Bold"/>
                         <TextBlock Text="{Binding Patient.Address}" TextWrapping="Wrap"/>
                     </StackPanel>
                 </StackPanel>
 
                 <!-- Column 2: Statistics -->
                 <StackPanel Orientation="Vertical" Grid.Column="1" HorizontalAlignment="Left" Margin="10">
-                    <TextBlock Text="Statistics"
+                    <TextBlock Text="Estadísticas"
                                FontWeight="Bold" FontSize="16"
                                Margin="0,0,0,10"/>
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="Number of visits: " FontWeight="Bold"/>
+                        <TextBlock Text="Número de visitas: " FontWeight="Bold"/>
                         <TextBlock Text="{Binding TotalVisits}"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="All invoices paid: " FontWeight="Bold"/>
+                        <TextBlock Text="Todas las facturas pagadas: " FontWeight="Bold"/>
                         <TextBlock Text="{Binding IsEverythingPaid}"/>
                     </StackPanel>
                 </StackPanel>
 
                 <!-- Column 3: Filter + PDF export -->
                 <StackPanel Grid.Column="2" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10">
-                    <TextBlock Text="Search / Filter:" FontWeight="Bold" Margin="0,0,0,5"/>
+                    <TextBlock Text="Buscar / Filtrar:" FontWeight="Bold" Margin="0,0,0,5"/>
                     <StackPanel Orientation="Horizontal">
                         <TextBox Width="160" 
                                  Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
                                  Style="{StaticResource MinimalTextBoxStyle}"
                                  Margin="0,0,5,0"/>
-                        <Button Content="Filter"
+                        <Button Content="Filtrar"
                                 Command="{Binding FilterCommand}"
                                 Style="{StaticResource MinimalButtonStyle}"
                                 Margin="0,0,10,0"/>
@@ -90,7 +90,7 @@
 
                     <Separator Margin="0,10,0,10"/>
 
-                    <Button Content="Export to PDF"
+                    <Button Content="Exportar a PDF"
                             Command="{Binding ExportPdfCommand}"
                             Style="{StaticResource MinimalButtonStyle}"
                             Width="120"/>
@@ -101,7 +101,7 @@
         <!-- TABCONTROL: Appointments, Prescriptions, etc. -->
         <TabControl Grid.Row="1" Style="{StaticResource MinimalTabControlStyle}">
             <!-- APPOINTMENTS TAB -->
-            <TabItem Header="Appointments">
+            <TabItem Header="Citas">
                 <Grid Margin="10">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -110,16 +110,16 @@
 
                     <!-- Buttons Row -->
                     <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,10">
-                        <Button Content="Add" 
+                        <Button Content="Agregar" 
                                 Command="{Binding AddAppointmentCommand}"
                                 Style="{StaticResource MinimalButtonStyle}"
                                 Margin="5"/>
-                        <Button Content="Edit"
+                        <Button Content="Editar"
                                 Command="{Binding EditAppointmentCommand}"
                                 CommandParameter="{Binding SelectedItem, ElementName=AppointmentsGrid}"
                                 Style="{StaticResource MinimalButtonStyle}"
                                 Margin="5"/>
-                        <Button Content="Preview"
+                        <Button Content="Vista Previa"
                                 Command="{Binding ViewAppointmentCommand}"
                                 CommandParameter="{Binding SelectedItem, ElementName=AppointmentsGrid}"
                                 Style="{StaticResource MinimalButtonStyle}"
@@ -133,19 +133,19 @@
                               Style="{StaticResource MinimalDataGridStyle}"
                               AutoGenerateColumns="False">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="Date"
+                            <DataGridTextColumn Header="Fecha"
                                                 Binding="{Binding AppointmentDate, StringFormat=yyyy-MM-dd}"
                                                 Width="120"/>
-                            <DataGridTextColumn Header="Time"
+                            <DataGridTextColumn Header="Hora"
                                                 Binding="{Binding StartTime, StringFormat=hh\\:mm}"
                                                 Width="80"/>
-                            <DataGridTextColumn Header="Dentist"
+                            <DataGridTextColumn Header="Dentista"
                                                 Binding="{Binding Dentist.DisplayInfo}"
                                                 Width="150"/>
-                            <DataGridTextColumn Header="Treatment"
+                            <DataGridTextColumn Header="Tratamiento"
                                                 Binding="{Binding Treatment.Name}"
                                                 Width="*"/>
-                            <DataGridTextColumn Header="Notes"
+                            <DataGridTextColumn Header="Notas"
                                                 Binding="{Binding Notes}"
                                                 Width="200"/>
                         </DataGrid.Columns>
@@ -154,7 +154,7 @@
             </TabItem>
 
             <!-- PRESCRIPTIONS TAB -->
-            <TabItem Header="Prescriptions">
+            <TabItem Header="Recetas">
                 <Grid Margin="10">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -163,16 +163,16 @@
 
                     <!-- Buttons Row -->
                     <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,10">
-                        <Button Content="Add"
+                        <Button Content="Agregar"
                                 Command="{Binding AddPrescriptionCommand}"
                                 Style="{StaticResource MinimalButtonStyle}"
                                 Margin="5"/>
-                        <Button Content="Edit"
+                        <Button Content="Editar"
                                 Command="{Binding EditPrescriptionCommand}"
                                 CommandParameter="{Binding SelectedItem, ElementName=PrescriptionsGrid}"
                                 Style="{StaticResource MinimalButtonStyle}"
                                 Margin="5"/>
-                        <Button Content="Preview"
+                        <Button Content="Vista Previa"
                                 Command="{Binding ViewPrescriptionCommand}"
                                 CommandParameter="{Binding SelectedItem, ElementName=PrescriptionsGrid}"
                                 Style="{StaticResource MinimalButtonStyle}"
@@ -187,19 +187,19 @@
                               AutoGenerateColumns="False">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="ID" Binding="{Binding PrescriptionID}" Width="60"/>
-                            <DataGridTextColumn Header="Issued"
+                            <DataGridTextColumn Header="Emitida"
                                                 Binding="{Binding DateIssued, StringFormat=yyyy-MM-dd}"
                                                 Width="130"/>
-                            <DataGridTextColumn Header="Medication"
+                            <DataGridTextColumn Header="Medicamento"
                                                 Binding="{Binding Medication}"
                                                 Width="150"/>
-                            <DataGridTextColumn Header="Dosage"
+                            <DataGridTextColumn Header="Dosis"
                                                 Binding="{Binding Dosage}"
                                                 Width="120"/>
-                            <DataGridTextColumn Header="Dentist"
+                            <DataGridTextColumn Header="Dentista"
                                                 Binding="{Binding Dentist.DisplayInfo}"
                                                 Width="150"/>
-                            <DataGridTextColumn Header="Instructions"
+                            <DataGridTextColumn Header="Instrucciones"
                                                 Binding="{Binding Instructions}"
                                                 Width="*"/>
                         </DataGrid.Columns>
@@ -208,7 +208,7 @@
             </TabItem>
 
             <!-- TREATMENT PLANS TAB -->
-            <TabItem Header="Treatment Plans">
+            <TabItem Header="Planes de Tratamiento">
                 <Grid Margin="10">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -217,16 +217,16 @@
 
                     <!-- Buttons Row -->
                     <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,10">
-                        <Button Content="Add"
+                        <Button Content="Agregar"
                                 Command="{Binding AddTreatmentPlanCommand}"
                                 Style="{StaticResource MinimalButtonStyle}"
                                 Margin="5"/>
-                        <Button Content="Edit"
+                        <Button Content="Editar"
                                 Command="{Binding EditTreatmentPlanCommand}"
                                 CommandParameter="{Binding SelectedItem, ElementName=TreatmentPlansGrid}"
                                 Style="{StaticResource MinimalButtonStyle}"
                                 Margin="5"/>
-                        <Button Content="Preview"
+                        <Button Content="Vista Previa"
                                 Command="{Binding ViewTreatmentPlanCommand}"
                                 CommandParameter="{Binding SelectedItem, ElementName=TreatmentPlansGrid}"
                                 Style="{StaticResource MinimalButtonStyle}"
@@ -241,13 +241,13 @@
                               AutoGenerateColumns="False">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="ID" Binding="{Binding TreatmentPlanID}" Width="60"/>
-                            <DataGridTextColumn Header="Creation Date"
+                            <DataGridTextColumn Header="Fecha de Creación"
                                                 Binding="{Binding CreationDate, StringFormat=yyyy-MM-dd}"
                                                 Width="150"/>
-                            <DataGridTextColumn Header="Dentist"
+                            <DataGridTextColumn Header="Dentista"
                                                 Binding="{Binding Dentist.DisplayInfo}"
                                                 Width="150"/>
-                            <DataGridTextColumn Header="Details"
+                            <DataGridTextColumn Header="Detalles"
                                                 Binding="{Binding Details}"
                                                 Width="*"/>
                         </DataGrid.Columns>
@@ -256,7 +256,7 @@
             </TabItem>
 
             <!-- INVOICES TAB -->
-            <TabItem Header="Invoices">
+            <TabItem Header="Facturas">
                 <Grid Margin="10">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -265,16 +265,16 @@
 
                     <!-- Buttons Row -->
                     <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,10">
-                        <Button Content="Add"
+                        <Button Content="Agregar"
                                 Command="{Binding AddInvoiceCommand}"
                                 Style="{StaticResource MinimalButtonStyle}"
                                 Margin="5"/>
-                        <Button Content="Edit"
+                        <Button Content="Editar"
                                 Command="{Binding EditInvoiceCommand}"
                                 CommandParameter="{Binding SelectedItem, ElementName=InvoicesGrid}"
                                 Style="{StaticResource MinimalButtonStyle}"
                                 Margin="5"/>
-                        <Button Content="Preview"
+                        <Button Content="Vista Previa"
                                 Command="{Binding ViewInvoiceCommand}"
                                 CommandParameter="{Binding SelectedItem, ElementName=InvoicesGrid}"
                                 Style="{StaticResource MinimalButtonStyle}"
@@ -288,19 +288,19 @@
                               Style="{StaticResource MinimalDataGridStyle}"
                               AutoGenerateColumns="False">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="Invoice ID"
+                            <DataGridTextColumn Header="ID Factura"
                                                 Binding="{Binding InvoiceID}"
                                                 Width="100"/>
-                            <DataGridTextColumn Header="Date"
+                            <DataGridTextColumn Header="Fecha"
                                                 Binding="{Binding InvoiceDate, StringFormat=yyyy-MM-dd}"
                                                 Width="130"/>
-                            <DataGridTextColumn Header="Amount"
+                            <DataGridTextColumn Header="Monto"
                                                 Binding="{Binding TotalAmount, StringFormat=C}"
                                                 Width="100"/>
-                            <DataGridCheckBoxColumn Header="Paid"
+                            <DataGridCheckBoxColumn Header="Pagada"
                                                     Binding="{Binding IsPaid}"
                                                     Width="60"/>
-                            <DataGridTextColumn Header="Appointment"
+                            <DataGridTextColumn Header="Cita"
                                                 Binding="{Binding Appointment.DisplayInfo}"
                                                 Width="*"/>
                         </DataGrid.Columns>
@@ -309,7 +309,7 @@
             </TabItem>
 
             <!-- MEDICAL DOCUMENTATION TAB -->
-            <TabItem Header="Medical Documentation">
+            <TabItem Header="Documentación Médica">
                 <Grid Margin="10">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -318,21 +318,21 @@
 
                     <!-- Buttons Row -->
                     <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,10">
-                        <Button Content="Add"
+                        <Button Content="Agregar"
                                 Command="{Binding AddMedicalRecordCommand}"
                                 Style="{StaticResource MinimalButtonStyle}"
                                 Margin="5"/>
-                        <Button Content="Edit"
+                        <Button Content="Editar"
                                 Command="{Binding EditMedicalRecordCommand}"
                                 CommandParameter="{Binding SelectedItem, ElementName=MedicalRecordsGrid}"
                                 Style="{StaticResource MinimalButtonStyle}"
                                 Margin="5"/>
-                        <Button Content="Download"
+                        <Button Content="Descargar"
                                 Command="{Binding DownloadAttachmentCommand}"
                                 CommandParameter="{Binding SelectedItem, ElementName=MedicalRecordsGrid}"
                                 Style="{StaticResource MinimalButtonStyle}"
                                 Margin="5"/>
-                        <Button Content="Preview"
+                        <Button Content="Vista Previa"
                                 Command="{Binding ViewMedicalRecordCommand}"
                                 CommandParameter="{Binding SelectedItem, ElementName=MedicalRecordsGrid}"
                                 Style="{StaticResource MinimalButtonStyle}"
@@ -346,17 +346,17 @@
                               Style="{StaticResource MinimalDataGridStyle}"
                               AutoGenerateColumns="False">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="Record ID" Binding="{Binding RecordID}" Width="100"/>
-                            <DataGridTextColumn Header="Date"
+                            <DataGridTextColumn Header="ID Registro" Binding="{Binding RecordID}" Width="100"/>
+                            <DataGridTextColumn Header="Fecha"
                                                 Binding="{Binding Date, StringFormat=yyyy-MM-dd}"
                                                 Width="130"/>
-                            <DataGridTextColumn Header="Dentist"
+                            <DataGridTextColumn Header="Dentista"
                                                 Binding="{Binding Dentist.DisplayInfo}"
                                                 Width="150"/>
-                            <DataGridTextColumn Header="Notes"
+                            <DataGridTextColumn Header="Notas"
                                                 Binding="{Binding Notes}"
                                                 Width="*"/>
-                            <DataGridTemplateColumn Header="Attachment" Width="100">
+                            <DataGridTemplateColumn Header="Adjunto" Width="100">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <!-- Example placeholder if you want a button here -->
@@ -364,9 +364,9 @@
                                                                   RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                 CommandParameter="{Binding}"
                                                 Width="60" Margin="2"
-                                                ToolTip="Download attached file"
+                                                ToolTip="Descargar archivo adjunto"
                                                 Style="{StaticResource MinimalButtonStyle}">
-                                            <TextBlock Text="DL" HorizontalAlignment="Center"/>
+                                            <TextBlock Text="Desc" HorizontalAlignment="Center"/>
                                         </Button>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
@@ -397,7 +397,7 @@
                                    TextWrapping="Wrap" 
                                    FontSize="14"/>
                     </ScrollViewer>
-                    <Button Content="Close"
+                    <Button Content="Cerrar"
                             Width="80"
                             HorizontalAlignment="Right"
                             Margin="0,10,0,0"
