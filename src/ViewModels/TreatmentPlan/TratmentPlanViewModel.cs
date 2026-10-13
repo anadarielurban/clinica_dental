@@ -47,7 +47,7 @@ namespace DentalClinicWPF.ViewModels.TreatmentPlan
         {
             "Patient",
             "Dentist",
-            "Creation Date"
+            "Fecha de Creación"
         };
         public string SelectedSortOption { get; set; }
         public ICommand SortCommand { get; }
@@ -88,7 +88,7 @@ namespace DentalClinicWPF.ViewModels.TreatmentPlan
         {
             if (SelectedTreatmentPlan == null)
             {
-                MessageBox.Show("Please select a treatment plan to edit.", "No Selection", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Selecciona un plan de tratamiento para editar.", "Sin Selección", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
@@ -106,13 +106,13 @@ namespace DentalClinicWPF.ViewModels.TreatmentPlan
         {
             if (SelectedTreatmentPlan == null)
             {
-                MessageBox.Show("Please select a treatment plan to delete.", "No Selection", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Selecciona un plan de tratamiento para eliminar.", "Sin Selección", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
             var result = MessageBox.Show(
-                "Are you sure you want to delete this treatment plan? This action cannot be undone.",
-                "Confirm Delete",
+                "¿Seguro que quieres eliminar este plan de tratamiento? Esta acción no se puede deshacer.",
+                "Confirmar Eliminación",
                 MessageBoxButton.YesNo,
                 MessageBoxImage.Warning);
 
@@ -123,11 +123,11 @@ namespace DentalClinicWPF.ViewModels.TreatmentPlan
                     _context.TreatmentPlan.Remove(SelectedTreatmentPlan);
                     _context.SaveChanges();
                     TreatmentPlans.Remove(SelectedTreatmentPlan);
-                    MessageBox.Show("Treatment Plan deleted successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                    MessageBox.Show("¡Plan de tratamiento eliminado!", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Error while deleting treatment plan: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show($"Error al eliminar el plan: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }
@@ -146,7 +146,7 @@ namespace DentalClinicWPF.ViewModels.TreatmentPlan
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error loading treatment plans: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error al cargar los planes: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -175,7 +175,7 @@ namespace DentalClinicWPF.ViewModels.TreatmentPlan
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error searching treatment plans: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error al buscar planes: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -188,7 +188,7 @@ namespace DentalClinicWPF.ViewModels.TreatmentPlan
             {
                 "Patient" => TreatmentPlans.OrderBy(tp => tp.Patient.LastName).ThenBy(tp => tp.Patient.FirstName),
                 "Dentist" => TreatmentPlans.OrderBy(tp => tp.Dentist.LastName).ThenBy(tp => tp.Dentist.FirstName),
-                "Creation Date" => TreatmentPlans.OrderBy(tp => tp.CreationDate),
+                "Fecha de Creación" => TreatmentPlans.OrderBy(tp => tp.CreationDate),
                 _ => TreatmentPlans
             };
 

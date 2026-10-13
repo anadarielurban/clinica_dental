@@ -63,24 +63,24 @@ namespace DentalClinicWPF.ViewModels.Equipment
             {
                 case nameof(EditingEquipment.Name):
                     if (string.IsNullOrWhiteSpace(EditingEquipment.Name))
-                        AddError(propertyName, "Name is required.");
+                        AddError(propertyName, "El nombre es obligatorio.");
                     break;
                 case nameof(EditingEquipment.Model):
                     if (string.IsNullOrWhiteSpace(EditingEquipment.Model))
-                        AddError(propertyName, "Model is required.");
+                        AddError(propertyName, "El modelo es obligatorio.");
                     break;
                 case nameof(EditingEquipment.SerialNumber):
                     if (!string.IsNullOrWhiteSpace(EditingEquipment.SerialNumber) &&
                         !Regex.IsMatch(EditingEquipment.SerialNumber, @"^[a-zA-Z0-9-]+$"))
-                        AddError(propertyName, "Serial Number must contain only alphanumeric characters or dashes.");
+                        AddError(propertyName, "El número de serie solo puede contener caracteres alfanuméricos o guiones.");
                     break;
                 case nameof(EditingEquipment.PurchaseDate):
                     if (EditingEquipment.PurchaseDate > DateTime.Now)
-                        AddError(propertyName, "Purchase Date cannot be in the future.");
+                        AddError(propertyName, "La fecha de compra no puede ser futura.");
                     break;
                 case nameof(EditingEquipment.LastServiceDate):
                     if (EditingEquipment.LastServiceDate > DateTime.Now)
-                        AddError(propertyName, "Last Service Date cannot be in the future.");
+                        AddError(propertyName, "La fecha del último servicio no puede ser futura.");
                     break;
             }
 
@@ -102,7 +102,7 @@ namespace DentalClinicWPF.ViewModels.Equipment
         {
             if (HasErrors)
             {
-                MessageBox.Show("Please fix validation errors before saving.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Corrige los errores de validación antes de guardar.", "Error de Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
@@ -113,12 +113,12 @@ namespace DentalClinicWPF.ViewModels.Equipment
                 _context.Equipment.Update(EditingEquipment);
                 _context.SaveChanges();
 
-                MessageBox.Show("Equipment updated successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("¡Equipo actualizado correctamente!", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
                 CloseWindow();
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error while updating equipment: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error al actualizar el equipo: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -128,17 +128,17 @@ namespace DentalClinicWPF.ViewModels.Equipment
         {
             try
             {
-                if (MessageBox.Show("Are you sure you want to delete this equipment?", "Delete Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
+                if (MessageBox.Show("¿Seguro que quieres eliminar este equipo?", "Confirmar Eliminación", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
                 {
                     _context.Equipment.Remove(EditingEquipment);
                     _context.SaveChanges();
-                    MessageBox.Show("Equipment deleted successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                    MessageBox.Show("¡Equipo eliminado correctamente!", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
                     CloseWindow();
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error while deleting equipment: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error al eliminar el equipo: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

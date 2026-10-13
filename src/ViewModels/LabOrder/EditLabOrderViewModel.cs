@@ -50,19 +50,19 @@ namespace DentalClinicWPF.ViewModels.LabOrder
             {
                 if (!IsLabOrderDataValid())
                 {
-                    MessageBox.Show("Please fill in all required fields correctly!", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show("Completa todos los campos correctamente.", "Error de Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
 
                 _context.LabOrder.Update(LabOrder);
                 _context.SaveChanges();
 
-                MessageBox.Show("Lab order updated successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("¡Orden de laboratorio actualizada!", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
                 CloseWindow(true);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"An error occurred while updating the lab order: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Ocurrió un error al actualizar la orden: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -75,20 +75,20 @@ namespace DentalClinicWPF.ViewModels.LabOrder
         {
             try
             {
-                var result = MessageBox.Show("Are you sure you want to delete this lab order?", "Delete Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                var result = MessageBox.Show("¿Seguro que quieres eliminar esta orden de laboratorio?", "Confirmar Eliminación", MessageBoxButton.YesNo, MessageBoxImage.Warning);
 
                 if (result == MessageBoxResult.Yes)
                 {
                     _context.LabOrder.Remove(LabOrder);
                     _context.SaveChanges();
 
-                    MessageBox.Show("Lab order deleted successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                    MessageBox.Show("¡Orden de laboratorio eliminada!", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
                     CloseWindow(true);
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"An error occurred while deleting the lab order: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Ocurrió un error al eliminar la orden: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -122,15 +122,15 @@ namespace DentalClinicWPF.ViewModels.LabOrder
             {
                 case nameof(LabOrder.PatientID):
                     if (LabOrder.PatientID == 0)
-                        AddError(propertyName, "Patient must be selected.");
+                        AddError(propertyName, "Debes seleccionar un paciente.");
                     break;
                 case nameof(LabOrder.DentistID):
                     if (LabOrder.DentistID == 0)
-                        AddError(propertyName, "Dentist must be selected.");
+                        AddError(propertyName, "Debes seleccionar un dentista.");
                     break;
                 case nameof(LabOrder.Description):
                     if (string.IsNullOrWhiteSpace(LabOrder.Description))
-                        AddError(propertyName, "Description is required.");
+                        AddError(propertyName, "La descripción es obligatoria.");
                     break;
             }
 

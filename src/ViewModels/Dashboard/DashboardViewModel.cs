@@ -320,10 +320,10 @@ namespace DentalClinicWPF.ViewModels.Dashboard
                     yPoint += 20;
 
                     // Table Headers
-                    gfx.DrawString("Date", fontRegular, XBrushes.Black, 40, yPoint);
-                    gfx.DrawString("Time", fontRegular, XBrushes.Black, 140, yPoint);
-                    gfx.DrawString("Patient", fontRegular, XBrushes.Black, 240, yPoint);
-                    gfx.DrawString("Dentist", fontRegular, XBrushes.Black, 340, yPoint);
+                    gfx.DrawString("Fecha", fontRegular, XBrushes.Black, 40, yPoint);
+                    gfx.DrawString("Hora", fontRegular, XBrushes.Black, 140, yPoint);
+                    gfx.DrawString("Paciente", fontRegular, XBrushes.Black, 240, yPoint);
+                    gfx.DrawString("Dentista", fontRegular, XBrushes.Black, 340, yPoint);
                     yPoint += 20;
 
                     // Table Data
@@ -347,7 +347,7 @@ namespace DentalClinicWPF.ViewModels.Dashboard
                     yPoint += 20;
 
                     // Table Headers
-                    gfx.DrawString("Dentist", fontRegular, XBrushes.Black, 40, yPoint);
+                    gfx.DrawString("Dentista", fontRegular, XBrushes.Black, 40, yPoint);
                     gfx.DrawString("Revenue", fontRegular, XBrushes.Black, 240, yPoint);
                     yPoint += 20;
 
@@ -412,10 +412,10 @@ namespace DentalClinicWPF.ViewModels.Dashboard
                     int row = 7;
 
                     // Table Headers
-                    worksheet.Cell(row, 1).Value = "Date";
-                    worksheet.Cell(row, 2).Value = "Time";
-                    worksheet.Cell(row, 3).Value = "Patient";
-                    worksheet.Cell(row, 4).Value = "Dentist";
+                    worksheet.Cell(row, 1).Value = "Fecha";
+                    worksheet.Cell(row, 2).Value = "Hora";
+                    worksheet.Cell(row, 3).Value = "Paciente";
+                    worksheet.Cell(row, 4).Value = "Dentista";
                     row++;
 
                     // Table Data
@@ -440,7 +440,7 @@ namespace DentalClinicWPF.ViewModels.Dashboard
                     row++;
 
                     // Table Headers
-                    worksheet.Cell(row, 1).Value = "Dentist";
+                    worksheet.Cell(row, 1).Value = "Dentista";
                     worksheet.Cell(row, 2).Value = "Revenue";
                     row++;
 

@@ -142,7 +142,7 @@ namespace DentalClinicWPF.ViewModels.Prescription
         {
             if (SelectedPrescription == null)
             {
-                MessageBox.Show("Please select a prescription to edit.", "No Selection", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Please select a prescription to edit.", "Sin Selección", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
             try

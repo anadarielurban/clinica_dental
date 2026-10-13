@@ -18,12 +18,12 @@
             <TextBox Width="300" 
                      Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" 
                      VerticalAlignment="Center" 
-                     ToolTip="Search by Name, Model, or Serial Number" 
+                     ToolTip="Buscar por nombre, modelo o número de serie" 
                      Margin="0,0,10,0" />
-            <Button Content="Search" Command="{Binding SearchCommand}" Margin="0,0,10,0" Width="100" />
-            <Button Content="Reload" Command="{Binding ReloadCommand}" Margin="0,0,10,0" Width="100" />
-            <Button Content="Add Equipment" Command="{Binding AddEquipmentCommand}" Width="150" Margin="0,0,10,0" />
-            <Button Content="Edit Equipment" Command="{Binding EditEquipmentCommand}" 
+            <Button Content="Buscar" Command="{Binding SearchCommand}" Margin="0,0,10,0" Width="100" />
+            <Button Content="Recargar" Command="{Binding ReloadCommand}" Margin="0,0,10,0" Width="100" />
+            <Button Content="Agregar Equipo" Command="{Binding AddEquipmentCommand}" Width="150" Margin="0,0,10,0" />
+            <Button Content="Editar Equipo" Command="{Binding EditEquipmentCommand}" 
                     Width="150" Margin="0,0,10,0" 
                     IsEnabled="{Binding SelectedEquipment, Converter={StaticResource NullToBoolConverter}}" />
         </StackPanel>
@@ -32,9 +32,9 @@
         <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="0,0,0,10">
             <ComboBox Width="150" ItemsSource="{Binding SortOptions}" 
                       SelectedItem="{Binding SelectedSortOption}" 
-                      ToolTip="Select sorting criterion" 
+                      ToolTip="Seleccionar criterio de ordenamiento" 
                       Margin="0,0,10,0" />
-            <Button Content="Sort" Command="{Binding SortCommand}" Width="100" />
+            <Button Content="Ordenar" Command="{Binding SortCommand}" Width="100" />
         </StackPanel>
 
         <!-- Equipment List -->
@@ -45,12 +45,12 @@
                   SelectionMode="Single" 
                   Margin="0,0,0,10">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*" />
-                <DataGridTextColumn Header="Model" Binding="{Binding Model}" Width="*" />
-                <DataGridTextColumn Header="Serial Number" Binding="{Binding SerialNumber}" Width="*" />
-                <DataGridTextColumn Header="Purchase Date" Binding="{Binding PurchaseDate, StringFormat=d}" Width="*" />
-                <DataGridTextColumn Header="Last Service Date" Binding="{Binding LastServiceDate, StringFormat=d}" Width="*" />
-                <DataGridTextColumn Header="Room" Binding="{Binding Room.RoomNumber}" Width="*" />
+                <DataGridTextColumn Header="Nombre" Binding="{Binding Name}" Width="*" />
+                <DataGridTextColumn Header="Modelo" Binding="{Binding Model}" Width="*" />
+                <DataGridTextColumn Header="Número de Serie" Binding="{Binding SerialNumber}" Width="*" />
+                <DataGridTextColumn Header="Fecha de Compra" Binding="{Binding PurchaseDate, StringFormat=d}" Width="*" />
+                <DataGridTextColumn Header="Último Servicio" Binding="{Binding LastServiceDate, StringFormat=d}" Width="*" />
+                <DataGridTextColumn Header="Consultorio" Binding="{Binding Room.RoomNumber}" Width="*" />
             </DataGrid.Columns>
         </DataGrid>
     </Grid>

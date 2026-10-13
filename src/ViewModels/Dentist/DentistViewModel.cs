@@ -42,8 +42,8 @@ namespace DentalClinicWPF.ViewModels.Dentist
         // Właściwości do sortowania
         public ObservableCollection<string> SortOptions { get; } = new ObservableCollection<string>
         {
-            "First Name",
-            "Last Name",
+            "Nombre",
+            "Apellido",
             "Specialization"
         };
         public string SelectedSortOption { get; set; }
@@ -85,7 +85,7 @@ namespace DentalClinicWPF.ViewModels.Dentist
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error loading dentists: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error al cargar los dentistas: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -108,7 +108,7 @@ namespace DentalClinicWPF.ViewModels.Dentist
         {
             if (SelectedDentist == null)
             {
-                MessageBox.Show("Please select a dentist to edit.", "No Selection", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Selecciona un dentista para editar.", "Sin Selección", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
             var editDentistWindow = new EditDentistWindow
@@ -142,7 +142,7 @@ namespace DentalClinicWPF.ViewModels.Dentist
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error during search: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error durante la búsqueda: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -152,8 +152,8 @@ namespace DentalClinicWPF.ViewModels.Dentist
                 return;
             IEnumerable<Models.Dentist> sortedDentists = SelectedSortOption switch
             {
-                "First Name" => Dentists.OrderBy(d => d.FirstName),
-                "Last Name" => Dentists.OrderBy(d => d.LastName),
+                "Nombre" => Dentists.OrderBy(d => d.FirstName),
+                "Apellido" => Dentists.OrderBy(d => d.LastName),
                 "Specialization" => Dentists.OrderBy(d => d.Specialization),
                 _ => Dentists
             };

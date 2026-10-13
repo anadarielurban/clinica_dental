@@ -54,19 +54,19 @@ namespace DentalClinicWPF.ViewModels.LabOrder
             {
                 if (!IsLabOrderDataValid())
                 {
-                    MessageBox.Show("Please fill in all required fields correctly!", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show("Completa todos los campos correctamente.", "Error de Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
 
                 _context.LabOrder.Add(LabOrder);
                 _context.SaveChanges();
 
-                MessageBox.Show("Lab order created successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("¡Orden de laboratorio creada correctamente!", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
                 CloseWindow(true);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"An error occurred while creating the lab order: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Ocurrió un error al crear la orden: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -105,15 +105,15 @@ namespace DentalClinicWPF.ViewModels.LabOrder
             {
                 case nameof(LabOrder.PatientID):
                     if (LabOrder.PatientID == 0)
-                        AddError(propertyName, "Patient must be selected.");
+                        AddError(propertyName, "Debes seleccionar un paciente.");
                     break;
                 case nameof(LabOrder.DentistID):
                     if (LabOrder.DentistID == 0)
-                        AddError(propertyName, "Dentist must be selected.");
+                        AddError(propertyName, "Debes seleccionar un dentista.");
                     break;
                 case nameof(LabOrder.Description):
                     if (string.IsNullOrWhiteSpace(LabOrder.Description))
-                        AddError(propertyName, "Description is required.");
+                        AddError(propertyName, "La descripción es obligatoria.");
                     break;
                 // Add more validations as needed
             }

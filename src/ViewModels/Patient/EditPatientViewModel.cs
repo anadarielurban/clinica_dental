@@ -160,7 +160,7 @@ namespace DentalClinicWPF.ViewModels.Patient
                 _context.SaveChanges();
 
                 MessageBox.Show("¡Paciente eliminado correctamente!",
-                                "Success",
+                                "Éxito",
                                 MessageBoxButton.OK,
                                 MessageBoxImage.Information);
 
@@ -202,7 +202,7 @@ namespace DentalClinicWPF.ViewModels.Patient
                 _context.SaveChanges();
 
                 MessageBox.Show("¡Paciente actualizado correctamente!",
-                                "Success",
+                                "Éxito",
                                 MessageBoxButton.OK,
                                 MessageBoxImage.Information);
 

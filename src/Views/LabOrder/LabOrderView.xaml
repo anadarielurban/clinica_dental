@@ -18,12 +18,12 @@
             <TextBox Width="300" 
                      Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" 
                      VerticalAlignment="Center" 
-                     ToolTip="Search by patient, dentist, or description" 
+                     ToolTip="Buscar por paciente, dentista o descripción" 
                      Margin="0,0,10,0" />
-            <Button Content="Search" Command="{Binding SearchCommand}" Margin="0,0,10,0" Width="100" />
-            <Button Content="Reload" Command="{Binding ReloadCommand}" Margin="0,0,10,0" Width="100" />
-            <Button Content="Add Order" Command="{Binding AddOrderCommand}" Width="150" Margin="0,0,10,0" />
-            <Button Content="Edit Order" Command="{Binding EditOrderCommand}" 
+            <Button Content="Buscar" Command="{Binding SearchCommand}" Margin="0,0,10,0" Width="100" />
+            <Button Content="Recargar" Command="{Binding ReloadCommand}" Margin="0,0,10,0" Width="100" />
+            <Button Content="Agregar Orden" Command="{Binding AddOrderCommand}" Width="150" Margin="0,0,10,0" />
+            <Button Content="Editar Orden" Command="{Binding EditOrderCommand}" 
                     Width="150" Margin="0,0,10,0" 
                     IsEnabled="{Binding SelectedOrder, Converter={StaticResource NullToBoolConverter}}" />
         </StackPanel>
@@ -32,9 +32,9 @@
         <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="0,0,0,10">
             <ComboBox Width="150" ItemsSource="{Binding SortOptions}" 
                       SelectedItem="{Binding SelectedSortOption}" 
-                      ToolTip="Select sorting criterion" 
+                      ToolTip="Seleccionar criterio de ordenamiento" 
                       Margin="0,0,10,0" />
-            <Button Content="Sort" Command="{Binding SortCommand}" Width="100" />
+            <Button Content="Ordenar" Command="{Binding SortCommand}" Width="100" />
         </StackPanel>
 
         <!-- Lab Order List -->
@@ -45,11 +45,11 @@
                   SelectionMode="Single" 
                   Margin="0,0,0,10">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Patient" Binding="{Binding Patient.DisplayInfo}" Width="*" />
-                <DataGridTextColumn Header="Dentist" Binding="{Binding Dentist.DisplayInfo}" Width="*" />
-                <DataGridTextColumn Header="Order Date" Binding="{Binding OrderDate, StringFormat=yyyy-MM-dd}" Width="Auto" />
-                <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="2*" />
-                <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="Auto" />
+                <DataGridTextColumn Header="Paciente" Binding="{Binding Patient.DisplayInfo}" Width="*" />
+                <DataGridTextColumn Header="Dentista" Binding="{Binding Dentist.DisplayInfo}" Width="*" />
+                <DataGridTextColumn Header="Fecha de Orden" Binding="{Binding OrderDate, StringFormat=yyyy-MM-dd}" Width="Auto" />
+                <DataGridTextColumn Header="Descripción" Binding="{Binding Description}" Width="2*" />
+                <DataGridTextColumn Header="Estado" Binding="{Binding Status}" Width="Auto" />
             </DataGrid.Columns>
         </DataGrid>
     </Grid>
