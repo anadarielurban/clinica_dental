@@ -44,7 +44,7 @@ namespace DentalClinicWPF.ViewModels.Treatment
         {
             if (string.IsNullOrWhiteSpace(EditingTreatment.Name) || EditingTreatment.Price <= 0 || EditingTreatment.Duration <= TimeSpan.Zero)
             {
-                MessageBox.Show("Please fill all fields correctly!", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Completa todos los campos correctamente.", "Error de Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
@@ -59,20 +59,20 @@ namespace DentalClinicWPF.ViewModels.Treatment
                 _context.Treatment.Update(OriginalTreatment);
                 _context.SaveChanges();
 
-                MessageBox.Show("Treatment updated successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("¡Tratamiento actualizado correctamente!", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
                 CloseWindow(true);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error while saving treatment: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error al guardar el tratamiento: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
         private void Delete()
         {
             var result = MessageBox.Show(
-                "Are you sure you want to delete this treatment? This action cannot be undone.",
-                "Confirm Delete",
+                "¿Seguro que quieres eliminar este tratamiento? Esta acción no se puede deshacer.",
+                "Confirmar Eliminación",
                 MessageBoxButton.YesNo,
                 MessageBoxImage.Warning);
 
@@ -83,12 +83,12 @@ namespace DentalClinicWPF.ViewModels.Treatment
                     _context.Treatment.Remove(OriginalTreatment);
                     _context.SaveChanges();
 
-                    MessageBox.Show("Treatment deleted successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                    MessageBox.Show("¡Tratamiento eliminado correctamente!", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
                     CloseWindow(true);
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Error while deleting treatment: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show($"Error al eliminar el tratamiento: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }

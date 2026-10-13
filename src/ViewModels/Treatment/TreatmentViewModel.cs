@@ -78,7 +78,7 @@ namespace DentalClinicWPF.ViewModels.Treatment
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error loading treatments: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error al cargar los tratamientos: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -114,7 +114,7 @@ namespace DentalClinicWPF.ViewModels.Treatment
         {
             if (SelectedTreatment == null)
             {
-                MessageBox.Show("Please select a treatment to edit.", "No Selection", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Selecciona un tratamiento para editar.", "Sin Selección", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
@@ -148,7 +148,7 @@ namespace DentalClinicWPF.ViewModels.Treatment
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error searching treatments: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error al buscar tratamientos: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }

@@ -110,26 +110,26 @@ namespace DentalClinicWPF.ViewModels.Treatment
             {
                 case nameof(Name):
                     if (string.IsNullOrWhiteSpace(Name))
-                        AddError(propertyName, "Name is required.");
+                        AddError(propertyName, "El nombre es obligatorio.");
                     else if (Name.Length > 100)
-                        AddError(propertyName, "Name cannot exceed 100 characters.");
+                        AddError(propertyName, "El nombre no puede superar 100 caracteres.");
                     break;
 
                 case nameof(Description):
                     if (string.IsNullOrWhiteSpace(Description))
-                        AddError(propertyName, "Description is required.");
+                        AddError(propertyName, "La descripción es obligatoria.");
                     else if (Description.Length > 500)
-                        AddError(propertyName, "Description cannot exceed 500 characters.");
+                        AddError(propertyName, "La descripción no puede superar 500 caracteres.");
                     break;
 
                 case nameof(Price):
                     if (Price <= 0)
-                        AddError(propertyName, "Price must be greater than 0.");
+                        AddError(propertyName, "El precio debe ser mayor a 0.");
                     break;
 
                 case nameof(DurationMinutes):
                     if (DurationMinutes < 1)
-                        AddError(propertyName, "Duration must be at least 1 minute.");
+                        AddError(propertyName, "La duración debe ser al menos 1 minuto.");
                     break;
             }
         }
@@ -147,7 +147,7 @@ namespace DentalClinicWPF.ViewModels.Treatment
         {
             if (!CanSave())
             {
-                MessageBox.Show("Please fix validation errors before saving.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Corrige los errores de validación antes de guardar.", "Error de Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
@@ -159,12 +159,12 @@ namespace DentalClinicWPF.ViewModels.Treatment
                     _context.Treatment.Update(Treatment);
 
                 _context.SaveChanges();
-                MessageBox.Show("Treatment saved successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("¡Tratamiento guardado correctamente!", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
                 CloseWindow(true);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error saving treatment: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error al guardar el tratamiento: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
