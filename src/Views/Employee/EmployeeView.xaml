@@ -16,12 +16,12 @@
         <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,10">
             <TextBox Width="300" 
                      Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" 
-                     ToolTip="Search by Name or Position" 
+                     ToolTip="Buscar por nombre o puesto" 
                      Margin="0,0,10,0" />
-            <Button Content="Search" Command="{Binding SearchCommand}" Margin="0,0,10,0" Width="100" />
-            <Button Content="Reload" Command="{Binding ReloadCommand}" Margin="0,0,10,0" Width="100" />
-            <Button Content="Add Employee" Command="{Binding AddEmployeeCommand}" Width="150" Margin="0,0,10,0" />
-            <Button Content="Edit Employee" Command="{Binding EditEmployeeCommand}" 
+            <Button Content="Buscar" Command="{Binding SearchCommand}" Margin="0,0,10,0" Width="100" />
+            <Button Content="Recargar" Command="{Binding ReloadCommand}" Margin="0,0,10,0" Width="100" />
+            <Button Content="Agregar Empleado" Command="{Binding AddEmployeeCommand}" Width="150" Margin="0,0,10,0" />
+            <Button Content="Editar Empleado" Command="{Binding EditEmployeeCommand}" 
                     Width="150" Margin="0,0,10,0" 
                     IsEnabled="{Binding SelectedEmployee, Converter={StaticResource NullToBoolConverter}}" />
         </StackPanel>
@@ -30,9 +30,9 @@
         <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="0,0,0,10">
             <ComboBox Width="150" ItemsSource="{Binding SortOptions}" 
                       SelectedItem="{Binding SelectedSortOption}" 
-                      ToolTip="Select sorting criterion" 
+                      ToolTip="Seleccionar criterio de ordenamiento" 
                       Margin="0,0,10,0" />
-            <Button Content="Sort" Command="{Binding SortCommand}" Width="100" />
+            <Button Content="Ordenar" Command="{Binding SortCommand}" Width="100" />
         </StackPanel>
 
         <!-- Employee List -->
@@ -43,12 +43,12 @@
                   SelectionMode="Single" 
                   Margin="0,0,0,10">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="First Name" Binding="{Binding FirstName}" Width="*" />
-                <DataGridTextColumn Header="Last Name" Binding="{Binding LastName}" Width="*" />
-                <DataGridTextColumn Header="Position" Binding="{Binding Position}" Width="*" />
-                <DataGridTextColumn Header="Phone Number" Binding="{Binding PhoneNumber}" Width="*" />
-                <DataGridTextColumn Header="Email" Binding="{Binding Email}" Width="*" />
-                <DataGridTextColumn Header="Assigned Dentist" Binding="{Binding Dentist.DisplayInfo}" Width="*" />
+                <DataGridTextColumn Header="Nombre" Binding="{Binding FirstName}" Width="*" />
+                <DataGridTextColumn Header="Apellido" Binding="{Binding LastName}" Width="*" />
+                <DataGridTextColumn Header="Puesto" Binding="{Binding Position}" Width="*" />
+                <DataGridTextColumn Header="Teléfono" Binding="{Binding PhoneNumber}" Width="*" />
+                <DataGridTextColumn Header="Correo" Binding="{Binding Email}" Width="*" />
+                <DataGridTextColumn Header="Dentista Asignado" Binding="{Binding Dentist.DisplayInfo}" Width="*" />
             </DataGrid.Columns>
         </DataGrid>
     </Grid>

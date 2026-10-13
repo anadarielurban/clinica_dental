@@ -14,6 +14,7 @@
     <DockPanel>
         <!-- Sidebar -->
         <Border DockPanel.Dock="Left" Width="250" Background="#1C1C1C" BorderBrush="#2C2C2C" BorderThickness="0,0,1,0">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
             <StackPanel>
                 <!-- Header -->
                 <TextBlock Text="Clínica Dental" FontSize="20" FontWeight="Bold" Foreground="#FFFFFF"
@@ -37,7 +38,7 @@
                 <Button Content="Empleados" Command="{Binding ShowEmployeesCommand}" Style="{StaticResource SidebarButtonStyle}" />
                 <Button Content="Consultorios" Command="{Binding ShowRoomsCommand}" Style="{StaticResource SidebarButtonStyle}" />
             </StackPanel>
-        </Border>
+        </ScrollViewer></Border>
 
         <!-- Main Content Area -->
         <TabControl ItemsSource="{Binding OpenTabs}" SelectedItem="{Binding SelectedTab}" BorderThickness="0">
