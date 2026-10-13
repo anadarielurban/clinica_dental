@@ -1,28 +1,22 @@
-﻿using DentalClinicWPF.Models;
-using DentalClinicWPF.ViewModels.Dentist;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
+using DentalClinicWPF.ViewModels.Dentist;
 
 namespace DentalClinicWPF.Views.Dentist
 {
     public partial class DentistView : UserControl
     {
-        public DentistView()
+        public DentistView() { InitializeComponent(); }
+
+        private void ClearSearch_Click(object sender, RoutedEventArgs e)
         {
-            InitializeComponent();
+            if (DataContext is DentistViewModel vm) vm.SearchText = string.Empty;
         }
 
-        private void DataGridRow_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        private void DataGrid_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            if (sender is DataGridRow row && row.Item is Models.Dentist dentist)
-            {
-                if (DataContext is DentistViewModel viewModel)
-                {
-                    viewModel.SelectedDentist = dentist;
-                    viewModel.OpenDentistDetailCommand.Execute(null);
-                }
-            }
+            if (DataContext is DentistViewModel vm && vm.OpenDentistDetailCommand.CanExecute(null))
+                vm.OpenDentistDetailCommand.Execute(null);
         }
     }
 }
