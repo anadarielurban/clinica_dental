@@ -39,9 +39,9 @@ namespace DentalClinicWPF.ViewModels.Room
         // Właściwości do sortowania
         public ObservableCollection<string> SortOptions { get; } = new ObservableCollection<string>
         {
-            "Room Number",
+            "Número",
             "Availability",
-            "Equipment Count"
+            "Equipos"
         };
         public string SelectedSortOption { get; set; }
         public ICommand SortCommand { get; }
@@ -74,7 +74,7 @@ namespace DentalClinicWPF.ViewModels.Room
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error loading rooms: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error al cargar los consultorios: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -97,7 +97,7 @@ namespace DentalClinicWPF.ViewModels.Room
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error during search: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error durante la búsqueda: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -108,9 +108,9 @@ namespace DentalClinicWPF.ViewModels.Room
 
             IEnumerable<Models.Room> sortedRooms = SelectedSortOption switch
             {
-                "Room Number" => Rooms.OrderBy(r => r.RoomNumber),
+                "Número" => Rooms.OrderBy(r => r.RoomNumber),
                 "Availability" => Rooms.OrderBy(r => r.IsAvailable),
-                "Equipment Count" => Rooms.OrderBy(r => r.Equipments?.Count ?? 0),
+                "Equipos" => Rooms.OrderBy(r => r.Equipments?.Count ?? 0),
                 _ => Rooms
             };
 

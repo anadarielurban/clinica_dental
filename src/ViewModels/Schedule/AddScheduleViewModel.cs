@@ -55,14 +55,14 @@ namespace DentalClinicWPF.ViewModels.Schedule
             if (Schedule.StartDate.DayOfWeek == DayOfWeek.Saturday || Schedule.StartDate.DayOfWeek == DayOfWeek.Sunday ||
                 Schedule.EndDate.DayOfWeek == DayOfWeek.Saturday || Schedule.EndDate.DayOfWeek == DayOfWeek.Sunday)
             {
-                MessageBox.Show("Employees do not work on weekends.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Los empleados no trabajan los fines de semana.", "Error de Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
             // Ensure the date range is logical
             if (Schedule.StartDate > Schedule.EndDate)
             {
-                MessageBox.Show("Start date must be earlier than end date.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("La fecha de inicio debe ser anterior a la fecha de fin.", "Error de Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
@@ -73,7 +73,7 @@ namespace DentalClinicWPF.ViewModels.Schedule
 
             if (overlappingSchedule)
             {
-                MessageBox.Show("A schedule for this dentist and date range already exists.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Ya existe un horario para este dentista en ese rango de fechas.", "Error de Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
@@ -81,7 +81,7 @@ namespace DentalClinicWPF.ViewModels.Schedule
             var dentist = Dentists.FirstOrDefault(d => d.DentistID == Schedule.DentistID);
             if (dentist == null)
             {
-                MessageBox.Show("Selected dentist does not exist.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("El dentista seleccionado no existe.", "Error de Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 

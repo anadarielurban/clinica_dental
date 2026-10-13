@@ -53,12 +53,12 @@ namespace DentalClinicWPF.ViewModels.Prescription
                 _context.Prescription.Add(Prescription);
                 _context.SaveChanges();
 
-                MessageBox.Show("Prescription added successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Receta agregada correctamente.", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
                 CloseWindow(true);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error saving prescription: {ex.InnerException?.Message ?? ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error al guardar la receta: {ex.InnerException?.Message ?? ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -84,43 +84,43 @@ namespace DentalClinicWPF.ViewModels.Prescription
         {
             if (Prescription.PatientID == 0)
             {
-                MessageBox.Show("Please select a patient.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Selecciona un paciente.", "Error de Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return false;
             }
 
             if (Prescription.DentistID == 0)
             {
-                MessageBox.Show("Please select a dentist.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Selecciona un dentista.", "Error de Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return false;
             }
 
             if (Prescription.DateIssued == default)
             {
-                MessageBox.Show("Please select a valid date.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Selecciona una fecha válida.", "Error de Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return false;
             }
 
             if (string.IsNullOrWhiteSpace(Prescription.Medication))
             {
-                MessageBox.Show("Medication is required.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("El medicamento es obligatorio.", "Error de Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return false;
             }
 
             if (string.IsNullOrWhiteSpace(Prescription.Dosage))
             {
-                MessageBox.Show("Dosage is required.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("La dosis es obligatoria.", "Error de Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return false;
             }
             
             if (Prescription.Medication.Length > 200)
             {
-                MessageBox.Show("Medication cannot exceed 200 characters.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("El medicamento no puede superar 200 caracteres.", "Error de Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return false;
             }
 
             if (Prescription.Dosage.Length > 100)
             {
-                MessageBox.Show("Dosage cannot exceed 100 characters.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("La dosis no puede superar 100 caracteres.", "Error de Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return false;
             }
 

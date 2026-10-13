@@ -17,12 +17,12 @@
         <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,10">
             <TextBox Width="300" 
                      Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" 
-                     ToolTip="Search by Dentist Name" 
+                     ToolTip="Buscar por nombre del dentista" 
                      Margin="0,0,10,0" />
-            <Button Content="Search" Command="{Binding SearchCommand}" Width="100" Margin="0,0,10,0" />
-            <Button Content="Reload" Command="{Binding ReloadSchedulesCommand}" Width="100" Margin="0,0,10,0" />
-            <Button Content="Add Schedule" Command="{Binding AddScheduleCommand}" Width="150" Margin="0,0,10,0" />
-            <Button Content="Edit Schedule" Command="{Binding EditScheduleCommand}" 
+            <Button Content="Buscar" Command="{Binding SearchCommand}" Width="100" Margin="0,0,10,0" />
+            <Button Content="Recargar" Command="{Binding ReloadSchedulesCommand}" Width="100" Margin="0,0,10,0" />
+            <Button Content="Agregar Horario" Command="{Binding AddScheduleCommand}" Width="150" Margin="0,0,10,0" />
+            <Button Content="Editar Horario" Command="{Binding EditScheduleCommand}" 
                     Width="150" Margin="0,0,10,0" 
                     IsEnabled="{Binding SelectedSchedule, Converter={StaticResource NullToBoolConverter}}" />
         </StackPanel>
@@ -31,9 +31,9 @@
         <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="0,0,0,10">
             <ComboBox Width="150" ItemsSource="{Binding SortOptions}" 
                       SelectedItem="{Binding SelectedSortOption}" 
-                      ToolTip="Select sorting criterion" 
+                      ToolTip="Seleccionar criterio de ordenamiento" 
                       Margin="0,0,10,0" />
-            <Button Content="Sort" Command="{Binding SortCommand}" Width="100" />
+            <Button Content="Ordenar" Command="{Binding SortCommand}" Width="100" />
         </StackPanel>
 
         <!-- Schedule List -->
@@ -43,12 +43,12 @@
                   IsReadOnly="True" SelectionMode="Single" 
                   Margin="0,0,0,10">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Dentist" Binding="{Binding Dentist.DisplayInfo}" Width="*" />
-                <DataGridTextColumn Header="Start Date" Binding="{Binding StartDate, StringFormat=d}" Width="Auto" />
-                <DataGridTextColumn Header="End Date" Binding="{Binding EndDate, StringFormat=d}" Width="Auto" />
-                <DataGridTextColumn Header="Start Time" Binding="{Binding StartTime, StringFormat=hh\\:mm}" Width="Auto" />
-                <DataGridTextColumn Header="End Time" Binding="{Binding EndTime, StringFormat=hh\\:mm}" Width="Auto" />
-                <DataGridCheckBoxColumn Header="Day Off" Binding="{Binding IsDayOff}" Width="Auto" />
+                <DataGridTextColumn Header="Dentista" Binding="{Binding Dentist.DisplayInfo}" Width="*" />
+                <DataGridTextColumn Header="Fecha de Inicio" Binding="{Binding StartDate, StringFormat=d}" Width="Auto" />
+                <DataGridTextColumn Header="Fecha de Fin" Binding="{Binding EndDate, StringFormat=d}" Width="Auto" />
+                <DataGridTextColumn Header="Hora de Inicio" Binding="{Binding StartTime, StringFormat=hh\\:mm}" Width="Auto" />
+                <DataGridTextColumn Header="Hora de Fin" Binding="{Binding EndTime, StringFormat=hh\\:mm}" Width="Auto" />
+                <DataGridCheckBoxColumn Header="Día Libre" Binding="{Binding IsDayOff}" Width="Auto" />
             </DataGrid.Columns>
         </DataGrid>
     </Grid>

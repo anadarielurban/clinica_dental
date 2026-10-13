@@ -42,7 +42,7 @@ namespace DentalClinicWPF.ViewModels.Room
             {
                 if (string.IsNullOrWhiteSpace(EditingRoom.RoomNumber))
                 {
-                    MessageBox.Show("Room Number is required.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show("El número de consultorio es obligatorio.", "Error de Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
 
@@ -51,7 +51,7 @@ namespace DentalClinicWPF.ViewModels.Room
                     var exists = _context.Room.Any(r => r.RoomNumber == EditingRoom.RoomNumber && r.RoomID != EditingRoom.RoomID);
                     if (exists)
                     {
-                        MessageBox.Show("Room Number already exists.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        MessageBox.Show("El número de consultorio ya existe.", "Error de Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
                         return;
                     }
                 }
@@ -62,12 +62,12 @@ namespace DentalClinicWPF.ViewModels.Room
                 _context.Room.Update(OriginalRoom);
                 _context.SaveChanges();
 
-                MessageBox.Show("Room updated successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("¡Consultorio actualizado correctamente!", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
                 CloseWindow(true);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error while saving room: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error al guardar el consultorio: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -81,8 +81,8 @@ namespace DentalClinicWPF.ViewModels.Room
             try
             {
                 var result = MessageBox.Show(
-                    "Are you sure you want to delete this room?",
-                    "Confirm Delete",
+                    "¿Seguro que quieres eliminar este consultorio?",
+                    "Confirmar Eliminación",
                     MessageBoxButton.YesNo,
                     MessageBoxImage.Warning);
 
@@ -91,20 +91,20 @@ namespace DentalClinicWPF.ViewModels.Room
                     var hasDentists = _context.Dentist.Any(d => d.RoomID == OriginalRoom.RoomID);
                     if (hasDentists)
                     {
-                        MessageBox.Show("Cannot delete room assigned to a dentist.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        MessageBox.Show("No se puede eliminar un consultorio asignado a un dentista.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                         return;
                     }
 
                     _context.Room.Remove(OriginalRoom);
                     _context.SaveChanges();
 
-                    MessageBox.Show("Room deleted successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                    MessageBox.Show("¡Consultorio eliminado correctamente!", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
                     CloseWindow(true);
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error while deleting room: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error al eliminar el consultorio: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

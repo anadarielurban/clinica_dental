@@ -55,13 +55,13 @@ namespace DentalClinicWPF.ViewModels.Prescription
                 {
                     // Print FlowDocument
                     IDocumentPaginatorSource idpSource = doc;
-                    printDialog.PrintDocument(idpSource.DocumentPaginator, "Printing Prescription");
+                    printDialog.PrintDocument(idpSource.DocumentPaginator, "Imprimiendo Receta");
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"An error occurred while printing:\n{ex.Message}",
-                                "Print Error",
+                MessageBox.Show($"Ocurrió un error al imprimir:\n{ex.Message}",
+                                "Error de Impresión",
                                 MessageBoxButton.OK,
                                 MessageBoxImage.Error);
             }
@@ -77,7 +77,7 @@ namespace DentalClinicWPF.ViewModels.Prescription
                 {
                     FileName = $"Prescription_{Prescription.PrescriptionID}",
                     DefaultExt = ".pdf",
-                    Filter = "PDF Documents (.pdf)|*.pdf"
+                    Filter = "Documentos PDF (.pdf)|*.pdf"
                 };
 
                 bool? result = saveFileDialog.ShowDialog();
@@ -89,7 +89,7 @@ namespace DentalClinicWPF.ViewModels.Prescription
 
                 using (var document = new PdfDocument())
                 {
-                    document.Info.Title = "Prescription Export";
+                    document.Info.Title = "Exportar Receta";
 
                     // Create a page
                     PdfPage page = document.AddPage();
@@ -105,7 +105,7 @@ namespace DentalClinicWPF.ViewModels.Prescription
                     double lineSpacing = 25;
 
                     // Title
-                    gfx.DrawString("Prescription Details",
+                    gfx.DrawString("Detalles de la Receta",
                                    fontTitle,
                                    XBrushes.Black,
                                    new XRect(xPos, yPos, page.Width - 2 * xPos, 40),
@@ -113,7 +113,7 @@ namespace DentalClinicWPF.ViewModels.Prescription
                     yPos += 50;
 
                     // Prescription ID
-                    gfx.DrawString("Prescription ID:", fontBold, XBrushes.Black, xPos, yPos);
+                    gfx.DrawString("ID de Receta:", fontBold, XBrushes.Black, xPos, yPos);
                     gfx.DrawString($"{Prescription.PrescriptionID}", fontRegular, XBrushes.Black, xPos + 150, yPos);
                     yPos += lineSpacing;
 
@@ -128,7 +128,7 @@ namespace DentalClinicWPF.ViewModels.Prescription
                     yPos += lineSpacing;
 
                     // Date Issued
-                    gfx.DrawString("Date Issued:", fontBold, XBrushes.Black, xPos, yPos);
+                    gfx.DrawString("Fecha de Emisión:", fontBold, XBrushes.Black, xPos, yPos);
                     gfx.DrawString($"{Prescription.DateIssued:yyyy-MM-dd}", fontRegular, XBrushes.Black, xPos + 150, yPos);
                     yPos += lineSpacing;
 
@@ -152,15 +152,15 @@ namespace DentalClinicWPF.ViewModels.Prescription
                     document.Save(fileName);
                 }
 
-                MessageBox.Show($"PDF exported successfully:\n{fileName}",
-                                "Export to PDF",
+                MessageBox.Show($"PDF exportado correctamente:\n{fileName}",
+                                "Exportar a PDF",
                                 MessageBoxButton.OK,
                                 MessageBoxImage.Information);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"An error occurred while exporting to PDF:\n{ex.Message}",
-                                "Export PDF Error",
+                MessageBox.Show($"Ocurrió un error al exportar a PDF:\n{ex.Message}",
+                                "Error al Exportar PDF",
                                 MessageBoxButton.OK,
                                 MessageBoxImage.Error);
             }
@@ -190,7 +190,7 @@ namespace DentalClinicWPF.ViewModels.Prescription
                 FontWeight = FontWeights.Bold,
                 TextAlignment = TextAlignment.Center
             };
-            titlePara.Inlines.Add("Prescription Details");
+            titlePara.Inlines.Add("Detalles de la Receta");
             doc.Blocks.Add(titlePara);
 
             // Information Paragraph

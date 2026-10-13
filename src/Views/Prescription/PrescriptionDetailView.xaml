@@ -27,7 +27,7 @@
 
             <StackPanel>
                 <!-- Header / Title -->
-                <TextBlock Text="Prescription Details"
+                <TextBlock Text="Detalles de la Receta"
                            FontSize="20"
                            FontWeight="Bold"
                            Foreground="#333333"
@@ -50,43 +50,43 @@
                     </Grid.RowDefinitions>
 
                     <!-- Prescription ID -->
-                    <TextBlock Text="Prescription ID:" FontWeight="Bold" Grid.Row="0" Grid.Column="0" 
+                    <TextBlock Text="ID de Receta:" FontWeight="Bold" Grid.Row="0" Grid.Column="0" 
                                Margin="0,0,0,5" />
                     <TextBlock Text="{Binding Prescription.PrescriptionID}" Grid.Row="0" Grid.Column="1" 
                                Margin="0,0,0,5" />
 
                     <!-- Patient -->
-                    <TextBlock Text="Patient:" FontWeight="Bold" Grid.Row="1" Grid.Column="0" 
+                    <TextBlock Text="Paciente:" FontWeight="Bold" Grid.Row="1" Grid.Column="0" 
                                Margin="0,5,0,5" />
                     <TextBlock Text="{Binding Prescription.Patient.DisplayInfo}" Grid.Row="1" Grid.Column="1" 
                                Margin="0,5,0,5" />
 
                     <!-- Dentist -->
-                    <TextBlock Text="Dentist:" FontWeight="Bold" Grid.Row="2" Grid.Column="0" 
+                    <TextBlock Text="Dentista:" FontWeight="Bold" Grid.Row="2" Grid.Column="0" 
                                Margin="0,5,0,5" />
                     <TextBlock Text="{Binding Prescription.Dentist.DisplayInfo}" Grid.Row="2" Grid.Column="1"
                                Margin="0,5,0,5"/>
 
                     <!-- Date Issued -->
-                    <TextBlock Text="Date Issued:" FontWeight="Bold" Grid.Row="3" Grid.Column="0" 
+                    <TextBlock Text="Fecha de Emisión:" FontWeight="Bold" Grid.Row="3" Grid.Column="0" 
                                Margin="0,5,0,5"/>
                     <TextBlock Text="{Binding Prescription.DateIssued, StringFormat={}{0:yyyy-MM-dd}}" 
                                Grid.Row="3" Grid.Column="1" Margin="0,5,0,5"/>
 
                     <!-- Medication -->
-                    <TextBlock Text="Medication:" FontWeight="Bold" Grid.Row="4" Grid.Column="0" 
+                    <TextBlock Text="Medicamento:" FontWeight="Bold" Grid.Row="4" Grid.Column="0" 
                                Margin="0,5,0,5"/>
                     <TextBlock Text="{Binding Prescription.Medication}" 
                                Grid.Row="4" Grid.Column="1" Margin="0,5,0,5"/>
 
                     <!-- Dosage -->
-                    <TextBlock Text="Dosage:" FontWeight="Bold" Grid.Row="5" Grid.Column="0" 
+                    <TextBlock Text="Dosis:" FontWeight="Bold" Grid.Row="5" Grid.Column="0" 
                                Margin="0,5,0,5"/>
                     <TextBlock Text="{Binding Prescription.Dosage}" 
                                Grid.Row="5" Grid.Column="1" Margin="0,5,0,5"/>
 
                     <!-- Instructions -->
-                    <TextBlock Text="Instructions:" FontWeight="Bold" Grid.Row="6" Grid.Column="0" 
+                    <TextBlock Text="Instrucciones:" FontWeight="Bold" Grid.Row="6" Grid.Column="0" 
                                Margin="0,5,0,5"/>
                     <TextBlock Text="{Binding Prescription.Instructions}"
                                TextWrapping="Wrap" 
@@ -95,17 +95,17 @@
 
                 <!-- Buttons: Preview, Print, and Export PDF -->
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,20,0,0">
-                    <Button Content="Preview"
+                    <Button Content="Vista Previa"
                             Command="{Binding PreviewCommand}"
                             Margin="0,0,10,0"
                             Width="80"/>
 
-                    <Button Content="Print"
+                    <Button Content="Imprimir"
                             Command="{Binding PrintCommand}"
                             Margin="0,0,10,0"
                             Width="80"/>
 
-                    <Button Content="Export PDF"
+                    <Button Content="Exportar PDF"
                             Command="{Binding ExportPdfCommand}"
                             Width="100"/>
                 </StackPanel>
