@@ -35,6 +35,7 @@ namespace DentalClinicWPF.Models
         public virtual ICollection<Prescription> Prescriptions { get; set; } = new List<Prescription>();
         public virtual ICollection<Schedule> Schedules { get; set; } = new List<Schedule>();
 
+        public string FullName => $"{FirstName} {LastName}";
         public string DisplayInfo => $"{LastName}, {Specialization}";
     }
 }

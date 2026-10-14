@@ -1,29 +1,16 @@
-﻿using DentalClinicWPF.Models;
-using DentalClinicWPF.ViewModels.Invoice;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
+using DentalClinicWPF.ViewModels.Invoice;
 
 namespace DentalClinicWPF.Views.Invoice
 {
     public partial class InvoiceView : UserControl
     {
-        public InvoiceView()
-        {
-            InitializeComponent();
-        }
+        public InvoiceView() { InitializeComponent(); }
 
-        // Opcjonalnie możesz dodać obsługę podwójnego kliknięcia na wierszu, aby automatycznie otwierać szczegóły:
-        private void DataGridRow_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        private void ClearSearch_Click(object sender, RoutedEventArgs e)
         {
-            if (sender is DataGridRow row && row.Item is Models.Invoice invoice)
-            {
-                if (DataContext is InvoiceViewModel viewModel)
-                {
-                    viewModel.SelectedInvoice = invoice;
-                    viewModel.OpenInvoiceDetailCommand.Execute(null);
-                }
-            }
+            if (DataContext is InvoiceViewModel vm) vm.SearchText = string.Empty;
         }
     }
 }

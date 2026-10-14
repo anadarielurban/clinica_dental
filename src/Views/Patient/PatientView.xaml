@@ -179,6 +179,34 @@
                         <DataGridTextColumn Header="Teléfono" Binding="{Binding PhoneNumber}" Width="150"/>
                         <DataGridTextColumn Header="Correo" Binding="{Binding Email}" Width="2*"/>
                         <DataGridTextColumn Header="Fecha de Nacimiento" Binding="{Binding DateOfBirth, StringFormat=d}" Width="150"/>
+                        <DataGridTemplateColumn Header="Acciones" Width="110">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                        <Button Command="{Binding DataContext.OpenEditPatientCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                CommandParameter="{Binding}"
+                                                Width="32" Height="32" Margin="0,0,4,0"
+                                                Background="Transparent" BorderThickness="0"
+                                                Cursor="Hand" ToolTip="Editar">
+                                            <TextBlock Text="&#xE70F;"
+                                                       FontFamily="Segoe MDL2 Assets"
+                                                       FontSize="14"
+                                                       Foreground="{StaticResource Brush.Primary}"/>
+                                        </Button>
+                                        <Button Command="{Binding DataContext.OpenPatientDetailCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                CommandParameter="{Binding}"
+                                                Width="32" Height="32"
+                                                Background="Transparent" BorderThickness="0"
+                                                Cursor="Hand" ToolTip="Ver Detalles">
+                                            <TextBlock Text="&#xE7B3;"
+                                                       FontFamily="Segoe MDL2 Assets"
+                                                       FontSize="14"
+                                                       Foreground="{StaticResource Brush.TextSecondary}"/>
+                                        </Button>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
                     </DataGrid.Columns>
                 </DataGrid>
 

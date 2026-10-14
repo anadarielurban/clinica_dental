@@ -34,48 +34,104 @@
             <ColumnDefinition Width="*"/>   <!-- Right part -->
         </Grid.ColumnDefinitions>
 
-        <!-- Header with dentist's first and last name -->
-        <Border Grid.Row="0" Grid.ColumnSpan="2" Padding="10">
-            <TextBlock Text="{Binding Dentist.FullName}"
-                       FontSize="24" FontWeight="Bold"
-                       HorizontalAlignment="Center" />
+        <!-- Header moderno con avatar + nombre -->
+        <Border Grid.Row="0" Grid.ColumnSpan="2"
+                Background="{StaticResource Brush.Surface}"
+                CornerRadius="12" Padding="24"
+                Margin="20,20,20,10">
+            <StackPanel Orientation="Horizontal">
+                <Border Width="52" Height="52"
+                        Background="{StaticResource Brush.PrimarySoft}"
+                        CornerRadius="26">
+                    <TextBlock Text="&#xE77B;"
+                               FontFamily="Segoe MDL2 Assets"
+                               FontSize="24"
+                               Foreground="{StaticResource Brush.PrimaryPressed}"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"/>
+                </Border>
+                <StackPanel VerticalAlignment="Center" Margin="14,0,0,0">
+                    <TextBlock Text="{Binding Dentist.FullName}"
+                               FontSize="22" FontWeight="Bold"
+                               Foreground="{StaticResource Brush.TextPrimary}"/>
+                    <TextBlock Text="Dentista"
+                               FontSize="12"
+                               Foreground="{StaticResource Brush.TextMuted}"
+                               Margin="0,2,0,0"/>
+                </StackPanel>
+            </StackPanel>
         </Border>
 
-        <!-- Left panel with dentist information and statistics -->
-        <StackPanel Grid.Row="1" Grid.Column="0" Margin="10">
-            <!-- Dentist Information -->
-            <GroupBox Header="Información del Dentista" Margin="0,0,0,10">
-                <StackPanel Margin="10">
-                    <TextBlock Text="Especialización:" FontWeight="Bold"/>
-                    <TextBlock Text="{Binding Dentist.Specialization}" Margin="0,0,0,5"/>
+        <!-- Panel izquierdo: Info + Disponibilidad + Rendimiento -->
+        <StackPanel Grid.Row="1" Grid.Column="0" Margin="20,0,10,20">
+            <TextBlock Text="INFORMACIÓN"
+                       FontSize="10" FontWeight="SemiBold"
+                       Foreground="{StaticResource Brush.TextMuted}"
+                       Margin="0,0,0,10"/>
 
-                    <TextBlock Text="Teléfono:" FontWeight="Bold"/>
-                    <TextBlock Text="{Binding Dentist.PhoneNumber}" Margin="0,0,0,5"/>
+            <Border Background="{StaticResource Brush.Surface}"
+                    CornerRadius="12" Padding="18" Margin="0,0,0,16">
+                <StackPanel>
+                    <TextBlock Text="Especialización"
+                               FontSize="11"
+                               Foreground="{StaticResource Brush.TextMuted}"/>
+                    <TextBlock Text="{Binding Dentist.Specialization}"
+                               FontSize="14" FontWeight="SemiBold"
+                               Foreground="{StaticResource Brush.TextPrimary}"
+                               Margin="0,2,0,12"/>
 
-                    <TextBlock Text="Correo:" FontWeight="Bold"/>
-                    <TextBlock Text="{Binding Dentist.Email}" Margin="0,0,0,5"/>
+                    <TextBlock Text="Teléfono"
+                               FontSize="11"
+                               Foreground="{StaticResource Brush.TextMuted}"/>
+                    <TextBlock Text="{Binding Dentist.PhoneNumber}"
+                               FontSize="14"
+                               Foreground="{StaticResource Brush.TextPrimary}"
+                               Margin="0,2,0,12"/>
+
+                    <TextBlock Text="Correo"
+                               FontSize="11"
+                               Foreground="{StaticResource Brush.TextMuted}"/>
+                    <TextBlock Text="{Binding Dentist.Email}"
+                               FontSize="14"
+                               Foreground="{StaticResource Brush.TextPrimary}"
+                               TextWrapping="Wrap"/>
                 </StackPanel>
-            </GroupBox>
+            </Border>
 
-            <!-- Availability -->
-            <GroupBox Header="Disponibilidad" Margin="0,0,0,10">
-                <StackPanel Margin="10">
-                    <TextBlock Text="Lun-Vie: 9:00-18:00"/>
+            <TextBlock Text="RENDIMIENTO (ESTA SEMANA)"
+                       FontSize="10" FontWeight="SemiBold"
+                       Foreground="{StaticResource Brush.TextMuted}"
+                       Margin="0,0,0,10"/>
+
+            <Border Background="{StaticResource Brush.Surface}"
+                    CornerRadius="12" Padding="18" Margin="0,0,0,10">
+                <StackPanel>
+                    <TextBlock Text="Citas esta semana"
+                               FontSize="12"
+                               Foreground="{StaticResource Brush.TextSecondary}"/>
+                    <TextBlock Text="{Binding TotalAppointmentsThisWeek}"
+                               FontSize="24" FontWeight="Bold"
+                               Foreground="{StaticResource Brush.PrimaryPressed}"
+                               Margin="0,4,0,0"/>
                 </StackPanel>
-            </GroupBox>
+            </Border>
 
-            <!-- Weekly Statistics -->
-            <GroupBox Header="Rendimiento (Esta Semana)">
-                <StackPanel Margin="10">
-                    <TextBlock Text="Citas esta semana:" FontWeight="Bold"/>
-                    <TextBlock Text="{Binding TotalAppointmentsThisWeek}" Margin="0,0,0,5"/>
-
-                    <TextBlock Text="Procedimiento más frecuente esta semana:" FontWeight="Bold"/>
-                    <TextBlock Text="{Binding MostFrequentProcedureThisWeek}"/>
+            <Border Background="{StaticResource Brush.Surface}"
+                    CornerRadius="12" Padding="18">
+                <StackPanel>
+                    <TextBlock Text="Procedimiento más frecuente"
+                               FontSize="12"
+                               Foreground="{StaticResource Brush.TextSecondary}"/>
+                    <TextBlock Text="{Binding MostFrequentProcedureThisWeek}"
+                               FontSize="14" FontWeight="SemiBold"
+                               Foreground="{StaticResource Brush.TextPrimary}"
+                               TextWrapping="Wrap"
+                               Margin="0,4,0,0"/>
                 </StackPanel>
-            </GroupBox>
+            </Border>
         </StackPanel>
 
+        <!-- Right panel with weekly navigation and days -->
         <!-- Right panel with weekly navigation and days -->
         <Grid Grid.Row="1" Grid.Column="1" Margin="10">
             <Grid.RowDefinitions>
@@ -101,7 +157,7 @@
                 </StackPanel>
             </Border>
 
-            <!-- Columns for week days (Monday - Friday) -->
+            <!-- Semana: Lun-Vie -->
             <Grid Grid.Row="1">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
@@ -111,222 +167,466 @@
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
 
-                <!-- Definition for each week day (Monday - Friday) -->
-                <!-- Example for Monday (WeekDays[0]) -->
-                <Border Grid.Column="0" Style="{StaticResource AppointmentBorderStyle}">
-                    <StackPanel>
-                        <TextBlock Text="{Binding WeekDays[0].DisplayDate}"
-                                   FontWeight="Bold" FontSize="16"
-                                   Margin="0,0,0,5"
-                                   HorizontalAlignment="Center" />
-
-                        <ItemsControl ItemsSource="{Binding WeekDays[0].Appointments}">
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <Border Style="{StaticResource AppointmentBorderStyle}" Margin="0,0,0,5">
-                                        <StackPanel Orientation="Vertical">
-                                            <!-- StartTime - EndTime with corrected StringFormat or converter -->
-                                            <TextBlock Style="{StaticResource AppointmentTimeTextStyle}">
-                                                <!-- Option 1: Use StringFormat for TimeSpan -->
-                                                <Run Text="{Binding StartTime, StringFormat={}{0:hh\\:mm}}"/>
-                                                <Run Text=" - "/>
-                                                <Run Text="{Binding EndTime, StringFormat={}{0:hh\\:mm}}"/>
-                                                
-                                                <!-- Option 2: Use TimeSpanToStringConverter -->
-                                                <!--
-                                                <Run Text="{Binding StartTime, Converter={StaticResource TimeSpanToStringConverter}}"/>
-                                                <Run Text=" - "/>
-                                                <Run Text="{Binding EndTime, Converter={StaticResource TimeSpanToStringConverter}}"/>
-                                                -->
-                                            </TextBlock>
-
-                                            <!-- Patient's first and last name -->
-                                            <TextBlock Text="{Binding Patient.FullName}" 
-                                                       Style="{StaticResource AppointmentGeneralTextStyle}"/>
-                                            <!-- Procedure -->
-                                            <TextBlock Text="{Binding Treatment.Name}" 
-                                                       Style="{StaticResource AppointmentGeneralTextStyle}"/>
-                                            <!-- Notes -->
-                                            <TextBlock Text="{Binding Notes}" 
-                                                       Style="{StaticResource AppointmentGeneralTextStyle}"
-                                                       TextWrapping="Wrap"/>
-                                        </StackPanel>
-                                    </Border>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-
-                        <!-- When there are no appointments -->
-                        <TextBlock Text="Sin citas" 
-                                   HorizontalAlignment="Center" Margin="5"
-                                   Visibility="{Binding WeekDays[0].Appointments.Count,
-                                               Converter={StaticResource CountToVisibilityConverter},
-                                               ConverterParameter=Zero}"/>
-                    </StackPanel>
+                <!-- Helper: tarjeta de día reutilizable -->
+                <Border Grid.Column="0" Background="{StaticResource Brush.Surface}"
+                        CornerRadius="10" Margin="0,0,5,0">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Border Grid.Row="0" Background="{StaticResource Brush.PrimarySoft}"
+                                CornerRadius="10,10,0,0" Padding="12,10">
+                            <TextBlock Text="{Binding WeekDays[0].DisplayDate}"
+                                       FontWeight="SemiBold" FontSize="14"
+                                       Foreground="{StaticResource Brush.PrimaryPressed}"
+                                       HorizontalAlignment="Center"/>
+                        </Border>
+                        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Padding="8">
+                            <Grid>
+                                <ItemsControl ItemsSource="{Binding WeekDays[0].Appointments}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Button Command="{Binding DataContext.OpenAppointmentDetailsCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    CommandParameter="{Binding}"
+                                                    Background="Transparent"
+                                                    BorderThickness="0"
+                                                    Padding="0"
+                                                    HorizontalContentAlignment="Stretch"
+                                                    Cursor="Hand">
+                                            <Border Background="{StaticResource Brush.Background}"
+                                                    CornerRadius="8" Padding="10" Margin="0,0,0,8">
+                                                <StackPanel>
+                                                    <Border Background="{StaticResource Brush.Primary}"
+                                                            CornerRadius="4" Padding="6,2"
+                                                            HorizontalAlignment="Left"
+                                                            Margin="0,0,0,6">
+                                                        <TextBlock Foreground="White" FontSize="11" FontWeight="SemiBold">
+                                                            <Run Text="{Binding StartTime, StringFormat={}{0:hh\\:mm}}"/>
+                                                            <Run Text=" - "/>
+                                                            <Run Text="{Binding EndTime, StringFormat={}{0:hh\\:mm}}"/>
+                                                        </TextBlock>
+                                                    </Border>
+                                                    <TextBlock Text="{Binding Patient.FullName}"
+                                                               FontSize="13" FontWeight="SemiBold"
+                                                               Foreground="{StaticResource Brush.TextPrimary}"
+                                                               TextTrimming="CharacterEllipsis"/>
+                                                    <TextBlock Text="{Binding Treatment.Name}"
+                                                               FontSize="11"
+                                                               Foreground="{StaticResource Brush.TextSecondary}"
+                                                               TextTrimming="CharacterEllipsis"
+                                                               Margin="0,2,0,0"/>
+                                                </StackPanel>
+                                            </Border>
+                                            </Button>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center"
+                                            Visibility="{Binding WeekDays[0].Appointments.Count, Converter={StaticResource CountToVisibilityConverter}}">
+                                    <TextBlock Text="&#xE787;"
+                                               FontFamily="Segoe MDL2 Assets"
+                                               FontSize="24"
+                                               Foreground="{StaticResource Brush.TextMuted}"
+                                               HorizontalAlignment="Center"/>
+                                    <TextBlock Text="Sin citas"
+                                               FontSize="12"
+                                               Foreground="{StaticResource Brush.TextMuted}"
+                                               HorizontalAlignment="Center"
+                                               Margin="0,6,0,0"/>
+                                </StackPanel>
+                            </Grid>
+                        </ScrollViewer>
+                    </Grid>
                 </Border>
 
-                <!-- Repeat the above block for the remaining days of the week (WeekDays[1] - WeekDays[4]) -->
-                <!-- Tuesday (WeekDays[1]) -->
-                <Border Grid.Column="1" Style="{StaticResource AppointmentBorderStyle}">
-                    <StackPanel>
-                        <TextBlock Text="{Binding WeekDays[1].DisplayDate}"
-                                   FontWeight="Bold" FontSize="16"
-                                   Margin="0,0,0,5"
-                                   HorizontalAlignment="Center" />
-
-                        <ItemsControl ItemsSource="{Binding WeekDays[1].Appointments}">
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <Border Style="{StaticResource AppointmentBorderStyle}" Margin="0,0,0,5">
-                                        <StackPanel Orientation="Vertical">
-                                            <TextBlock Style="{StaticResource AppointmentTimeTextStyle}">
-                                                <Run Text="{Binding StartTime, StringFormat={}{0:hh\\:mm}}"/>
-                                                <Run Text=" - "/>
-                                                <Run Text="{Binding EndTime, StringFormat={}{0:hh\\:mm}}"/>
-                                            </TextBlock>
-
-                                            <TextBlock Text="{Binding Patient.FullName}"
-                                                       Style="{StaticResource AppointmentGeneralTextStyle}"/>
-                                            <TextBlock Text="{Binding Treatment.Name}"
-                                                       Style="{StaticResource AppointmentGeneralTextStyle}"/>
-                                            <TextBlock Text="{Binding Notes}"
-                                                       Style="{StaticResource AppointmentGeneralTextStyle}"
-                                                       TextWrapping="Wrap"/>
-                                        </StackPanel>
-                                    </Border>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-
-                        <TextBlock Text="Sin citas" 
-                                   HorizontalAlignment="Center" Margin="5"
-                                   Visibility="{Binding WeekDays[1].Appointments.Count,
-                                               Converter={StaticResource CountToVisibilityConverter},
-                                               ConverterParameter=Zero}"/>
-                    </StackPanel>
+                <Border Grid.Column="1" Background="{StaticResource Brush.Surface}"
+                        CornerRadius="10" Margin="5,0">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Border Grid.Row="0" Background="{StaticResource Brush.PrimarySoft}"
+                                CornerRadius="10,10,0,0" Padding="12,10">
+                            <TextBlock Text="{Binding WeekDays[1].DisplayDate}"
+                                       FontWeight="SemiBold" FontSize="14"
+                                       Foreground="{StaticResource Brush.PrimaryPressed}"
+                                       HorizontalAlignment="Center"/>
+                        </Border>
+                        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Padding="8">
+                            <Grid>
+                                <ItemsControl ItemsSource="{Binding WeekDays[1].Appointments}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Button Command="{Binding DataContext.OpenAppointmentDetailsCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    CommandParameter="{Binding}"
+                                                    Background="Transparent"
+                                                    BorderThickness="0"
+                                                    Padding="0"
+                                                    HorizontalContentAlignment="Stretch"
+                                                    Cursor="Hand">
+                                            <Border Background="{StaticResource Brush.Background}"
+                                                    CornerRadius="8" Padding="10" Margin="0,0,0,8">
+                                                <StackPanel>
+                                                    <Border Background="{StaticResource Brush.Primary}"
+                                                            CornerRadius="4" Padding="6,2"
+                                                            HorizontalAlignment="Left"
+                                                            Margin="0,0,0,6">
+                                                        <TextBlock Foreground="White" FontSize="11" FontWeight="SemiBold">
+                                                            <Run Text="{Binding StartTime, StringFormat={}{0:hh\\:mm}}"/>
+                                                            <Run Text=" - "/>
+                                                            <Run Text="{Binding EndTime, StringFormat={}{0:hh\\:mm}}"/>
+                                                        </TextBlock>
+                                                    </Border>
+                                                    <TextBlock Text="{Binding Patient.FullName}"
+                                                               FontSize="13" FontWeight="SemiBold"
+                                                               Foreground="{StaticResource Brush.TextPrimary}"
+                                                               TextTrimming="CharacterEllipsis"/>
+                                                    <TextBlock Text="{Binding Treatment.Name}"
+                                                               FontSize="11"
+                                                               Foreground="{StaticResource Brush.TextSecondary}"
+                                                               TextTrimming="CharacterEllipsis"
+                                                               Margin="0,2,0,0"/>
+                                                </StackPanel>
+                                            </Border>
+                                            </Button>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center"
+                                            Visibility="{Binding WeekDays[1].Appointments.Count, Converter={StaticResource CountToVisibilityConverter}}">
+                                    <TextBlock Text="&#xE787;" FontFamily="Segoe MDL2 Assets" FontSize="24"
+                                               Foreground="{StaticResource Brush.TextMuted}" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="Sin citas" FontSize="12"
+                                               Foreground="{StaticResource Brush.TextMuted}"
+                                               HorizontalAlignment="Center" Margin="0,6,0,0"/>
+                                </StackPanel>
+                            </Grid>
+                        </ScrollViewer>
+                    </Grid>
                 </Border>
 
-                <!-- Wednesday (WeekDays[2]) -->
-                <Border Grid.Column="2" Style="{StaticResource AppointmentBorderStyle}">
-                    <StackPanel>
-                        <TextBlock Text="{Binding WeekDays[2].DisplayDate}"
-                                   FontWeight="Bold" FontSize="16"
-                                   Margin="0,0,0,5"
-                                   HorizontalAlignment="Center" />
-
-                        <ItemsControl ItemsSource="{Binding WeekDays[2].Appointments}">
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <Border Style="{StaticResource AppointmentBorderStyle}" Margin="0,0,0,5">
-                                        <StackPanel Orientation="Vertical">
-                                            <TextBlock Style="{StaticResource AppointmentTimeTextStyle}">
-                                                <Run Text="{Binding StartTime, StringFormat={}{0:hh\\:mm}}"/>
-                                                <Run Text=" - "/>
-                                                <Run Text="{Binding EndTime, StringFormat={}{0:hh\\:mm}}"/>
-                                            </TextBlock>
-
-                                            <TextBlock Text="{Binding Patient.FullName}" 
-                                                       Style="{StaticResource AppointmentGeneralTextStyle}"/>
-                                            <TextBlock Text="{Binding Treatment.Name}" 
-                                                       Style="{StaticResource AppointmentGeneralTextStyle}"/>
-                                            <TextBlock Text="{Binding Notes}"
-                                                       Style="{StaticResource AppointmentGeneralTextStyle}"
-                                                       TextWrapping="Wrap"/>
-                                        </StackPanel>
-                                    </Border>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-
-                        <TextBlock Text="Sin citas" 
-                                   HorizontalAlignment="Center" Margin="5"
-                                   Visibility="{Binding WeekDays[2].Appointments.Count,
-                                               Converter={StaticResource CountToVisibilityConverter},
-                                               ConverterParameter=Zero}"/>
-                    </StackPanel>
+                <Border Grid.Column="2" Background="{StaticResource Brush.Surface}"
+                        CornerRadius="10" Margin="5,0">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Border Grid.Row="0" Background="{StaticResource Brush.PrimarySoft}"
+                                CornerRadius="10,10,0,0" Padding="12,10">
+                            <TextBlock Text="{Binding WeekDays[2].DisplayDate}"
+                                       FontWeight="SemiBold" FontSize="14"
+                                       Foreground="{StaticResource Brush.PrimaryPressed}"
+                                       HorizontalAlignment="Center"/>
+                        </Border>
+                        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Padding="8">
+                            <Grid>
+                                <ItemsControl ItemsSource="{Binding WeekDays[2].Appointments}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Button Command="{Binding DataContext.OpenAppointmentDetailsCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    CommandParameter="{Binding}"
+                                                    Background="Transparent"
+                                                    BorderThickness="0"
+                                                    Padding="0"
+                                                    HorizontalContentAlignment="Stretch"
+                                                    Cursor="Hand">
+                                            <Border Background="{StaticResource Brush.Background}"
+                                                    CornerRadius="8" Padding="10" Margin="0,0,0,8">
+                                                <StackPanel>
+                                                    <Border Background="{StaticResource Brush.Primary}"
+                                                            CornerRadius="4" Padding="6,2"
+                                                            HorizontalAlignment="Left"
+                                                            Margin="0,0,0,6">
+                                                        <TextBlock Foreground="White" FontSize="11" FontWeight="SemiBold">
+                                                            <Run Text="{Binding StartTime, StringFormat={}{0:hh\\:mm}}"/>
+                                                            <Run Text=" - "/>
+                                                            <Run Text="{Binding EndTime, StringFormat={}{0:hh\\:mm}}"/>
+                                                        </TextBlock>
+                                                    </Border>
+                                                    <TextBlock Text="{Binding Patient.FullName}"
+                                                               FontSize="13" FontWeight="SemiBold"
+                                                               Foreground="{StaticResource Brush.TextPrimary}"
+                                                               TextTrimming="CharacterEllipsis"/>
+                                                    <TextBlock Text="{Binding Treatment.Name}"
+                                                               FontSize="11"
+                                                               Foreground="{StaticResource Brush.TextSecondary}"
+                                                               TextTrimming="CharacterEllipsis"
+                                                               Margin="0,2,0,0"/>
+                                                </StackPanel>
+                                            </Border>
+                                            </Button>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center"
+                                            Visibility="{Binding WeekDays[2].Appointments.Count, Converter={StaticResource CountToVisibilityConverter}}">
+                                    <TextBlock Text="&#xE787;" FontFamily="Segoe MDL2 Assets" FontSize="24"
+                                               Foreground="{StaticResource Brush.TextMuted}" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="Sin citas" FontSize="12"
+                                               Foreground="{StaticResource Brush.TextMuted}"
+                                               HorizontalAlignment="Center" Margin="0,6,0,0"/>
+                                </StackPanel>
+                            </Grid>
+                        </ScrollViewer>
+                    </Grid>
                 </Border>
 
-                <!-- Thursday (WeekDays[3]) -->
-                <Border Grid.Column="3" Style="{StaticResource AppointmentBorderStyle}">
-                    <StackPanel>
-                        <TextBlock Text="{Binding WeekDays[3].DisplayDate}"
-                                   FontWeight="Bold" FontSize="16"
-                                   Margin="0,0,0,5"
-                                   HorizontalAlignment="Center" />
-
-                        <ItemsControl ItemsSource="{Binding WeekDays[3].Appointments}">
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <Border Style="{StaticResource AppointmentBorderStyle}" Margin="0,0,0,5">
-                                        <StackPanel Orientation="Vertical">
-                                            <TextBlock Style="{StaticResource AppointmentTimeTextStyle}">
-                                                <Run Text="{Binding StartTime, StringFormat={}{0:hh\\:mm}}"/>
-                                                <Run Text=" - "/>
-                                                <Run Text="{Binding EndTime, StringFormat={}{0:hh\\:mm}}"/>
-                                            </TextBlock>
-
-                                            <TextBlock Text="{Binding Patient.FullName}" 
-                                                       Style="{StaticResource AppointmentGeneralTextStyle}"/>
-                                            <TextBlock Text="{Binding Treatment.Name}" 
-                                                       Style="{StaticResource AppointmentGeneralTextStyle}"/>
-                                            <TextBlock Text="{Binding Notes}"
-                                                       Style="{StaticResource AppointmentGeneralTextStyle}"
-                                                       TextWrapping="Wrap"/>
-                                        </StackPanel>
-                                    </Border>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-
-                        <TextBlock Text="Sin citas"
-                                   HorizontalAlignment="Center" Margin="5"
-                                   Visibility="{Binding WeekDays[3].Appointments.Count,
-                                               Converter={StaticResource CountToVisibilityConverter},
-                                               ConverterParameter=Zero}"/>
-                    </StackPanel>
+                <Border Grid.Column="3" Background="{StaticResource Brush.Surface}"
+                        CornerRadius="10" Margin="5,0">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Border Grid.Row="0" Background="{StaticResource Brush.PrimarySoft}"
+                                CornerRadius="10,10,0,0" Padding="12,10">
+                            <TextBlock Text="{Binding WeekDays[3].DisplayDate}"
+                                       FontWeight="SemiBold" FontSize="14"
+                                       Foreground="{StaticResource Brush.PrimaryPressed}"
+                                       HorizontalAlignment="Center"/>
+                        </Border>
+                        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Padding="8">
+                            <Grid>
+                                <ItemsControl ItemsSource="{Binding WeekDays[3].Appointments}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Button Command="{Binding DataContext.OpenAppointmentDetailsCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    CommandParameter="{Binding}"
+                                                    Background="Transparent"
+                                                    BorderThickness="0"
+                                                    Padding="0"
+                                                    HorizontalContentAlignment="Stretch"
+                                                    Cursor="Hand">
+                                            <Border Background="{StaticResource Brush.Background}"
+                                                    CornerRadius="8" Padding="10" Margin="0,0,0,8">
+                                                <StackPanel>
+                                                    <Border Background="{StaticResource Brush.Primary}"
+                                                            CornerRadius="4" Padding="6,2"
+                                                            HorizontalAlignment="Left"
+                                                            Margin="0,0,0,6">
+                                                        <TextBlock Foreground="White" FontSize="11" FontWeight="SemiBold">
+                                                            <Run Text="{Binding StartTime, StringFormat={}{0:hh\\:mm}}"/>
+                                                            <Run Text=" - "/>
+                                                            <Run Text="{Binding EndTime, StringFormat={}{0:hh\\:mm}}"/>
+                                                        </TextBlock>
+                                                    </Border>
+                                                    <TextBlock Text="{Binding Patient.FullName}"
+                                                               FontSize="13" FontWeight="SemiBold"
+                                                               Foreground="{StaticResource Brush.TextPrimary}"
+                                                               TextTrimming="CharacterEllipsis"/>
+                                                    <TextBlock Text="{Binding Treatment.Name}"
+                                                               FontSize="11"
+                                                               Foreground="{StaticResource Brush.TextSecondary}"
+                                                               TextTrimming="CharacterEllipsis"
+                                                               Margin="0,2,0,0"/>
+                                                </StackPanel>
+                                            </Border>
+                                            </Button>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center"
+                                            Visibility="{Binding WeekDays[3].Appointments.Count, Converter={StaticResource CountToVisibilityConverter}}">
+                                    <TextBlock Text="&#xE787;" FontFamily="Segoe MDL2 Assets" FontSize="24"
+                                               Foreground="{StaticResource Brush.TextMuted}" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="Sin citas" FontSize="12"
+                                               Foreground="{StaticResource Brush.TextMuted}"
+                                               HorizontalAlignment="Center" Margin="0,6,0,0"/>
+                                </StackPanel>
+                            </Grid>
+                        </ScrollViewer>
+                    </Grid>
                 </Border>
 
-                <!-- Friday (WeekDays[4]) -->
-                <Border Grid.Column="4" Style="{StaticResource AppointmentBorderStyle}">
-                    <StackPanel>
-                        <TextBlock Text="{Binding WeekDays[4].DisplayDate}"
-                                   FontWeight="Bold" FontSize="16"
-                                   Margin="0,0,0,5"
-                                   HorizontalAlignment="Center" />
-
-                        <ItemsControl ItemsSource="{Binding WeekDays[4].Appointments}">
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <Border Style="{StaticResource AppointmentBorderStyle}" Margin="0,0,0,5">
-                                        <StackPanel Orientation="Vertical">
-                                            <TextBlock Style="{StaticResource AppointmentTimeTextStyle}">
-                                                <Run Text="{Binding StartTime, StringFormat={}{0:hh\\:mm}}"/>
-                                                <Run Text=" - "/>
-                                                <Run Text="{Binding EndTime, StringFormat={}{0:hh\\:mm}}"/>
-                                            </TextBlock>
-
-                                            <TextBlock Text="{Binding Patient.FullName}"
-                                                       Style="{StaticResource AppointmentGeneralTextStyle}"/>
-                                            <TextBlock Text="{Binding Treatment.Name}"
-                                                       Style="{StaticResource AppointmentGeneralTextStyle}"/>
-                                            <TextBlock Text="{Binding Notes}"
-                                                       Style="{StaticResource AppointmentGeneralTextStyle}"
-                                                       TextWrapping="Wrap"/>
-                                        </StackPanel>
-                                    </Border>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-
-                        <TextBlock Text="Sin citas"
-                                   HorizontalAlignment="Center" Margin="5"
-                                   Visibility="{Binding WeekDays[4].Appointments.Count,
-                                               Converter={StaticResource CountToVisibilityConverter},
-                                               ConverterParameter=Zero}"/>
-                    </StackPanel>
+                <Border Grid.Column="4" Background="{StaticResource Brush.Surface}"
+                        CornerRadius="10" Margin="5,0,0,0">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Border Grid.Row="0" Background="{StaticResource Brush.PrimarySoft}"
+                                CornerRadius="10,10,0,0" Padding="12,10">
+                            <TextBlock Text="{Binding WeekDays[4].DisplayDate}"
+                                       FontWeight="SemiBold" FontSize="14"
+                                       Foreground="{StaticResource Brush.PrimaryPressed}"
+                                       HorizontalAlignment="Center"/>
+                        </Border>
+                        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Padding="8">
+                            <Grid>
+                                <ItemsControl ItemsSource="{Binding WeekDays[4].Appointments}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Button Command="{Binding DataContext.OpenAppointmentDetailsCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    CommandParameter="{Binding}"
+                                                    Background="Transparent"
+                                                    BorderThickness="0"
+                                                    Padding="0"
+                                                    HorizontalContentAlignment="Stretch"
+                                                    Cursor="Hand">
+                                            <Border Background="{StaticResource Brush.Background}"
+                                                    CornerRadius="8" Padding="10" Margin="0,0,0,8">
+                                                <StackPanel>
+                                                    <Border Background="{StaticResource Brush.Primary}"
+                                                            CornerRadius="4" Padding="6,2"
+                                                            HorizontalAlignment="Left"
+                                                            Margin="0,0,0,6">
+                                                        <TextBlock Foreground="White" FontSize="11" FontWeight="SemiBold">
+                                                            <Run Text="{Binding StartTime, StringFormat={}{0:hh\\:mm}}"/>
+                                                            <Run Text=" - "/>
+                                                            <Run Text="{Binding EndTime, StringFormat={}{0:hh\\:mm}}"/>
+                                                        </TextBlock>
+                                                    </Border>
+                                                    <TextBlock Text="{Binding Patient.FullName}"
+                                                               FontSize="13" FontWeight="SemiBold"
+                                                               Foreground="{StaticResource Brush.TextPrimary}"
+                                                               TextTrimming="CharacterEllipsis"/>
+                                                    <TextBlock Text="{Binding Treatment.Name}"
+                                                               FontSize="11"
+                                                               Foreground="{StaticResource Brush.TextSecondary}"
+                                                               TextTrimming="CharacterEllipsis"
+                                                               Margin="0,2,0,0"/>
+                                                </StackPanel>
+                                            </Border>
+                                            </Button>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center"
+                                            Visibility="{Binding WeekDays[4].Appointments.Count, Converter={StaticResource CountToVisibilityConverter}}">
+                                    <TextBlock Text="&#xE787;" FontFamily="Segoe MDL2 Assets" FontSize="24"
+                                               Foreground="{StaticResource Brush.TextMuted}" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="Sin citas" FontSize="12"
+                                               Foreground="{StaticResource Brush.TextMuted}"
+                                               HorizontalAlignment="Center" Margin="0,6,0,0"/>
+                                </StackPanel>
+                            </Grid>
+                        </ScrollViewer>
+                    </Grid>
                 </Border>
-
             </Grid>
+
+        <!-- OVERLAY: Detalles de la cita seleccionada -->
+        <Grid Grid.Row="0" Grid.RowSpan="2" Grid.Column="0" Grid.ColumnSpan="2"
+              Background="#80000000"
+              Panel.ZIndex="100"
+              Visibility="{Binding HasSelectedAppointment, Converter={StaticResource BoolToVisibilityConverter}}">
+            <Border Background="{StaticResource Brush.Surface}"
+                    CornerRadius="14" Padding="0"
+                    Width="480"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Header del overlay -->
+                    <Border Grid.Row="0" Background="{StaticResource Brush.Primary}"
+                            CornerRadius="14,14,0,0" Padding="20,16">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0" Orientation="Horizontal">
+                                <TextBlock Text="&#xE787;"
+                                           FontFamily="Segoe MDL2 Assets"
+                                           FontSize="18" Foreground="White"
+                                           VerticalAlignment="Center"/>
+                                <TextBlock Text="Detalles de la Cita"
+                                           FontSize="16" FontWeight="SemiBold"
+                                           Foreground="White"
+                                           Margin="10,0,0,0"
+                                           VerticalAlignment="Center"/>
+                            </StackPanel>
+                            <Button Grid.Column="1"
+                                    Command="{Binding CloseAppointmentDetailsCommand}"
+                                    Width="30" Height="30"
+                                    Background="Transparent" BorderThickness="0"
+                                    Cursor="Hand" ToolTip="Cerrar">
+                                <TextBlock Text="&#xE711;"
+                                           FontFamily="Segoe MDL2 Assets"
+                                           FontSize="12" Foreground="White"/>
+                            </Button>
+                        </Grid>
+                    </Border>
+
+                    <!-- Contenido -->
+                    <StackPanel Grid.Row="1" Margin="24">
+                        <TextBlock Text="PACIENTE" FontSize="10" FontWeight="SemiBold"
+                                   Foreground="{StaticResource Brush.TextMuted}"/>
+                        <TextBlock Text="{Binding SelectedAppointment.Patient.FullName}"
+                                   FontSize="16" FontWeight="SemiBold"
+                                   Foreground="{StaticResource Brush.TextPrimary}"
+                                   Margin="0,2,0,16"/>
+
+                        <TextBlock Text="TRATAMIENTO" FontSize="10" FontWeight="SemiBold"
+                                   Foreground="{StaticResource Brush.TextMuted}"/>
+                        <TextBlock Text="{Binding SelectedAppointment.Treatment.Name}"
+                                   FontSize="14"
+                                   Foreground="{StaticResource Brush.TextPrimary}"
+                                   Margin="0,2,0,16"/>
+
+                        <Grid Margin="0,0,0,16">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="FECHA" FontSize="10" FontWeight="SemiBold"
+                                           Foreground="{StaticResource Brush.TextMuted}"/>
+                                <TextBlock Text="{Binding SelectedAppointment.AppointmentDate, StringFormat=dd/MM/yyyy}"
+                                           FontSize="14"
+                                           Foreground="{StaticResource Brush.TextPrimary}"
+                                           Margin="0,2,0,0"/>
+                            </StackPanel>
+                            <StackPanel Grid.Column="1">
+                                <TextBlock Text="HORARIO" FontSize="10" FontWeight="SemiBold"
+                                           Foreground="{StaticResource Brush.TextMuted}"/>
+                                <TextBlock FontSize="14"
+                                           Foreground="{StaticResource Brush.TextPrimary}"
+                                           Margin="0,2,0,0">
+                                    <Run Text="{Binding SelectedAppointment.StartTime, StringFormat={}{0:hh\\:mm}}"/>
+                                    <Run Text=" - "/>
+                                    <Run Text="{Binding SelectedAppointment.EndTime, StringFormat={}{0:hh\\:mm}}"/>
+                                </TextBlock>
+                            </StackPanel>
+                        </Grid>
+
+                        <TextBlock Text="NOTAS" FontSize="10" FontWeight="SemiBold"
+                                   Foreground="{StaticResource Brush.TextMuted}"/>
+                        <TextBlock Text="{Binding SelectedAppointment.Notes}"
+                                   FontSize="13"
+                                   Foreground="{StaticResource Brush.TextSecondary}"
+                                   TextWrapping="Wrap"
+                                   Margin="0,2,0,0"
+                                   MinHeight="40"/>
+                    </StackPanel>
+
+                    <!-- Footer con botón cerrar -->
+                    <Border Grid.Row="2"
+                            Background="{StaticResource Brush.Background}"
+                            CornerRadius="0,0,14,14"
+                            Padding="20,14">
+                        <Button Command="{Binding CloseAppointmentDetailsCommand}"
+                                Style="{StaticResource Modern.Button.Primary}"
+                                HorizontalAlignment="Right">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="&#xE711;" FontFamily="Segoe MDL2 Assets"
+                                           FontSize="13" VerticalAlignment="Center"/>
+                                <TextBlock Text="Cerrar" Margin="6,0,0,0"/>
+                            </StackPanel>
+                        </Button>
+                    </Border>
+                </Grid>
+            </Border>
+        </Grid>
         </Grid>
     </Grid>
 </UserControl>
