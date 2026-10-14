@@ -4,16 +4,18 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              mc:Ignorable="d"
-             d:DesignHeight="600" d:DesignWidth="1000"
+             d:DesignHeight="700" d:DesignWidth="1100"
              Background="{StaticResource Brush.Background}">
 
     <Grid Margin="28">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
+        <!-- HEADER -->
         <Grid Grid.Row="0" Margin="0,0,0,20">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
@@ -34,6 +36,7 @@
             </Button>
         </Grid>
 
+        <!-- TOOLBAR -->
         <Border Grid.Row="1" Background="{StaticResource Brush.Surface}"
                 CornerRadius="12" Padding="16" Margin="0,0,0,16">
             <Grid>
@@ -67,13 +70,6 @@
                                 ToolTip="Limpiar" Click="ClearSearch_Click" VerticalAlignment="Center"/>
                     </Grid>
                 </Border>
-                <Button Grid.Column="1" Command="{Binding EditAppointmentCommand}"
-                        Style="{StaticResource Modern.Button.Secondary}" Margin="8,0,0,0">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="&#xE70F;" FontFamily="Segoe MDL2 Assets" FontSize="13" VerticalAlignment="Center"/>
-                        <TextBlock Text="Editar" Margin="6,0,0,0"/>
-                    </StackPanel>
-                </Button>
                 <Button Grid.Column="2" Command="{Binding ReloadCommand}"
                         Style="{StaticResource Modern.Button.Secondary}" Margin="8,0,0,0">
                     <StackPanel Orientation="Horizontal">
@@ -84,7 +80,120 @@
             </Grid>
         </Border>
 
-        <Border Grid.Row="2" Background="{StaticResource Brush.Surface}" CornerRadius="12" Padding="0">
+        <!-- WEEK STRIP -->
+        <Border Grid.Row="2" Background="{StaticResource Brush.Surface}"
+                CornerRadius="12" Padding="16" Margin="0,0,0,16">
+            <StackPanel>
+
+                <!-- Navigation -->
+                <Grid Margin="0,0,0,14">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <Button Grid.Column="0" Command="{Binding PreviousWeekCommand}"
+                            Style="{StaticResource Modern.Button.Secondary}"
+                            Width="42" Height="32" MinWidth="0" Padding="0">
+                        <TextBlock Text="&#xE76B;" FontFamily="Segoe MDL2 Assets"
+                                   FontSize="12" Foreground="{StaticResource Brush.TextSecondary}"/>
+                    </Button>
+                    <TextBlock Grid.Column="1" Text="{Binding WeekRangeLabel}"
+                               HorizontalAlignment="Center" VerticalAlignment="Center"
+                               FontSize="14" FontWeight="SemiBold"
+                               Foreground="{StaticResource Brush.TextPrimary}"/>
+                    <Button Grid.Column="2" Command="{Binding NextWeekCommand}"
+                            Style="{StaticResource Modern.Button.Secondary}"
+                            Width="42" Height="32" MinWidth="0" Padding="0"
+                            Margin="0,0,8,0">
+                        <TextBlock Text="&#xE76C;" FontFamily="Segoe MDL2 Assets"
+                                   FontSize="12" Foreground="{StaticResource Brush.TextSecondary}"/>
+                    </Button>
+                    <Button Grid.Column="3" Command="{Binding ClearDayFilterCommand}"
+                            Style="{StaticResource Modern.Button.Secondary}"
+                            Visibility="{Binding HasDayFilter, Converter={StaticResource BoolToVisibilityConverter}}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding DayFilterLabel}"
+                                       FontSize="12" VerticalAlignment="Center"/>
+                            <TextBlock Text="&#xE711;" FontFamily="Segoe MDL2 Assets"
+                                       FontSize="10" Margin="8,0,0,0" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+                </Grid>
+
+                <!-- Day cards -->
+                <ItemsControl ItemsSource="{Binding WeekDays}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <UniformGrid Columns="7"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Button Command="{Binding DataContext.FilterByDayCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                    CommandParameter="{Binding}"
+                                    Margin="3"
+                                    Padding="0"
+                                    Background="Transparent"
+                                    BorderThickness="0"
+                                    Cursor="Hand">
+                                <Border Background="{StaticResource Brush.Background}"
+                                        CornerRadius="10"
+                                        Padding="8,10"
+                                        BorderBrush="Transparent"
+                                        BorderThickness="2">
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsToday}" Value="True">
+                                                    <Setter Property="Background" Value="{StaticResource Brush.PrimarySoft}"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                                    <Setter Property="BorderBrush" Value="{StaticResource Brush.Primary}"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding DayName}"
+                                                   FontSize="11" FontWeight="SemiBold"
+                                                   Foreground="{StaticResource Brush.TextMuted}"
+                                                   HorizontalAlignment="Center"/>
+                                        <TextBlock Text="{Binding DayNumber}"
+                                                   FontSize="20" FontWeight="Bold"
+                                                   Foreground="{StaticResource Brush.TextPrimary}"
+                                                   HorizontalAlignment="Center"
+                                                   Margin="0,2,0,6"/>
+                                        <Border Background="{StaticResource Brush.Primary}"
+                                                CornerRadius="10"
+                                                Padding="8,2"
+                                                HorizontalAlignment="Center">
+                                            <Border.Style>
+                                                <Style TargetType="Border">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding AppointmentCount}" Value="0">
+                                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Border.Style>
+                                            <TextBlock Text="{Binding AppointmentCount}"
+                                                       FontSize="11" FontWeight="SemiBold"
+                                                       Foreground="White"
+                                                       HorizontalAlignment="Center"/>
+                                        </Border>
+                                    </StackPanel>
+                                </Border>
+                            </Button>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+            </StackPanel>
+        </Border>
+        <Border Grid.Row="3" Background="{StaticResource Brush.Surface}" CornerRadius="12" Padding="0">
             <Grid>
                 <DataGrid ItemsSource="{Binding Appointments}" AutoGenerateColumns="False"
                           SelectedItem="{Binding SelectedAppointment, Mode=TwoWay}"
@@ -138,13 +247,71 @@
                         </Style>
                     </DataGrid.RowStyle>
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="Paciente" Binding="{Binding Patient.DisplayInfo}" Width="*"/>
-                        <DataGridTextColumn Header="Dentista" Binding="{Binding Dentist.DisplayInfo}" Width="*"/>
+                        <DataGridTemplateColumn Header="Paciente" Width="2*">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding Patient.FullName}"
+                                                   FontSize="13" FontWeight="SemiBold"
+                                                   Foreground="{StaticResource Brush.TextPrimary}"
+                                                   TextTrimming="CharacterEllipsis"/>
+                                        <TextBlock Text="{Binding Patient.PhoneNumber}"
+                                                   FontSize="11"
+                                                   Foreground="{StaticResource Brush.TextMuted}"
+                                                   TextTrimming="CharacterEllipsis"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="Dentista" Width="*">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding Dentist.FullName}"
+                                                   FontSize="13"
+                                                   Foreground="{StaticResource Brush.TextPrimary}"
+                                                   TextTrimming="CharacterEllipsis"/>
+                                        <TextBlock Text="{Binding Dentist.Specialization}"
+                                                   FontSize="11"
+                                                   Foreground="{StaticResource Brush.TextMuted}"
+                                                   TextTrimming="CharacterEllipsis"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
                         <DataGridTextColumn Header="Tratamiento" Binding="{Binding Treatment.Name}" Width="*"/>
-                        <DataGridTextColumn Header="Fecha" Binding="{Binding AppointmentDate, StringFormat=d}" Width="100"/>
-                        <DataGridTextColumn Header="Inicio" Binding="{Binding StartTime, StringFormat=hh\\:mm}" Width="80"/>
-                        <DataGridTextColumn Header="Fin" Binding="{Binding EndTime, StringFormat=hh\\:mm}" Width="80"/>
-                        <DataGridTextColumn Header="Notas" Binding="{Binding Notes}" Width="2*"/>
+                        <DataGridTemplateColumn Header="Fecha" Width="120">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding AppointmentDate, StringFormat=dd/MM/yyyy}"
+                                                   FontSize="13"
+                                                   Foreground="{StaticResource Brush.TextPrimary}"/>
+                                        <TextBlock Text="{Binding AppointmentDate, StringFormat=dddd}"
+                                                   FontSize="11"
+                                                   Foreground="{StaticResource Brush.TextMuted}"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="Horario" Width="140">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Border Background="{StaticResource Brush.PrimarySoft}"
+                                            CornerRadius="6" Padding="10,6"
+                                            HorizontalAlignment="Left"
+                                            VerticalAlignment="Center">
+                                        <TextBlock FontSize="12" FontWeight="SemiBold"
+                                                   Foreground="{StaticResource Brush.PrimaryPressed}">
+                                            <Run Text="{Binding StartTime, StringFormat={}{0:hh\\:mm}}"/>
+                                            <Run Text=" - "/>
+                                            <Run Text="{Binding EndTime, StringFormat={}{0:hh\\:mm}}"/>
+                                        </TextBlock>
+                                    </Border>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTextColumn Header="Notas" Binding="{Binding Notes}" Width="*"/>
                     </DataGrid.Columns>
                 </DataGrid>
 

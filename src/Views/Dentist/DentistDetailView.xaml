@@ -509,6 +509,7 @@
                 </Border>
             </Grid>
 
+        </Grid>
         <!-- OVERLAY: Detalles de la cita seleccionada -->
         <Grid Grid.Row="0" Grid.RowSpan="2" Grid.Column="0" Grid.ColumnSpan="2"
               Background="#80000000"
@@ -626,7 +627,6 @@
                     </Border>
                 </Grid>
             </Border>
-        </Grid>
         </Grid>
     </Grid>
 </UserControl>
