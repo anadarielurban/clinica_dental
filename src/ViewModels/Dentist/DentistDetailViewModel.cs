@@ -167,16 +167,7 @@ namespace DentalClinicWPF.ViewModels.Dentist
         private void OpenAppointmentDetails(Models.Appointment appointment)
         {
             if (appointment == null) return;
-
-            string msg = $"Detalles de la cita:\n" +
-                         $"Patient: {appointment.Patient?.FullName}\n" +
-                         $"Procedure: {appointment.Treatment?.Name}\n" +
-                         $"Date: {appointment.AppointmentDate:dd/MM/yyyy}\n" +
-                         $"Time: {appointment.StartTime:HH\\:mm} - {appointment.EndTime:HH\\:mm}\n" +
-                         $"Notes: {appointment.Notes}\n";
-
-            MessageBox.Show(msg, "Detalles de la Cita",
-                            MessageBoxButton.OK, MessageBoxImage.Information);
+            SelectedAppointment = appointment;
         }
     }
 }

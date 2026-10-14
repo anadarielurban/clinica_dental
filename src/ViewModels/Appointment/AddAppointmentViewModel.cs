@@ -184,6 +184,20 @@ namespace DentalClinicWPF.ViewModels.Appointment
                 AddError(nameof(StartTime), "La hora de inicio debe ser anterior a la hora de fin.");
         }
 
+        private bool HasTimeConflict()
+        {
+            if (DentistID == 0) return false;
+            if (!TimeSpan.TryParse(StartTime, out var start)) return false;
+            if (!TimeSpan.TryParse(EndTime, out var end)) return false;
+
+            var date = AppointmentDate.Date;
+
+            return _context.Appointment
+                .Where(a => a.DentistID == DentistID && a.AppointmentDate.Date == date)
+                .AsEnumerable()
+                .Any(a => a.StartTime < end && a.EndTime > start);
+        }
+
         private bool CanSave()
         {
             return !HasErrors &&
@@ -198,6 +212,18 @@ namespace DentalClinicWPF.ViewModels.Appointment
 
         private void Save()
         {
+            // Check for time conflict first
+            if (HasTimeConflict())
+            {
+                MessageBox.Show(
+                    "El dentista ya tiene una cita en ese horario.\n\n" +
+                    "Por favor elige otra hora o fecha.",
+                    "Horario ocupado",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+                return;
+            }
+
             if (!CanSave())
             {
                 MessageBox.Show("Corrige los errores de validación antes de guardar.", "Error de Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
