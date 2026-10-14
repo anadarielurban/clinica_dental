@@ -66,6 +66,7 @@ namespace DentalClinicWPF.ViewModels.Dentist
             _context = context ?? throw new ArgumentNullException(nameof(context));
             Dentist = dentist ?? throw new ArgumentNullException(nameof(dentist));
 
+            CloseAppointmentDetailsCommand = new RelayCommand(() => SelectedAppointment = null);
             NextWeekCommand = new RelayCommand(NextWeek);
             PreviousWeekCommand = new RelayCommand(PreviousWeek);
             OpenAppointmentDetailsCommand = new RelayCommand<Models.Appointment>(OpenAppointmentDetails);
@@ -108,6 +109,7 @@ namespace DentalClinicWPF.ViewModels.Dentist
                     .Where(a => a.DentistID == Dentist.DentistID
                                 && a.AppointmentDate >= startDate
                                 && a.AppointmentDate < endDate)
+                    .AsEnumerable()
                     .OrderBy(a => a.AppointmentDate)
                     .ThenBy(a => a.StartTime)
                     .ToList();
@@ -145,6 +147,22 @@ namespace DentalClinicWPF.ViewModels.Dentist
                 .FirstOrDefault()?.Key
                 ?? "N/A";
         }
+
+        private Models.Appointment _selectedAppointment;
+        public Models.Appointment SelectedAppointment
+        {
+            get => _selectedAppointment;
+            set
+            {
+                _selectedAppointment = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(HasSelectedAppointment));
+            }
+        }
+
+        public bool HasSelectedAppointment => _selectedAppointment != null;
+
+        public ICommand CloseAppointmentDetailsCommand { get; }
 
         private void OpenAppointmentDetails(Models.Appointment appointment)
         {

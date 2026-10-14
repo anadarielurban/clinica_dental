@@ -28,72 +28,167 @@
         </Grid.RowDefinitions>
 
         <!-- TOP SECTION: Patient Info and Statistics -->
-        <Border Style="{StaticResource MinimalBorderStyle}" Margin="0,0,0,20">
+        <Border Background="{StaticResource Brush.Surface}"
+                CornerRadius="12" Padding="24"
+                Margin="0,0,0,20">
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="3*"/>
                     <ColumnDefinition Width="2*"/>
                     <ColumnDefinition Width="2*"/>
                 </Grid.ColumnDefinitions>
 
-                <!-- Column 1: Patient basic data -->
-                <StackPanel Orientation="Vertical" HorizontalAlignment="Left" Margin="10">
-                    <TextBlock Text="{Binding Patient.FullName}"
-                               FontSize="18" FontWeight="Bold"
-                               Margin="0,0,0,10"/>
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="Fecha Nac: " FontWeight="Bold"/>
-                        <TextBlock Text="{Binding Patient.DateOfBirth, StringFormat='yyyy-MM-dd'}"/>
+                <!-- Columna 1: Datos del paciente -->
+                <StackPanel Grid.Column="0" Margin="0,0,20,0">
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
+                        <Border Width="52" Height="52"
+                                Background="{StaticResource Brush.PrimarySoft}"
+                                CornerRadius="26">
+                            <TextBlock Text="&#xE77B;"
+                                       FontFamily="Segoe MDL2 Assets"
+                                       FontSize="24"
+                                       Foreground="{StaticResource Brush.PrimaryPressed}"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"/>
+                        </Border>
+                        <StackPanel VerticalAlignment="Center" Margin="14,0,0,0">
+                            <TextBlock Text="{Binding Patient.FullName}"
+                                       FontSize="22" FontWeight="Bold"
+                                       Foreground="{StaticResource Brush.TextPrimary}"/>
+                            <TextBlock Text="Paciente"
+                                       FontSize="12"
+                                       Foreground="{StaticResource Brush.TextMuted}"
+                                       Margin="0,2,0,0"/>
+                        </StackPanel>
                     </StackPanel>
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="Teléfono: " FontWeight="Bold"/>
-                        <TextBlock Text="{Binding Patient.PhoneNumber}"/>
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="Correo: " FontWeight="Bold"/>
-                        <TextBlock Text="{Binding Patient.Email}"/>
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="Dirección: " FontWeight="Bold"/>
-                        <TextBlock Text="{Binding Patient.Address}" TextWrapping="Wrap"/>
-                    </StackPanel>
+
+                    <TextBlock Text="INFORMACIÓN"
+                               FontSize="10" FontWeight="SemiBold"
+                               Foreground="{StaticResource Brush.TextMuted}"
+                               Margin="0,0,0,8"/>
+
+                    <TextBlock Text="Fecha de Nacimiento"
+                               FontSize="11"
+                               Foreground="{StaticResource Brush.TextMuted}"/>
+                    <TextBlock Text="{Binding Patient.DateOfBirth, StringFormat=dd/MM/yyyy}"
+                               FontSize="13"
+                               Foreground="{StaticResource Brush.TextPrimary}"
+                               Margin="0,2,0,10"/>
+
+                    <TextBlock Text="Teléfono"
+                               FontSize="11"
+                               Foreground="{StaticResource Brush.TextMuted}"/>
+                    <TextBlock Text="{Binding Patient.PhoneNumber}"
+                               FontSize="13"
+                               Foreground="{StaticResource Brush.TextPrimary}"
+                               Margin="0,2,0,10"/>
+
+                    <TextBlock Text="Correo"
+                               FontSize="11"
+                               Foreground="{StaticResource Brush.TextMuted}"/>
+                    <TextBlock Text="{Binding Patient.Email}"
+                               FontSize="13"
+                               Foreground="{StaticResource Brush.TextPrimary}"
+                               TextWrapping="Wrap"
+                               Margin="0,2,0,10"/>
+
+                    <TextBlock Text="Dirección"
+                               FontSize="11"
+                               Foreground="{StaticResource Brush.TextMuted}"/>
+                    <TextBlock Text="{Binding Patient.Address}"
+                               FontSize="13"
+                               Foreground="{StaticResource Brush.TextPrimary}"
+                               TextWrapping="Wrap"
+                               Margin="0,2,0,0"/>
                 </StackPanel>
 
-                <!-- Column 2: Statistics -->
-                <StackPanel Orientation="Vertical" Grid.Column="1" HorizontalAlignment="Left" Margin="10">
-                    <TextBlock Text="Estadísticas"
-                               FontWeight="Bold" FontSize="16"
-                               Margin="0,0,0,10"/>
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="Número de visitas: " FontWeight="Bold"/>
-                        <TextBlock Text="{Binding TotalVisits}"/>
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="Todas las facturas pagadas: " FontWeight="Bold"/>
-                        <TextBlock Text="{Binding IsEverythingPaid}"/>
-                    </StackPanel>
+                <!-- Columna 2: Estadísticas -->
+                <StackPanel Grid.Column="1" Margin="0,0,20,0">
+                    <TextBlock Text="ESTADÍSTICAS"
+                               FontSize="10" FontWeight="SemiBold"
+                               Foreground="{StaticResource Brush.TextMuted}"
+                               Margin="0,0,0,12"/>
+
+                    <Border Background="{StaticResource Brush.Background}"
+                            CornerRadius="10" Padding="16" Margin="0,0,0,10">
+                        <StackPanel>
+                            <TextBlock Text="Visitas totales"
+                                       FontSize="12"
+                                       Foreground="{StaticResource Brush.TextSecondary}"/>
+                            <TextBlock Text="{Binding TotalVisits}"
+                                       FontSize="24" FontWeight="Bold"
+                                       Foreground="{StaticResource Brush.PrimaryPressed}"
+                                       Margin="0,4,0,0"/>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Background="{StaticResource Brush.Background}"
+                            CornerRadius="10" Padding="16">
+                        <StackPanel>
+                            <TextBlock Text="Facturas pagadas"
+                                       FontSize="12"
+                                       Foreground="{StaticResource Brush.TextSecondary}"/>
+                            <TextBlock Text="{Binding IsEverythingPaid}"
+                                       FontSize="16" FontWeight="SemiBold"
+                                       Foreground="{StaticResource Brush.TextPrimary}"
+                                       Margin="0,4,0,0"/>
+                        </StackPanel>
+                    </Border>
                 </StackPanel>
 
-                <!-- Column 3: Filter + PDF export -->
-                <StackPanel Grid.Column="2" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10">
-                    <TextBlock Text="Buscar / Filtrar:" FontWeight="Bold" Margin="0,0,0,5"/>
-                    <StackPanel Orientation="Horizontal">
-                        <TextBox Width="160" 
-                                 Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
-                                 Style="{StaticResource MinimalTextBoxStyle}"
-                                 Margin="0,0,5,0"/>
-                        <Button Content="Filtrar"
-                                Command="{Binding FilterCommand}"
-                                Style="{StaticResource MinimalButtonStyle}"
-                                Margin="0,0,10,0"/>
-                    </StackPanel>
+                <!-- Columna 3: Búsqueda y exportar -->
+                <StackPanel Grid.Column="2">
+                    <TextBlock Text="BÚSQUEDA"
+                               FontSize="10" FontWeight="SemiBold"
+                               Foreground="{StaticResource Brush.TextMuted}"
+                               Margin="0,0,0,12"/>
 
-                    <Separator Margin="0,10,0,10"/>
+                    <Border Background="{StaticResource Brush.Background}"
+                            CornerRadius="8" Height="38"
+                            BorderBrush="{StaticResource Brush.Border}"
+                            BorderThickness="1"
+                            Margin="0,0,0,10">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Text="&#xE721;"
+                                       FontFamily="Segoe MDL2 Assets"
+                                       FontSize="13"
+                                       Foreground="{StaticResource Brush.TextMuted}"
+                                       VerticalAlignment="Center"
+                                       Margin="12,0,6,0"/>
+                            <TextBox Grid.Column="1"
+                                     Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                                     Background="Transparent" BorderThickness="0"
+                                     FontSize="13"
+                                     Foreground="{StaticResource Brush.TextPrimary}"
+                                     VerticalContentAlignment="Center"
+                                     ToolTip="Buscar en el historial"/>
+                        </Grid>
+                    </Border>
 
-                    <Button Content="Exportar a PDF"
-                            Command="{Binding ExportPdfCommand}"
-                            Style="{StaticResource MinimalButtonStyle}"
-                            Width="120"/>
+                    <Button Command="{Binding FilterCommand}"
+                            Style="{StaticResource Modern.Button.Secondary}"
+                            HorizontalAlignment="Stretch"
+                            Margin="0,0,0,10">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE71C;" FontFamily="Segoe MDL2 Assets"
+                                       FontSize="13" VerticalAlignment="Center"/>
+                            <TextBlock Text="Filtrar" Margin="6,0,0,0"/>
+                        </StackPanel>
+                    </Button>
+
+                    <Button Command="{Binding ExportPdfCommand}"
+                            Style="{StaticResource Modern.Button.Primary}"
+                            HorizontalAlignment="Stretch">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE8A5;" FontFamily="Segoe MDL2 Assets"
+                                       FontSize="13" VerticalAlignment="Center"/>
+                            <TextBlock Text="Exportar PDF" Margin="6,0,0,0"/>
+                        </StackPanel>
+                    </Button>
                 </StackPanel>
             </Grid>
         </Border>

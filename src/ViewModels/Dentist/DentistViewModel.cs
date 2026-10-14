@@ -48,8 +48,8 @@ namespace DentalClinicWPF.ViewModels.Dentist
             {
                 _selectedDentist = value;
                 OnPropertyChanged();
-                (EditDentistCommand as RelayCommand)?.NotifyCanExecuteChanged();
-                (OpenDentistDetailCommand as RelayCommand)?.NotifyCanExecuteChanged();
+                (EditDentistCommand as RelayCommand<Models.Dentist>)?.NotifyCanExecuteChanged();
+                (OpenDentistDetailCommand as RelayCommand<Models.Dentist>)?.NotifyCanExecuteChanged();
             }
         }
 
@@ -90,11 +90,11 @@ namespace DentalClinicWPF.ViewModels.Dentist
             _searchTimer.Tick += (s, e) => { _searchTimer.Stop(); SearchDentists(); };
 
             AddDentistCommand = new RelayCommand(OpenAddDentist);
-            EditDentistCommand = new RelayCommand(OpenEditDentist, CanEditDentist);
+            EditDentistCommand = new RelayCommand<Models.Dentist>(OpenEditDentistWithParam, p => p != null);
             ReloadCommand = new RelayCommand(ReloadAll);
             SearchCommand = new RelayCommand(SearchDentists);
             SortCommand = new RelayCommand(SortDentists);
-            OpenDentistDetailCommand = new RelayCommand(OpenDentistDetail, CanOpenDentistDetail);
+            OpenDentistDetailCommand = new RelayCommand<Models.Dentist>(OpenDentistDetailWithParam, p => p != null);
 
             LoadDentists();
         }
@@ -166,11 +166,25 @@ namespace DentalClinicWPF.ViewModels.Dentist
             if (w.ShowDialog() == true) LoadDentists();
         }
 
+        private void OpenEditDentistWithParam(Models.Dentist dentist)
+        {
+            if (dentist == null) return;
+            SelectedDentist = dentist;
+            OpenEditDentist();
+        }
+
         private void OpenEditDentist()
         {
             if (SelectedDentist == null) return;
             var w = new EditDentistWindow { DataContext = new EditDentistViewModel(SelectedDentist, _context), Owner = Application.Current.MainWindow };
             if (w.ShowDialog() == true) LoadDentists();
+        }
+
+        private void OpenDentistDetailWithParam(Models.Dentist dentist)
+        {
+            if (dentist == null) return;
+            SelectedDentist = dentist;
+            OpenDentistDetail();
         }
 
         private void OpenDentistDetail()

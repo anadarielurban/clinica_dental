@@ -61,8 +61,8 @@ namespace DentalClinicWPF.ViewModels.Patient
             {
                 _selectedPatient = value;
                 OnPropertyChanged();
-                ((RelayCommand)OpenEditPatientCommand).NotifyCanExecuteChanged();
-                ((RelayCommand)OpenPatientDetailCommand).NotifyCanExecuteChanged();
+                (OpenEditPatientCommand as RelayCommand<Models.Patient>)?.NotifyCanExecuteChanged();
+                (OpenPatientDetailCommand as RelayCommand<Models.Patient>)?.NotifyCanExecuteChanged();
             }
         }
 
@@ -116,10 +116,10 @@ namespace DentalClinicWPF.ViewModels.Patient
         private void InitializeCommands()
         {
             OpenAddPatientCommand = new RelayCommand(OpenAddPatient);
-            OpenEditPatientCommand = new RelayCommand(OpenEditPatient, CanEditPatient);
+            OpenEditPatientCommand = new RelayCommand<Models.Patient>(OpenEditPatientWithParam, p => p != null);
             SearchCommand = new RelayCommand(SearchPatients);
             ReloadCommand = new RelayCommand(ReloadAll);
-            OpenPatientDetailCommand = new RelayCommand(OpenPatientDetail, CanOpenPatientDetail);
+            OpenPatientDetailCommand = new RelayCommand<Models.Patient>(OpenPatientDetailWithParam, p => p != null);
             SortCommand = new RelayCommand(SortPatients);
         }
 
@@ -217,6 +217,13 @@ namespace DentalClinicWPF.ViewModels.Patient
             }
         }
 
+        private void OpenEditPatientWithParam(Models.Patient patient)
+        {
+            if (patient == null) return;
+            SelectedPatient = patient;
+            OpenEditPatient();
+        }
+
         private void OpenEditPatient()
         {
             if (SelectedPatient == null) return;
@@ -231,6 +238,13 @@ namespace DentalClinicWPF.ViewModels.Patient
             {
                 LoadPatients();
             }
+        }
+
+        private void OpenPatientDetailWithParam(Models.Patient patient)
+        {
+            if (patient == null) return;
+            SelectedPatient = patient;
+            OpenPatientDetail();
         }
 
         private void OpenPatientDetail()
