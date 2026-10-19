@@ -25,7 +25,8 @@ namespace DentalClinicWPF.ViewModels.Room
             {
                 _selectedRoom = value;
                 OnPropertyChanged();
-                (EditRoomCommand as RelayCommand)?.NotifyCanExecuteChanged();
+                (EditRoomCommand as RelayCommand<Models.Room>)?.NotifyCanExecuteChanged();
+                (DeleteRoomCommand as RelayCommand<Models.Room>)?.NotifyCanExecuteChanged();
             }
         }
 
@@ -36,20 +37,17 @@ namespace DentalClinicWPF.ViewModels.Room
             set { _searchText = value; OnPropertyChanged(); }
         }
 
-        // Właściwości do sortowania
         public ObservableCollection<string> SortOptions { get; } = new ObservableCollection<string>
         {
-            "Número",
-            "Availability",
-            "Equipos"
+            "Número", "Disponibilidad", "Equipos"
         };
         public string SelectedSortOption { get; set; }
         public ICommand SortCommand { get; }
-
         public ICommand SearchCommand { get; }
         public ICommand ReloadCommand { get; }
         public ICommand AddRoomCommand { get; }
         public ICommand EditRoomCommand { get; }
+        public ICommand DeleteRoomCommand { get; }
 
         public RoomViewModel(DentalClinicContext context)
         {
@@ -58,8 +56,9 @@ namespace DentalClinicWPF.ViewModels.Room
             SearchCommand = new RelayCommand(SearchRooms);
             ReloadCommand = new RelayCommand(LoadRooms);
             AddRoomCommand = new RelayCommand(OpenAddRoom);
-            EditRoomCommand = new RelayCommand(OpenEditRoom, CanEditRoom);
-            SortCommand = new RelayCommand(SortRooms); // Komenda sortowania
+            EditRoomCommand = new RelayCommand<Models.Room>(OpenEditRoomWithParam, r => r != null);
+            DeleteRoomCommand = new RelayCommand<Models.Room>(DeleteRoomWithParam, r => r != null);
+            SortCommand = new RelayCommand(SortRooms);
 
             LoadRooms();
         }
@@ -82,16 +81,10 @@ namespace DentalClinicWPF.ViewModels.Room
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(SearchText))
-                {
-                    LoadRooms();
-                    return;
-                }
-
+                if (string.IsNullOrWhiteSpace(SearchText)) { LoadRooms(); return; }
                 var filteredRooms = _context.Room
                     .Where(r => r.RoomNumber.Contains(SearchText))
                     .ToList();
-
                 Rooms = new ObservableCollection<Models.Room>(filteredRooms);
                 OnPropertyChanged(nameof(Rooms));
             }
@@ -103,52 +96,51 @@ namespace DentalClinicWPF.ViewModels.Room
 
         private void SortRooms()
         {
-            if (string.IsNullOrEmpty(SelectedSortOption) || Rooms == null)
-                return;
-
-            IEnumerable<Models.Room> sortedRooms = SelectedSortOption switch
+            if (string.IsNullOrEmpty(SelectedSortOption) || Rooms == null) return;
+            var sorted = SelectedSortOption switch
             {
-                "Número" => Rooms.OrderBy(r => r.RoomNumber),
-                "Availability" => Rooms.OrderBy(r => r.IsAvailable),
-                "Equipos" => Rooms.OrderBy(r => r.Equipments?.Count ?? 0),
-                _ => Rooms
+                "Número" => Rooms.OrderBy(r => r.RoomNumber).ToList(),
+                "Disponibilidad" => Rooms.OrderBy(r => r.IsAvailable).ToList(),
+                "Equipos" => Rooms.OrderBy(r => r.Equipments?.Count ?? 0).ToList(),
+                _ => Rooms.ToList()
             };
-
-            Rooms = new ObservableCollection<Models.Room>(sortedRooms);
+            Rooms = new ObservableCollection<Models.Room>(sorted);
             OnPropertyChanged(nameof(Rooms));
         }
 
         private void OpenAddRoom()
         {
-            var addRoomView = new AddRoomView
-            {
-                DataContext = new AddRoomViewModel(_context),
-                Owner = Application.Current.MainWindow
-            };
-            if (addRoomView.ShowDialog() == true)
-            {
-                LoadRooms();
-            }
+            var v = new AddRoomView { DataContext = new AddRoomViewModel(_context), Owner = Application.Current.MainWindow };
+            if (v.ShowDialog() == true) LoadRooms();
         }
 
-        private void OpenEditRoom()
+        private void OpenEditRoomWithParam(Models.Room room)
         {
-            if (SelectedRoom == null) return;
-
-            var editRoomView = new EditRoomView
-            {
-                DataContext = new EditRoomViewModel(SelectedRoom, _context),
-                Owner = Application.Current.MainWindow
-            };
-            if (editRoomView.ShowDialog() == true)
-            {
-                LoadRooms();
-            }
+            if (room == null) return;
+            SelectedRoom = room;
+            var v = new EditRoomView { DataContext = new EditRoomViewModel(SelectedRoom, _context), Owner = Application.Current.MainWindow };
+            if (v.ShowDialog() == true) LoadRooms();
         }
 
-        private bool CanEditRoom()
+        private void DeleteRoomWithParam(Models.Room room)
         {
-            return SelectedRoom != null;
+            if (room == null) return;
+            var result = MessageBox.Show(
+                $"¿Seguro que quieres eliminar el consultorio '{room.RoomNumber}'?",
+                "Confirmar Eliminación", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+            if (result == MessageBoxResult.Yes)
+            {
+                try
+                {
+                    _context.Room.Remove(room);
+                    _context.SaveChanges();
+                    LoadRooms();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error al eliminar el consultorio: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
         }
     }
 }

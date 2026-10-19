@@ -7,7 +7,6 @@ using CommunityToolkit.Mvvm.Input;
 using DentalClinicWPF.Data;
 using DentalClinicWPF.Models;
 using DentalClinicWPF.ViewModels.Base;
-using DentalClinicWPF.Views.LabOrder;
 using Microsoft.EntityFrameworkCore;
 
 namespace DentalClinicWPF.ViewModels.LabOrder
@@ -16,135 +15,110 @@ namespace DentalClinicWPF.ViewModels.LabOrder
     {
         private readonly DentalClinicContext _context;
 
-        public ObservableCollection<Models.LabOrder> LabOrders { get; private set; } = new();
-        private Models.LabOrder? _selectedOrder;
+        public ObservableCollection<Models.LabOrder> LabOrders { get; private set; }
 
-        public Models.LabOrder? SelectedOrder
+        private Models.LabOrder _selectedLabOrder;
+        public Models.LabOrder SelectedLabOrder
         {
-            get => _selectedOrder;
+            get => _selectedLabOrder;
             set
             {
-                _selectedOrder = value;
+                _selectedLabOrder = value;
                 OnPropertyChanged();
-                (EditOrderCommand as RelayCommand)?.NotifyCanExecuteChanged();
+                (EditOrderCommand as RelayCommand<Models.LabOrder>)?.NotifyCanExecuteChanged();
+                (DeleteOrderCommand as RelayCommand<Models.LabOrder>)?.NotifyCanExecuteChanged();
             }
         }
 
-        public string SearchText { get; set; } = string.Empty;
+        private string _searchText;
+        public string SearchText { get => _searchText; set { _searchText = value; OnPropertyChanged(); } }
 
-        // Właściwości do sortowania
         public ObservableCollection<string> SortOptions { get; } = new ObservableCollection<string>
         {
-            "Paciente",
-            "Dentista",
-            "Fecha de Orden",
-            "Status"
+            "Fecha de Orden", "Paciente", "Dentista"
         };
         public string SelectedSortOption { get; set; }
         public ICommand SortCommand { get; }
-
         public ICommand AddOrderCommand { get; }
         public ICommand EditOrderCommand { get; }
+        public ICommand DeleteOrderCommand { get; }
         public ICommand ReloadCommand { get; }
         public ICommand SearchCommand { get; }
 
         public LabOrderViewModel(DentalClinicContext context)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
+            LabOrders = new ObservableCollection<Models.LabOrder>();
 
-            AddOrderCommand = new RelayCommand(OpenAddOrder);
-            EditOrderCommand = new RelayCommand(OpenEditOrder, CanEditOrder);
-            ReloadCommand = new RelayCommand(LoadLabOrders);
-            SearchCommand = new RelayCommand(SearchOrders);
-            SortCommand = new RelayCommand(SortOrders); // Komenda sortowania
+            AddOrderCommand = new RelayCommand(OpenAdd);
+            EditOrderCommand = new RelayCommand<Models.LabOrder>(OpenEditWithParam, o => o != null);
+            DeleteOrderCommand = new RelayCommand<Models.LabOrder>(DeleteWithParam, o => o != null);
+            ReloadCommand = new RelayCommand(LoadData);
+            SearchCommand = new RelayCommand(SearchData);
+            SortCommand = new RelayCommand(SortData);
 
-            LoadLabOrders();
+            LoadData();
         }
 
-        private void LoadLabOrders()
+        private void LoadData()
         {
             try
             {
-                LabOrders = new ObservableCollection<Models.LabOrder>(_context.LabOrder
-                    .Include(lo => lo.Patient)
-                    .Include(lo => lo.Dentist)
-                    .ToList());
-                OnPropertyChanged(nameof(LabOrders));
+                var list = _context.LabOrder.Include(l => l.Patient).Include(l => l.Dentist).ToList();
+                LabOrders.Clear();
+                foreach (var o in list) LabOrders.Add(o);
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error al cargar las órdenes: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+            catch (Exception ex) { MessageBox.Show($"Error al cargar: {ex.Message}"); }
         }
 
-        private bool CanEditOrder() => SelectedOrder != null;
-
-        private void OpenAddOrder()
+        private void SearchData()
         {
-            var addOrderView = new AddLabOrderView
+            if (string.IsNullOrWhiteSpace(SearchText)) { LoadData(); return; }
+            var term = SearchText.ToLower();
+            var filtered = _context.LabOrder.Include(l => l.Patient).Include(l => l.Dentist).ToList()
+                .Where(l => (l.Patient?.FirstName?.ToLower().Contains(term) ?? false) ||
+                            (l.Patient?.LastName?.ToLower().Contains(term) ?? false) ||
+                            (l.Description?.ToLower().Contains(term) ?? false)).ToList();
+            LabOrders.Clear();
+            foreach (var o in filtered) LabOrders.Add(o);
+        }
+
+        private void SortData()
+        {
+            if (string.IsNullOrEmpty(SelectedSortOption)) return;
+            var sorted = SelectedSortOption switch
             {
-                DataContext = new AddLabOrderViewModel(_context)
+                "Fecha de Orden" => LabOrders.OrderBy(l => l.OrderDate).ToList(),
+                "Paciente" => LabOrders.OrderBy(l => l.Patient?.LastName).ToList(),
+                "Dentista" => LabOrders.OrderBy(l => l.Dentist?.LastName).ToList(),
+                _ => LabOrders.ToList()
             };
-
-            if (addOrderView.ShowDialog() == true)
-            {
-                LoadLabOrders();
-            }
+            LabOrders.Clear();
+            foreach (var o in sorted) LabOrders.Add(o);
         }
 
-        private void OpenEditOrder()
+        private void OpenAdd()
         {
-            if (SelectedOrder == null) return;
-
-            var editOrderView = new EditLabOrderView
-            {
-                DataContext = new EditLabOrderViewModel(_context, SelectedOrder)
-            };
-
-            if (editOrderView.ShowDialog() == true)
-            {
-                LoadLabOrders();
-            }
+            var w = new Views.LabOrder.AddLabOrderView { DataContext = new AddLabOrderViewModel(_context) };
+            if (w.ShowDialog() == true) LoadData();
         }
 
-        private void SearchOrders()
+        private void OpenEditWithParam(Models.LabOrder order)
         {
-            try
-            {
-                var filtered = _context.LabOrder
-                    .Include(lo => lo.Patient)
-                    .Include(lo => lo.Dentist)
-                    .Where(lo => lo.Patient.FirstName.Contains(SearchText) ||
-                                lo.Patient.LastName.Contains(SearchText) ||
-                                lo.Description.Contains(SearchText) ||
-                                lo.Status.Contains(SearchText))
-                    .ToList();
-
-                LabOrders = new ObservableCollection<Models.LabOrder>(filtered);
-                OnPropertyChanged(nameof(LabOrders));
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error durante la búsqueda: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+            if (order == null) return;
+            SelectedLabOrder = order;
+            var w = new Views.LabOrder.EditLabOrderView { DataContext = new EditLabOrderViewModel(_context, order) };
+            if (w.ShowDialog() == true) LoadData();
         }
 
-        private void SortOrders()
+        private void DeleteWithParam(Models.LabOrder order)
         {
-            if (string.IsNullOrEmpty(SelectedSortOption) || LabOrders == null)
-                return;
-
-            IEnumerable<Models.LabOrder> sortedOrders = SelectedSortOption switch
+            if (order == null) return;
+            if (MessageBox.Show($"¿Seguro que quieres eliminar esta orden de laboratorio?", "Confirmar", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
             {
-                "Paciente" => LabOrders.OrderBy(lo => lo.Patient.LastName).ThenBy(lo => lo.Patient.FirstName),
-                "Dentista" => LabOrders.OrderBy(lo => lo.Dentist.LastName).ThenBy(lo => lo.Dentist.FirstName),
-                "Fecha de Orden" => LabOrders.OrderBy(lo => lo.OrderDate),
-                "Status" => LabOrders.OrderBy(lo => lo.Status),
-                _ => LabOrders
-            };
-
-            LabOrders = new ObservableCollection<Models.LabOrder>(sortedOrders);
-            OnPropertyChanged(nameof(LabOrders));
+                try { _context.LabOrder.Remove(order); _context.SaveChanges(); LoadData(); }
+                catch (Exception ex) { MessageBox.Show($"Error al eliminar: {ex.Message}"); }
+            }
         }
     }
 }
