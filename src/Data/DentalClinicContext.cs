@@ -20,6 +20,7 @@ namespace DentalClinicWPF.Data
         public DbSet<Supplier> Supplier { get; set; }
         public DbSet<Inventory> Inventory { get; set; }
         public DbSet<LabOrder> LabOrder { get; set; }
+        public DbSet<ToothRecord> ToothRecord { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

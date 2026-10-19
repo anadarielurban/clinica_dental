@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:DentalClinicWPF.Views.Patient.PatientDetail"
              mc:Ignorable="d"
              d:DesignHeight="800" d:DesignWidth="1200"
              Background="{StaticResource Brush.Background}">
@@ -51,6 +52,12 @@
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="&#xE710;" FontFamily="Segoe MDL2 Assets" Margin="0,0,6,0" VerticalAlignment="Center"/>
                             <TextBlock Text="Agendar Cita"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Command="{Binding PrintRecordCommand}" Style="{StaticResource Modern.Button.Secondary}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE749;" FontFamily="Segoe MDL2 Assets" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                            <TextBlock Text="Imprimir Expediente"/>
                         </StackPanel>
                     </Button>
                 </StackPanel>
@@ -115,6 +122,25 @@
             </TabItem>
 
             <!-- Pestaña Recetas -->
+                        <!-- Pestaña Odontograma -->
+            <TabItem Header="Odontograma">
+                <Border Background="{StaticResource Brush.Surface}" CornerRadius="0,12,12,12" Padding="16">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
+                            <Button Command="{Binding SaveOdontogramCommand}" Style="{StaticResource Modern.Button.Primary}" Margin="0,0,10,0">
+                                <StackPanel Orientation="Horizontal"><TextBlock Text="&#xE74E;" FontFamily="Segoe MDL2 Assets" Margin="0,0,6,0"/><TextBlock Text="Guardar Cambios"/></StackPanel>
+                            </Button>
+                            <TextBlock Text="Haz clic derecho en un diente para cambiar su estado." VerticalAlignment="Center" Foreground="{StaticResource Brush.TextMuted}" FontSize="12"/>
+                        </StackPanel>
+                        <local:OdontogramView Grid.Row="1" DataContext="{Binding}"/>
+                    </Grid>
+                </Border>
+            </TabItem>
+
             <TabItem Header="Recetas">
                 <Border Background="{StaticResource Brush.Surface}" CornerRadius="0,12,12,12" Padding="16">
                     <Grid>
@@ -226,3 +252,5 @@
         </TabControl>
     </Grid>
 </UserControl>
+
+
