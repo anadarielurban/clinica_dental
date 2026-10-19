@@ -39,7 +39,7 @@
                 <TextBlock Text="Nombre" FontSize="12" FontWeight="SemiBold"
                            Foreground="{StaticResource Brush.TextSecondary}"
                            Margin="0,8,0,6"/>
-                <TextBox Text="{Binding FirstName, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=True}"
+                <TextBox Style="{StaticResource FormTextBoxStyle}" Text="{Binding FirstName, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=True}"
                          Height="38" Padding="10,0" FontSize="14"
                          Background="{StaticResource Brush.Surface}"
                          Foreground="{StaticResource Brush.TextPrimary}"
@@ -50,7 +50,7 @@
                 <TextBlock Text="Apellido" FontSize="12" FontWeight="SemiBold"
                            Foreground="{StaticResource Brush.TextSecondary}"
                            Margin="0,16,0,6"/>
-                <TextBox Text="{Binding LastName, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=True}"
+                <TextBox Style="{StaticResource FormTextBoxStyle}" Text="{Binding LastName, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=True}"
                          Height="38" Padding="10,0" FontSize="14"
                          Background="{StaticResource Brush.Surface}"
                          Foreground="{StaticResource Brush.TextPrimary}"
@@ -61,7 +61,7 @@
                 <TextBlock Text="Fecha de Nacimiento" FontSize="12" FontWeight="SemiBold"
                            Foreground="{StaticResource Brush.TextSecondary}"
                            Margin="0,16,0,6"/>
-                <DatePicker SelectedDate="{Binding DateOfBirth, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=True}"
+                <DatePicker Style="{StaticResource FormDatePickerStyle}" SelectedDate="{Binding DateOfBirth, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=True}"
                             Height="38" Padding="8,0" FontSize="14"
                             Background="{StaticResource Brush.Surface}"
                             Foreground="{StaticResource Brush.TextPrimary}"
@@ -71,7 +71,7 @@
                 <TextBlock Text="Género" FontSize="12" FontWeight="SemiBold"
                            Foreground="{StaticResource Brush.TextSecondary}"
                            Margin="0,16,0,6"/>
-                <ComboBox SelectedItem="{Binding Gender, UpdateSourceTrigger=PropertyChanged}"
+                <ComboBox Style="{StaticResource FormComboBoxStyle}" SelectedItem="{Binding Gender, UpdateSourceTrigger=PropertyChanged}"
                           Height="38" Padding="10,0" FontSize="14"
                           Background="{StaticResource Brush.Surface}"
                           Foreground="{StaticResource Brush.TextPrimary}"
@@ -90,7 +90,7 @@
                 <TextBlock Text="Teléfono" FontSize="12" FontWeight="SemiBold"
                            Foreground="{StaticResource Brush.TextSecondary}"
                            Margin="0,16,0,6"/>
-                <TextBox Text="{Binding PhoneNumber, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=True}"
+                <TextBox Style="{StaticResource FormTextBoxStyle}" Text="{Binding PhoneNumber, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=True}"
                          Height="38" Padding="10,0" FontSize="14"
                          Background="{StaticResource Brush.Surface}"
                          Foreground="{StaticResource Brush.TextPrimary}"
@@ -101,7 +101,7 @@
                 <TextBlock Text="Correo" FontSize="12" FontWeight="SemiBold"
                            Foreground="{StaticResource Brush.TextSecondary}"
                            Margin="0,16,0,6"/>
-                <TextBox Text="{Binding Email, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=True}"
+                <TextBox Style="{StaticResource FormTextBoxStyle}" Text="{Binding Email, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=True}"
                          Height="38" Padding="10,0" FontSize="14"
                          Background="{StaticResource Brush.Surface}"
                          Foreground="{StaticResource Brush.TextPrimary}"
@@ -112,7 +112,7 @@
                 <TextBlock Text="Dirección" FontSize="12" FontWeight="SemiBold"
                            Foreground="{StaticResource Brush.TextSecondary}"
                            Margin="0,16,0,6"/>
-                <TextBox Text="{Binding Address, UpdateSourceTrigger=PropertyChanged}"
+                <TextBox Style="{StaticResource FormTextBoxStyle}" Text="{Binding Address, UpdateSourceTrigger=PropertyChanged}"
                          Height="38" Padding="10,0" FontSize="14"
                          Background="{StaticResource Brush.Surface}"
                          Foreground="{StaticResource Brush.TextPrimary}"
@@ -141,3 +141,4 @@
         </Border>
     </Grid>
 </Window>
+

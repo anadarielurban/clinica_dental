@@ -4,18 +4,18 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         mc:Ignorable="d"
-        Title="Agregar Consultorio" Height="300" Width="400" WindowStartupLocation="CenterOwner">
+        Title="Agregar Consultorio" Height="300" Width="400" WindowStartupLocation="CenterOwner" Background="{StaticResource Brush.Background}" FontFamily="{StaticResource Font.Primary}">
     <Grid Margin="10">
         <StackPanel>
             <Label Content="Número de Consultorio:" />
-            <TextBox Text="{Binding Room.RoomNumber, UpdateSourceTrigger=PropertyChanged}" Margin="0,5" />
+            <TextBox Style="{StaticResource FormTextBoxStyle}" Text="{Binding Room.RoomNumber, UpdateSourceTrigger=PropertyChanged}" Margin="0,5" />
 
             <Label Content="Disponible:" />
             <CheckBox IsChecked="{Binding Room.IsAvailable}" Margin="0,5" />
 
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
-                <Button Content="Cancelar" Command="{Binding CancelCommand}" Width="100" Margin="5" />
-                <Button Content="Guardar" Command="{Binding SaveCommand}" Width="100" Margin="5" />
+                <Button Style="{StaticResource Modern.Button.Secondary}" Content="Cancelar" Command="{Binding CancelCommand}" Width="100" Margin="5" />
+                <Button Style="{StaticResource Modern.Button.Primary}" Content="Guardar" Command="{Binding SaveCommand}" Width="100" Margin="5" />
             </StackPanel>
         </StackPanel>
     </Grid>

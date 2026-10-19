@@ -1,26 +1,17 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Win32;  // for SaveFileDialog
 using DentalClinicWPF.Data;
 using DentalClinicWPF.Models;
 using DentalClinicWPF.ViewModels.Base;
-using DentalClinicWPF.ViewModels.Appointment;
-using DentalClinicWPF.ViewModels.Invoice;
-using DentalClinicWPF.ViewModels.MedicalRecord;
-using DentalClinicWPF.ViewModels.Prescription;
-using DentalClinicWPF.ViewModels.TreatmentPlan;
 using DentalClinicWPF.Views.Appointment;
-using DentalClinicWPF.Views.Invoice;
-using DentalClinicWPF.Views.MedicalRecord;
 using DentalClinicWPF.Views.Prescription;
 using DentalClinicWPF.Views.TreatmentPlan;
+using DentalClinicWPF.Views.Invoice;
+using DentalClinicWPF.Views.MedicalRecord;
 
 namespace DentalClinicWPF.ViewModels.Patient.PatientDetail
 {
@@ -28,599 +19,149 @@ namespace DentalClinicWPF.ViewModels.Patient.PatientDetail
     {
         private readonly DentalClinicContext _context;
 
+        public Models.Patient Patient { get; }
+        public ObservableCollection<Models.Appointment> Appointments { get; set; }
+        public ObservableCollection<Models.Prescription> Prescriptions { get; set; }
+        public ObservableCollection<Models.TreatmentPlan> TreatmentPlans { get; set; }
+        public ObservableCollection<Models.Invoice> Invoices { get; set; }
+        public ObservableCollection<Models.MedicalRecord> MedicalRecords { get; set; }
+
+        // Propiedades seleccionadas
+        public Models.Appointment SelectedAppointment { get; set; }
+        public Models.Prescription SelectedPrescription { get; set; }
+        public Models.TreatmentPlan SelectedTreatmentPlan { get; set; }
+        public Models.Invoice SelectedInvoice { get; set; }
+        public Models.MedicalRecord SelectedMedicalRecord { get; set; }
+
+        // Comandos
+        public ICommand AddAppointmentCommand { get; }
+        public ICommand EditAppointmentCommand { get; }
+        public ICommand PreviewAppointmentCommand { get; }
+
+        public ICommand AddPrescriptionCommand { get; }
+        public ICommand EditPrescriptionCommand { get; }
+        public ICommand PreviewPrescriptionCommand { get; }
+
+        public ICommand AddTreatmentPlanCommand { get; }
+        public ICommand EditTreatmentPlanCommand { get; }
+        public ICommand PreviewTreatmentPlanCommand { get; }
+
+        public ICommand AddInvoiceCommand { get; }
+        public ICommand EditInvoiceCommand { get; }
+        public ICommand PreviewInvoiceCommand { get; }
+
+        public ICommand AddMedicalRecordCommand { get; }
+        public ICommand EditMedicalRecordCommand { get; }
+        public ICommand PreviewMedicalRecordCommand { get; }
+
         public PatientDetailViewModel(DentalClinicContext context, Models.Patient patient)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             Patient = patient ?? throw new ArgumentNullException(nameof(patient));
 
-            // Initialize collections
-            Appointments = new ObservableCollection<Models.Appointment>();
-            Prescriptions = new ObservableCollection<Models.Prescription>();
-            TreatmentPlans = new ObservableCollection<Models.TreatmentPlan>();
-            Invoices = new ObservableCollection<Models.Invoice>();
-            MedicalRecords = new ObservableCollection<Models.MedicalRecord>();
+            // Cargar datos
+            Appointments = new ObservableCollection<Models.Appointment>(_context.Appointment.Where(a => a.PatientID == patient.PatientID).ToList());
+            Prescriptions = new ObservableCollection<Models.Prescription>(_context.Prescription.Where(p => p.PatientID == patient.PatientID).ToList());
+            TreatmentPlans = new ObservableCollection<Models.TreatmentPlan>(_context.TreatmentPlan.Where(t => t.PatientID == patient.PatientID).ToList());
+            Invoices = new ObservableCollection<Models.Invoice>(_context.Invoice.Where(i => i.Appointment.PatientID == patient.PatientID).ToList());
+            MedicalRecords = new ObservableCollection<Models.MedicalRecord>(_context.MedicalRecord.Where(m => m.PatientID == patient.PatientID).ToList());
 
-            // Initialize commands
-            // Appointments
-            AddAppointmentCommand = new RelayCommand(OpenAddAppointmentWindow);
-            EditAppointmentCommand = new RelayCommand<Models.Appointment>(OpenEditAppointmentWindow);
-            ViewAppointmentCommand = new RelayCommand<Models.Appointment>(ViewAppointmentOverlay);
+            // Comandos de Citas
+            AddAppointmentCommand = new RelayCommand(() => {
+                try {
+                    var w = new AddAppointmentView { DataContext = new ViewModels.Appointment.AddAppointmentViewModel(_context) };
+                    if (w.ShowDialog() == true) { /* Recargar */ }
+                } catch (Exception ex) { MessageBox.Show(ex.Message); }
+            });
+            EditAppointmentCommand = new RelayCommand(() => {
+                if (SelectedAppointment == null) { MessageBox.Show("Selecciona una cita de la tabla primero.", "Aviso", MessageBoxButton.OK, MessageBoxImage.Warning); return; }
+                try {
+                    var w = new EditAppointmentView { DataContext = new ViewModels.Appointment.EditAppointmentViewModel(_context, SelectedAppointment) };
+                    if (w.ShowDialog() == true) { /* Recargar */ }
+                } catch (Exception ex) { MessageBox.Show($"Error al editar la cita: {ex.Message}", "Error"); }
+            });
+            PreviewAppointmentCommand = new RelayCommand(() => {
+                if (SelectedAppointment == null) { MessageBox.Show("Selecciona una cita primero.", "Aviso", MessageBoxButton.OK, MessageBoxImage.Warning); return; }
+                MessageBox.Show($"Cita: {SelectedAppointment.AppointmentDate:dd/MM/yyyy} - {SelectedAppointment.Notes}", "Detalles de Cita");
+            });
 
-            // Prescriptions
-            AddPrescriptionCommand = new RelayCommand(OpenAddPrescriptionWindow);
-            EditPrescriptionCommand = new RelayCommand<Models.Prescription>(OpenEditPrescriptionWindow);
-            ViewPrescriptionCommand = new RelayCommand<Models.Prescription>(ViewPrescriptionOverlay);
+            // Comandos de Recetas
+            AddPrescriptionCommand = new RelayCommand(() => {
+                try {
+                    var w = new AddPrescriptionView { DataContext = new ViewModels.Prescription.AddPrescriptionViewModel(_context) };
+                    if (w.ShowDialog() == true) { /* Recargar */ }
+                } catch (Exception ex) { MessageBox.Show(ex.Message); }
+            });
+            EditPrescriptionCommand = new RelayCommand(() => {
+                if (SelectedPrescription == null) { MessageBox.Show("Selecciona una receta de la tabla primero.", "Aviso", MessageBoxButton.OK, MessageBoxImage.Warning); return; }
+                try {
+                    var w = new EditPrescriptionView { DataContext = new ViewModels.Prescription.EditPrescriptionViewModel(SelectedPrescription, _context) };
+                    if (w.ShowDialog() == true) { /* Recargar */ }
+                } catch (Exception ex) { MessageBox.Show($"Error al editar la receta: {ex.Message}", "Error"); }
+            });
+            PreviewPrescriptionCommand = new RelayCommand(() => {
+                if (SelectedPrescription == null) { MessageBox.Show("Selecciona una receta primero.", "Aviso", MessageBoxButton.OK, MessageBoxImage.Warning); return; }
+                var w = new PrescriptionPreviewWindow(SelectedPrescription);
+                w.ShowDialog();
+            });
 
-            // Treatment Plans
-            AddTreatmentPlanCommand = new RelayCommand(OpenAddTreatmentPlanWindow);
-            EditTreatmentPlanCommand = new RelayCommand<Models.TreatmentPlan>(OpenEditTreatmentPlanWindow);
-            ViewTreatmentPlanCommand = new RelayCommand<Models.TreatmentPlan>(ViewTreatmentPlanOverlay);
+            // Comandos de Planes
+            AddTreatmentPlanCommand = new RelayCommand(() => {
+                try {
+                    var w = new AddTreatmentPlanView { DataContext = new ViewModels.TreatmentPlan.AddTreatmentPlanViewModel(_context) };
+                    if (w.ShowDialog() == true) { /* Recargar */ }
+                } catch (Exception ex) { MessageBox.Show(ex.Message); }
+            });
+            EditTreatmentPlanCommand = new RelayCommand(() => {
+                if (SelectedTreatmentPlan == null) { MessageBox.Show("Selecciona un plan de la tabla primero.", "Aviso", MessageBoxButton.OK, MessageBoxImage.Warning); return; }
+                try {
+                    var w = new EditTreatmentPlanView { DataContext = new ViewModels.TreatmentPlan.EditTreatmentPlanViewModel(_context, SelectedTreatmentPlan) };
+                    if (w.ShowDialog() == true) { /* Recargar */ }
+                } catch (Exception ex) { MessageBox.Show($"Error al editar el plan: {ex.Message}", "Error"); }
+            });
+            PreviewTreatmentPlanCommand = new RelayCommand(() => {
+                if (SelectedTreatmentPlan == null) { MessageBox.Show("Selecciona un plan primero.", "Aviso", MessageBoxButton.OK, MessageBoxImage.Warning); return; }
+                MessageBox.Show($"Plan: {SelectedTreatmentPlan.Details}", "Detalles del Plan");
+            });
 
-            // Invoices
-            AddInvoiceCommand = new RelayCommand(OpenAddInvoiceWindow);
-            EditInvoiceCommand = new RelayCommand<Models.Invoice>(OpenEditInvoiceWindow);
-            ViewInvoiceCommand = new RelayCommand<Models.Invoice>(ViewInvoiceOverlay);
+            // Comandos de Facturas
+            AddInvoiceCommand = new RelayCommand(() => {
+                try {
+                    var w = new AddInvoiceView { DataContext = new ViewModels.Invoice.AddInvoiceViewModel(_context) };
+                    if (w.ShowDialog() == true) { /* Recargar */ }
+                } catch (Exception ex) { MessageBox.Show(ex.Message); }
+            });
+            EditInvoiceCommand = new RelayCommand(() => {
+                if (SelectedInvoice == null) { MessageBox.Show("Selecciona una factura de la tabla primero.", "Aviso", MessageBoxButton.OK, MessageBoxImage.Warning); return; }
+                try {
+                    var w = new EditInvoiceView { DataContext = new ViewModels.Invoice.EditInvoiceViewModel(_context, SelectedInvoice) };
+                    if (w.ShowDialog() == true) { /* Recargar */ }
+                } catch (Exception ex) { MessageBox.Show($"Error al editar la factura: {ex.Message}", "Error"); }
+            });
+            PreviewInvoiceCommand = new RelayCommand(() => {
+                if (SelectedInvoice == null) { MessageBox.Show("Selecciona una factura primero.", "Aviso", MessageBoxButton.OK, MessageBoxImage.Warning); return; }
+                MessageBox.Show($"Factura Total: {SelectedInvoice.TotalAmount:C}", "Detalles de Factura");
+            });
 
-            // Medical Records
-            AddMedicalRecordCommand = new RelayCommand(OpenAddMedicalRecordWindow);
-            EditMedicalRecordCommand = new RelayCommand<Models.MedicalRecord>(OpenEditMedicalRecordWindow);
-            ViewMedicalRecordCommand = new RelayCommand<Models.MedicalRecord>(ViewMedicalRecordOverlay);
-            DownloadAttachmentCommand = new RelayCommand<Models.MedicalRecord>(DownloadAttachment);
-
-            // Filter / Export
-            FilterCommand = new RelayCommand(ApplyFilter);
-            ExportPdfCommand = new RelayCommand(OnExportPdf);
-
-            // Preview overlay
-            ClosePreviewCommand = new RelayCommand(ClosePreview);
-
-            // Load data from DB
-            _ = LoadDataAsync();
+            // Comandos de Expedientes
+            AddMedicalRecordCommand = new RelayCommand(() => {
+                try {
+                    var w = new AddMedicalRecordView { DataContext = new ViewModels.MedicalRecord.AddMedicalRecordViewModel(_context) };
+                    if (w.ShowDialog() == true) { /* Recargar */ }
+                } catch (Exception ex) { MessageBox.Show(ex.Message); }
+            });
+            EditMedicalRecordCommand = new RelayCommand(() => {
+                if (SelectedMedicalRecord == null) { MessageBox.Show("Selecciona un expediente de la tabla primero.", "Aviso", MessageBoxButton.OK, MessageBoxImage.Warning); return; }
+                try {
+                    var w = new EditMedicalRecordView { DataContext = new ViewModels.MedicalRecord.EditMedicalRecordViewModel(_context, SelectedMedicalRecord) };
+                    if (w.ShowDialog() == true) { /* Recargar */ }
+                } catch (Exception ex) { MessageBox.Show($"Error al editar el expediente: {ex.Message}", "Error"); }
+            });
+            PreviewMedicalRecordCommand = new RelayCommand(() => {
+                if (SelectedMedicalRecord == null) { MessageBox.Show("Selecciona un expediente primero.", "Aviso", MessageBoxButton.OK, MessageBoxImage.Warning); return; }
+                MessageBox.Show($"Expediente: {SelectedMedicalRecord.Notes}", "Detalles");
+            });
         }
-
-        #region Patient & Collections
-
-        private Models.Patient _patient;
-        public Models.Patient Patient
-        {
-            get => _patient;
-            private set => SetProperty(ref _patient, value);
-        }
-
-        public ObservableCollection<Models.Appointment> Appointments { get; }
-        public ObservableCollection<Models.Prescription> Prescriptions { get; }
-        public ObservableCollection<Models.TreatmentPlan> TreatmentPlans { get; }
-        public ObservableCollection<Models.Invoice> Invoices { get; }
-        public ObservableCollection<Models.MedicalRecord> MedicalRecords { get; }
-
-        #endregion
-
-        #region Statistics
-
-        public int TotalVisits => Appointments?.Count ?? 0;
-
-        public string IsEverythingPaid
-        {
-            get
-            {
-                if (Invoices != null && Invoices.Any())
-                {
-                    return Invoices.All(i => i.IsPaid) ? "Yes" : "No";
-                }
-                return "No";
-            }
-        }
-
-        #endregion
-
-        #region Overlay Preview Properties
-
-        private bool _isPreviewOpen;
-        public bool IsPreviewOpen
-        {
-            get => _isPreviewOpen;
-            set => SetProperty(ref _isPreviewOpen, value);
-        }
-
-        private string _previewTitle;
-        public string PreviewTitle
-        {
-            get => _previewTitle;
-            set => SetProperty(ref _previewTitle, value);
-        }
-
-        private string _previewContent;
-        public string PreviewContent
-        {
-            get => _previewContent;
-            set => SetProperty(ref _previewContent, value);
-        }
-
-        #endregion
-
-        #region Commands (Add/Edit/View + Filter + PDF + Download)
-
-        // Appointments
-        public ICommand AddAppointmentCommand { get; }
-        public ICommand EditAppointmentCommand { get; }
-        public ICommand ViewAppointmentCommand { get; }
-
-        // Prescriptions
-        public ICommand AddPrescriptionCommand { get; }
-        public ICommand EditPrescriptionCommand { get; }
-        public ICommand ViewPrescriptionCommand { get; }
-
-        // Treatment Plans
-        public ICommand AddTreatmentPlanCommand { get; }
-        public ICommand EditTreatmentPlanCommand { get; }
-        public ICommand ViewTreatmentPlanCommand { get; }
-
-        // Invoices
-        public ICommand AddInvoiceCommand { get; }
-        public ICommand EditInvoiceCommand { get; }
-        public ICommand ViewInvoiceCommand { get; }
-
-        // Medical Records
-        public ICommand AddMedicalRecordCommand { get; }
-        public ICommand EditMedicalRecordCommand { get; }
-        public ICommand ViewMedicalRecordCommand { get; }
-        public ICommand DownloadAttachmentCommand { get; }
-
-        // Overlay preview
-        public ICommand ClosePreviewCommand { get; }
-
-        // Filtering
-        public ICommand FilterCommand { get; }
-
-        // Export PDF
-        public ICommand ExportPdfCommand { get; }
-
-        #endregion
-
-        #region Loading + Filtering
-
-        private async Task LoadDataAsync()
-        {
-            try
-            {
-                // Appointments
-                var dbAppointments = await _context.Appointment
-                    .Include(a => a.Dentist)
-                    .Include(a => a.Treatment)
-                    .Where(a => a.PatientID == Patient.PatientID)
-                    .ToListAsync();
-
-                Appointments.Clear();
-                foreach (var item in dbAppointments)
-                    Appointments.Add(item);
-
-                // Prescriptions
-                var dbPrescriptions = await _context.Prescription
-                    .Include(p => p.Dentist)
-                    .Where(p => p.PatientID == Patient.PatientID)
-                    .ToListAsync();
-
-                Prescriptions.Clear();
-                foreach (var item in dbPrescriptions)
-                    Prescriptions.Add(item);
-
-                // TreatmentPlans
-                var dbTreatmentPlans = await _context.TreatmentPlan
-                    .Include(tp => tp.Dentist)
-                    .Where(tp => tp.PatientID == Patient.PatientID)
-                    .ToListAsync();
-
-                TreatmentPlans.Clear();
-                foreach (var item in dbTreatmentPlans)
-                    TreatmentPlans.Add(item);
-
-                // Invoices
-                var dbInvoices = await _context.Invoice
-                    .Include(i => i.Appointment)
-                    .Where(i => i.Appointment.PatientID == Patient.PatientID)
-                    .ToListAsync();
-
-                Invoices.Clear();
-                foreach (var item in dbInvoices)
-                    Invoices.Add(item);
-
-                // MedicalRecords
-                var dbRecords = await _context.MedicalRecord
-                    .Include(mr => mr.Dentist)
-                    .Where(mr => mr.PatientID == Patient.PatientID)
-                    .ToListAsync();
-
-                MedicalRecords.Clear();
-                foreach (var item in dbRecords)
-                    MedicalRecords.Add(item);
-
-                // Update stats
-                OnPropertyChanged(nameof(TotalVisits));
-                OnPropertyChanged(nameof(IsEverythingPaid));
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error al cargar los datos del paciente: {ex.Message}",
-                                "Error",
-                                MessageBoxButton.OK,
-                                MessageBoxImage.Error);
-            }
-        }
-
-        private string _searchText;
-        public string SearchText
-        {
-            get => _searchText;
-            set => SetProperty(ref _searchText, value);
-        }
-
-        private void ApplyFilter()
-        {
-            try
-            {
-                // Re-load everything with a filter
-                // 1) Appointments
-                var apps = _context.Appointment
-                    .Include(a => a.Dentist)
-                    .Include(a => a.Treatment)
-                    .Where(a => a.PatientID == Patient.PatientID);
-
-                if (!string.IsNullOrWhiteSpace(SearchText))
-                {
-                    var lower = SearchText.ToLower();
-                    apps = apps.Where(a =>
-                        (a.Dentist.FirstName + " " + a.Dentist.LastName).ToLower().Contains(lower)
-                        || a.Treatment.Name.ToLower().Contains(lower)
-                        || (a.Notes != null && a.Notes.ToLower().Contains(lower)));
-                }
-                var filteredApps = apps.ToList();
-                Appointments.Clear();
-                foreach (var item in filteredApps)
-                    Appointments.Add(item);
-
-                // 2) Prescriptions
-                var pres = _context.Prescription
-                    .Include(p => p.Dentist)
-                    .Where(p => p.PatientID == Patient.PatientID);
-
-                if (!string.IsNullOrWhiteSpace(SearchText))
-                {
-                    var lower = SearchText.ToLower();
-                    pres = pres.Where(p =>
-                        p.Medication.ToLower().Contains(lower)
-                        || p.Dosage.ToLower().Contains(lower)
-                        || (p.Instructions != null && p.Instructions.ToLower().Contains(lower))
-                        || (p.Dentist != null &&
-                            (p.Dentist.FirstName + " " + p.Dentist.LastName).ToLower().Contains(lower))
-                    );
-                }
-                var filteredPres = pres.ToList();
-                Prescriptions.Clear();
-                foreach (var item in filteredPres)
-                    Prescriptions.Add(item);
-
-                // 3) TreatmentPlans
-                var plans = _context.TreatmentPlan
-                    .Include(tp => tp.Dentist)
-                    .Where(tp => tp.PatientID == Patient.PatientID);
-
-                if (!string.IsNullOrWhiteSpace(SearchText))
-                {
-                    var lower = SearchText.ToLower();
-                    plans = plans.Where(tp =>
-                        (tp.Dentist.FirstName + " " + tp.Dentist.LastName).ToLower().Contains(lower)
-                        || (tp.Details != null && tp.Details.ToLower().Contains(lower)));
-                }
-                var filteredPlans = plans.ToList();
-                TreatmentPlans.Clear();
-                foreach (var item in filteredPlans)
-                    TreatmentPlans.Add(item);
-
-                // 4) Invoices
-                var invs = _context.Invoice
-                    .Include(i => i.Appointment)
-                    .ThenInclude(a => a.Treatment)
-                    .Include(i => i.Appointment.Dentist)
-                    .Where(i => i.Appointment.PatientID == Patient.PatientID);
-
-                if (!string.IsNullOrWhiteSpace(SearchText))
-                {
-                    var lower = SearchText.ToLower();
-                    invs = invs.Where(i =>
-                        (i.Appointment.Dentist.FirstName + " " + i.Appointment.Dentist.LastName).ToLower().Contains(lower)
-                        || (i.Appointment.Treatment != null && i.Appointment.Treatment.Name.ToLower().Contains(lower))
-                    );
-                }
-                var filteredInvs = invs.ToList();
-                Invoices.Clear();
-                foreach (var item in filteredInvs)
-                    Invoices.Add(item);
-
-                // 5) MedicalRecords
-                var recs = _context.MedicalRecord
-                    .Include(m => m.Dentist)
-                    .Where(m => m.PatientID == Patient.PatientID);
-
-                if (!string.IsNullOrWhiteSpace(SearchText))
-                {
-                    var lower = SearchText.ToLower();
-                    recs = recs.Where(m =>
-                        (m.Dentist.FirstName + " " + m.Dentist.LastName).ToLower().Contains(lower)
-                        || (m.Notes != null && m.Notes.ToLower().Contains(lower)));
-                }
-                var filteredRecs = recs.ToList();
-                MedicalRecords.Clear();
-                foreach (var item in filteredRecs)
-                    MedicalRecords.Add(item);
-
-                // Update stats
-                OnPropertyChanged(nameof(TotalVisits));
-                OnPropertyChanged(nameof(IsEverythingPaid));
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error de filtro: {ex.Message}",
-                                "Error de Filtro",
-                                MessageBoxButton.OK,
-                                MessageBoxImage.Error);
-            }
-        }
-
-        #endregion
-
-        #region Export to PDF
-
-        private void OnExportPdf()
-        {
-            try
-            {
-                // Let user pick a save location
-                var dialog = new SaveFileDialog
-                {
-                    Title = "Guardar archivo PDF",
-                    Filter = "Archivos PDF|*.pdf",
-                    FileName = "Patient_" + Patient.FullName.Replace(" ", "_") + ".pdf"
-                };
-                if (dialog.ShowDialog() == true)
-                {
-                    string path = dialog.FileName;
-
-                    // TODO: Actually generate a real PDF. For now, just create a dummy file:
-                    File.WriteAllText(path, "Este es un PDF de demostración.");
-
-                    MessageBox.Show($"PDF guardado correctamente en:\n{path}",
-                                    "Exportar PDF",
-                                    MessageBoxButton.OK,
-                                    MessageBoxImage.Information);
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error al exportar PDF: {ex.Message}",
-                                "Error de Exportación",
-                                MessageBoxButton.OK,
-                                MessageBoxImage.Error);
-            }
-        }
-
-        #endregion
-
-        #region Overlay Preview Logic
-
-        public void ClosePreview()
-        {
-            IsPreviewOpen = false;
-        }
-
-        // 1) Appointments
-        private void ViewAppointmentOverlay(Models.Appointment appt)
-        {
-            if (appt == null) return;
-
-            PreviewTitle = "Vista Previa de Cita";
-            PreviewContent =
-                $"ID de Cita: {appt.AppointmentID}\n" +
-                $"Date: {appt.AppointmentDate:yyyy-MM-dd}\n" +
-                $"Time: {appt.StartTime:hh\\:mm}\n\n" +
-                $"Patient: {Patient.FullName} (DOB: {Patient.DateOfBirth:yyyy-MM-dd})\n" +
-                $"Dentist: {appt.Dentist?.DisplayInfo}\n" +
-                $"Treatment: {appt.Treatment?.Name}\n\n" +
-                $"Notes:\n{appt.Notes ?? ""}\n";
-
-            IsPreviewOpen = true;
-        }
-
-        // 2) Prescriptions
-        private void ViewPrescriptionOverlay(Models.Prescription prescription)
-        {
-            if (prescription == null) return;
-
-            PreviewTitle = "Vista Previa de Receta";
-            PreviewContent =
-                $"ID de Receta: {prescription.PrescriptionID}\n" +
-                $"Fecha de Emisión: {prescription.DateIssued:yyyy-MM-dd}\n\n" +
-                $"Patient: {Patient.FullName} (DOB: {Patient.DateOfBirth:yyyy-MM-dd})\n" +
-                $"Dentist: {prescription.Dentist?.DisplayInfo}\n\n" +
-                $"Medication: {prescription.Medication}\n" +
-                $"Dosage: {prescription.Dosage}\n" +
-                $"Instructions: {prescription.Instructions}\n\n" +
-                "**Disclaimer**: Please follow dosage instructions carefully and consult with your dentist if any side effects occur.";
-
-            IsPreviewOpen = true;
-        }
-
-        // 3) Treatment Plans
-        private void ViewTreatmentPlanOverlay(Models.TreatmentPlan plan)
-        {
-            if (plan == null) return;
-
-            PreviewTitle = "Vista Previa de Plan de Tratamiento";
-            PreviewContent =
-                $"ID de Plan: {plan.TreatmentPlanID}\n" +
-                $"Fecha de Creación: {plan.CreationDate:yyyy-MM-dd}\n\n" +
-                $"Patient: {Patient.FullName} (DOB: {Patient.DateOfBirth:yyyy-MM-dd})\n" +
-                $"Dentist: {plan.Dentist?.DisplayInfo}\n\n" +
-                $"Details:\n{plan.Details ?? ""}";
-
-            IsPreviewOpen = true;
-        }
-
-        // 4) Invoices
-        private void ViewInvoiceOverlay(Models.Invoice invoice)
-        {
-            if (invoice == null) return;
-
-            PreviewTitle = "Vista Previa de Factura";
-            PreviewContent =
-                $"ID de Factura: {invoice.InvoiceID}\n" +
-                $"Fecha de Factura: {invoice.InvoiceDate:yyyy-MM-dd}\n\n" +
-                $"Patient: {Patient.FullName} (DOB: {Patient.DateOfBirth:yyyy-MM-dd})\n" +
-                $"Amount: {invoice.TotalAmount:C}\n" +
-                $"Paid: {invoice.IsPaid}\n\n" +
-                $"Cita Vinculada: {(invoice.Appointment?.DisplayInfo ?? "N/A")}";
-
-            IsPreviewOpen = true;
-        }
-
-        // 5) Medical Records
-        private void ViewMedicalRecordOverlay(Models.MedicalRecord record)
-        {
-            if (record == null) return;
-
-            PreviewTitle = "Vista Previa de Expediente";
-            PreviewContent =
-                $"ID de Registro: {record.RecordID}\n" +
-                $"Date: {record.Date:yyyy-MM-dd}\n\n" +
-                $"Patient: {Patient.FullName} (DOB: {Patient.DateOfBirth:yyyy-MM-dd})\n" +
-                $"Dentist: {record.Dentist?.DisplayInfo}\n\n" +
-                $"Notes:\n{record.Notes ?? ""}";
-
-            IsPreviewOpen = true;
-        }
-
-        #endregion
-
-        #region Add/Edit Windows
-
-        // APPOINTMENTS
-        private void OpenAddAppointmentWindow()
-        {
-            var w = new AddAppointmentView
-            {
-                DataContext = new AddAppointmentViewModel(_context)
-            };
-            if (w.ShowDialog() == true)
-                _ = LoadDataAsync();
-        }
-
-        private void OpenEditAppointmentWindow(Models.Appointment a)
-        {
-            if (a == null) return;
-            var w = new EditAppointmentView
-            {
-                DataContext = new EditAppointmentViewModel(_context, a)
-            };
-            if (w.ShowDialog() == true)
-                _ = LoadDataAsync();
-        }
-
-        // PRESCRIPTIONS
-        private void OpenAddPrescriptionWindow()
-        {
-            var w = new AddPrescriptionView
-            {
-                DataContext = new AddPrescriptionViewModel(_context)
-            };
-            if (w.ShowDialog() == true)
-                _ = LoadDataAsync();
-        }
-
-        private void OpenEditPrescriptionWindow(Models.Prescription p)
-        {
-            if (p == null) return;
-            var w = new EditPrescriptionView
-            {
-                DataContext = new EditPrescriptionViewModel(p, _context)
-            };
-            if (w.ShowDialog() == true)
-                _ = LoadDataAsync();
-        }
-
-        // TREATMENT PLANS
-        private void OpenAddTreatmentPlanWindow()
-        {
-            var w = new AddTreatmentPlanView
-            {
-                DataContext = new AddTreatmentPlanViewModel(_context)
-            };
-            if (w.ShowDialog() == true)
-                _ = LoadDataAsync();
-        }
-
-        private void OpenEditTreatmentPlanWindow(Models.TreatmentPlan plan)
-        {
-            if (plan == null) return;
-            var w = new EditTreatmentPlanView
-            {
-                DataContext = new EditTreatmentPlanViewModel(_context, plan)
-            };
-            if (w.ShowDialog() == true)
-                _ = LoadDataAsync();
-        }
-
-        // INVOICES
-        private void OpenAddInvoiceWindow()
-        {
-            var w = new AddInvoiceView
-            {
-                DataContext = new AddInvoiceViewModel(_context)
-            };
-            if (w.ShowDialog() == true)
-                _ = LoadDataAsync();
-        }
-
-        private void OpenEditInvoiceWindow(Models.Invoice inv)
-        {
-            if (inv == null) return;
-            var w = new EditInvoiceView
-            {
-                DataContext = new EditInvoiceViewModel(_context, inv)
-            };
-            if (w.ShowDialog() == true)
-                _ = LoadDataAsync();
-        }
-
-        // MEDICAL RECORDS
-        private void OpenAddMedicalRecordWindow()
-        {
-            var w = new AddMedicalRecordView
-            {
-                DataContext = new AddMedicalRecordViewModel(_context)
-            };
-            if (w.ShowDialog() == true)
-                _ = LoadDataAsync();
-        }
-
-        private void OpenEditMedicalRecordWindow(Models.MedicalRecord rec)
-        {
-            if (rec == null) return;
-            var w = new EditMedicalRecordView
-            {
-                DataContext = new EditMedicalRecordViewModel(_context, rec)
-            };
-            if (w.ShowDialog() == true)
-                _ = LoadDataAsync();
-        }
-
-        private void DownloadAttachment(Models.MedicalRecord rec)
-        {
-            if (rec == null) return;
-            MessageBox.Show($"Descargando adjunto del registro {rec.RecordID}...",
-                            "Descargar Adjunto",
-                            MessageBoxButton.OK,
-                            MessageBoxImage.Information);
-        }
-
-        #endregion
     }
 }
+

@@ -1,7 +1,7 @@
 ﻿<Window x:Class="DentalClinicWPF.Views.Employee.EditEmployeeView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Editar Empleado" Height="600" Width="600" WindowStartupLocation="CenterOwner">
+        Title="Editar Empleado" Height="600" Width="600" WindowStartupLocation="CenterOwner" Background="{StaticResource Brush.Background}" FontFamily="{StaticResource Font.Primary}">
     
     <Grid Margin="20">
         <Grid.RowDefinitions>
@@ -56,9 +56,10 @@
         
         <!-- Buttons -->
         <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10">
-            <Button Content="Cancelar" Command="{Binding CancelCommand}" Width="100" Margin="5" />
-            <Button Content="Guardar" Command="{Binding SaveCommand}" Width="100" Margin="5" />
-            <Button Content="Eliminar" Command="{Binding DeleteCommand}" Width="100" Margin="5" />
+            <Button Style="{StaticResource Modern.Button.Secondary}" Content="Cancelar" Command="{Binding CancelCommand}" Width="100" Margin="5" />
+            <Button Style="{StaticResource Modern.Button.Primary}" Content="Guardar" Command="{Binding SaveCommand}" Width="100" Margin="5" />
+            <Button Style="{StaticResource Modern.Button.Danger}" Content="Eliminar" Command="{Binding DeleteCommand}" Width="100" Margin="5" />
         </StackPanel>
     </Grid>
 </Window>
+

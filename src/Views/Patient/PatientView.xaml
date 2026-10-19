@@ -73,7 +73,7 @@
                                    Foreground="{StaticResource Brush.TextMuted}"
                                    VerticalAlignment="Center"
                                    Margin="12,0,8,0"/>
-                        <TextBox Grid.Column="1"
+                        <TextBox Style="{StaticResource FormTextBoxStyle}" Grid.Column="1"
                                  Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
                                  Background="Transparent"
                                  BorderThickness="0"
@@ -232,3 +232,4 @@
         </Border>
     </Grid>
 </UserControl>
+

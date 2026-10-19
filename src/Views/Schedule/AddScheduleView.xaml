@@ -2,7 +2,7 @@
 <Window x:Class="DentalClinicWPF.Views.Schedule.AddScheduleView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Agregar Horario" Height="400" Width="400">
+        Title="Agregar Horario" Height="400" Width="400" Background="{StaticResource Brush.Background}" FontFamily="{StaticResource Font.Primary}">
     <Grid Margin="10">
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
@@ -11,30 +11,30 @@
 
         <StackPanel>
             <Label Content="Dentista" />
-            <ComboBox ItemsSource="{Binding Dentists}" 
+            <ComboBox Style="{StaticResource FormComboBoxStyle}" ItemsSource="{Binding Dentists}" 
                       DisplayMemberPath="DisplayInfo" 
                       SelectedValuePath="DentistID" 
                       SelectedValue="{Binding Schedule.DentistID}" 
                       Margin="0,5" />
 
             <Label Content="Fecha de Inicio" />
-            <DatePicker SelectedDate="{Binding Schedule.StartDate}" />
+            <DatePicker Style="{StaticResource FormDatePickerStyle}" SelectedDate="{Binding Schedule.StartDate}" />
 
             <Label Content="Fecha de Fin" />
-            <DatePicker SelectedDate="{Binding Schedule.EndDate}" />
+            <DatePicker Style="{StaticResource FormDatePickerStyle}" SelectedDate="{Binding Schedule.EndDate}" />
 
             <Label Content="Hora de Inicio" />
-            <TextBox Text="{Binding Schedule.StartTime}" IsReadOnly="True" />
+            <TextBox Style="{StaticResource FormTextBoxStyle}" Text="{Binding Schedule.StartTime}" IsReadOnly="True" />
 
             <Label Content="Hora de Fin" />
-            <TextBox Text="{Binding Schedule.EndTime}" IsReadOnly="True" />
+            <TextBox Style="{StaticResource FormTextBoxStyle}" Text="{Binding Schedule.EndTime}" IsReadOnly="True" />
 
             <CheckBox Content="Día Libre" IsChecked="{Binding Schedule.IsDayOff}" />
         </StackPanel>
 
         <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
-            <Button Content="Cancelar" Command="{Binding CancelCommand}" Width="100" Margin="5" />
-            <Button Content="Guardar" Command="{Binding SaveCommand}" Width="100" Margin="5" />
+            <Button Style="{StaticResource Modern.Button.Secondary}" Content="Cancelar" Command="{Binding CancelCommand}" Width="100" Margin="5" />
+            <Button Style="{StaticResource Modern.Button.Primary}" Content="Guardar" Command="{Binding SaveCommand}" Width="100" Margin="5" />
         </StackPanel>
     </Grid>
 </Window>
