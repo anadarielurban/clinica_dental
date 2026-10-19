@@ -36,7 +36,7 @@
                 <TextBlock Text="Paciente" FontSize="12" FontWeight="SemiBold"
                            Foreground="{StaticResource Brush.TextSecondary}"
                            Margin="0,8,0,6"/>
-                <ComboBox ItemsSource="{Binding Patients}"
+                <ComboBox Style="{StaticResource FormComboBoxStyle}" ItemsSource="{Binding Patients}"
                           DisplayMemberPath="DisplayInfo"
                           SelectedValuePath="PatientID"
                           SelectedValue="{Binding TreatmentPlan.PatientID, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
@@ -50,7 +50,7 @@
                 <TextBlock Text="Dentista" FontSize="12" FontWeight="SemiBold"
                            Foreground="{StaticResource Brush.TextSecondary}"
                            Margin="0,16,0,6"/>
-                <ComboBox ItemsSource="{Binding Dentists}"
+                <ComboBox Style="{StaticResource FormComboBoxStyle}" ItemsSource="{Binding Dentists}"
                           DisplayMemberPath="DisplayInfo"
                           SelectedValuePath="DentistID"
                           SelectedValue="{Binding TreatmentPlan.DentistID, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
@@ -64,7 +64,7 @@
                 <TextBlock Text="Detalles" FontSize="12" FontWeight="SemiBold"
                            Foreground="{StaticResource Brush.TextSecondary}"
                            Margin="0,16,0,6"/>
-                <TextBox Text="{Binding TreatmentPlan.Details, UpdateSourceTrigger=PropertyChanged}"
+                <TextBox Style="{StaticResource FormTextBoxStyle}" Text="{Binding TreatmentPlan.Details, UpdateSourceTrigger=PropertyChanged}"
                          Height="120" Padding="10,8" FontSize="14"
                          Background="{StaticResource Brush.Surface}"
                          Foreground="{StaticResource Brush.TextPrimary}"
@@ -94,3 +94,4 @@
         </Border>
     </Grid>
 </Window>
+

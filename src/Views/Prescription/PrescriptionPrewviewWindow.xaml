@@ -4,7 +4,7 @@
         Title="Vista Previa de Receta"
         WindowStartupLocation="CenterOwner"
         Height="600" Width="500"
-        Background="#FFFFFF">
+        Background="#FFFFFF" FontFamily="{StaticResource Font.Primary}">
     
     <Grid>
         <!-- A scroll viewer for the FlowDocument -->

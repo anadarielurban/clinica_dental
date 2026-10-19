@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Threading;
 using CommunityToolkit.Mvvm.Input;
 using DentalClinicWPF.Data;
 using DentalClinicWPF.Models;
@@ -15,10 +16,27 @@ namespace DentalClinicWPF.ViewModels.Employee
     public class EmployeeViewModel : BaseViewModel
     {
         private readonly DentalClinicContext _context;
+        private readonly DispatcherTimer _searchTimer;
 
-        public ObservableCollection<Models.Employee> Employees { get; private set; } = new();
+        public ObservableCollection<Models.Employee> Employees { get; private set; }
+
+        private string _searchText;
+        public string SearchText
+        {
+            get => _searchText;
+            set
+            {
+                if (_searchText != value)
+                {
+                    _searchText = value;
+                    OnPropertyChanged();
+                    _searchTimer.Stop();
+                    _searchTimer.Start();
+                }
+            }
+        }
+
         private Models.Employee _selectedEmployee;
-
         public Models.Employee SelectedEmployee
         {
             get => _selectedEmployee;
@@ -26,102 +44,142 @@ namespace DentalClinicWPF.ViewModels.Employee
             {
                 _selectedEmployee = value;
                 OnPropertyChanged();
-                (EditEmployeeCommand as RelayCommand)?.NotifyCanExecuteChanged();
+                (EditEmployeeCommand as RelayCommand<Models.Employee>)?.NotifyCanExecuteChanged();
+                (DeleteEmployeeCommand as RelayCommand<Models.Employee>)?.NotifyCanExecuteChanged();
             }
         }
 
-        public string SearchText { get; set; } = string.Empty;
-
-        // Właściwości do sortowania
         public ObservableCollection<string> SortOptions { get; } = new ObservableCollection<string>
         {
-            "Nombre",
-            "Apellido",
-            "Position"
+            "Nombre", "Apellido", "Puesto"
         };
-        public string SelectedSortOption { get; set; }
-        public ICommand SortCommand { get; }
 
+        private string _selectedSortOption;
+        public string SelectedSortOption
+        {
+            get => _selectedSortOption;
+            set
+            {
+                if (_selectedSortOption != value)
+                {
+                    _selectedSortOption = value;
+                    OnPropertyChanged();
+                    SortEmployees();
+                }
+            }
+        }
+
+        public ICommand SortCommand { get; }
         public ICommand SearchCommand { get; }
         public ICommand ReloadCommand { get; }
         public ICommand AddEmployeeCommand { get; }
         public ICommand EditEmployeeCommand { get; }
+        public ICommand DeleteEmployeeCommand { get; }
 
         public EmployeeViewModel(DentalClinicContext context)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
+            Employees = new ObservableCollection<Models.Employee>();
 
-            SearchCommand = new RelayCommand(SearchEmployees);
-            ReloadCommand = new RelayCommand(LoadEmployees);
+            _searchTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(300) };
+            _searchTimer.Tick += (s, e) => { _searchTimer.Stop(); ApplyFilters(); };
+
+            SearchCommand = new RelayCommand(ApplyFilters);
+            ReloadCommand = new RelayCommand(ReloadAll);
             AddEmployeeCommand = new RelayCommand(OpenAddEmployee);
-            EditEmployeeCommand = new RelayCommand(OpenEditEmployee, CanEditEmployee);
-            SortCommand = new RelayCommand(SortEmployees); // Komenda sortowania
+            EditEmployeeCommand = new RelayCommand<Models.Employee>(OpenEditEmployeeWithParam, e => e != null);
+            DeleteEmployeeCommand = new RelayCommand<Models.Employee>(DeleteEmployeeWithParam, e => e != null);
+            SortCommand = new RelayCommand(SortEmployees);
 
             LoadEmployees();
         }
 
         private void LoadEmployees()
         {
-            Employees = new ObservableCollection<Models.Employee>(
-                _context.Employee
-                        .Include(e => e.Dentist)
-                        .ToList()
-            );
-            OnPropertyChanged(nameof(Employees));
+            try
+            {
+                var list = _context.Employee.Include(e => e.Dentist).ToList();
+                Employees.Clear();
+                foreach (var e in list) Employees.Add(e);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al cargar los empleados: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
-        private void SearchEmployees()
+        private void ReloadAll()
         {
-            var filteredEmployees = _context.Employee
-                .Include(e => e.Dentist)
-                .Where(e => e.FirstName.Contains(SearchText) || 
-                            e.LastName.Contains(SearchText) ||
-                            e.Position.Contains(SearchText))
+            _searchTimer.Stop();
+            _searchText = string.Empty;
+            OnPropertyChanged(nameof(SearchText));
+            LoadEmployees();
+        }
+
+        private void ApplyFilters()
+        {
+            if (string.IsNullOrWhiteSpace(SearchText))
+            {
+                LoadEmployees();
+                return;
+            }
+
+            var term = SearchText.Trim().ToLower();
+            var filtered = _context.Employee.Include(e => e.Dentist).ToList()
+                .Where(e =>
+                    (e.FirstName?.ToLower().Contains(term) ?? false) ||
+                    (e.LastName?.ToLower().Contains(term) ?? false) ||
+                    (e.Position?.ToLower().Contains(term) ?? false))
                 .ToList();
 
-            Employees = new ObservableCollection<Models.Employee>(filteredEmployees);
-            OnPropertyChanged(nameof(Employees));
+            Employees.Clear();
+            foreach (var e in filtered) Employees.Add(e);
         }
 
         private void SortEmployees()
         {
-            if (string.IsNullOrEmpty(SelectedSortOption) || Employees == null)
-                return;
-
-            IEnumerable<Models.Employee> sortedEmployees = SelectedSortOption switch
+            if (string.IsNullOrEmpty(SelectedSortOption)) return;
+            var sorted = SelectedSortOption switch
             {
-                "Nombre" => Employees.OrderBy(e => e.FirstName),
-                "Apellido" => Employees.OrderBy(e => e.LastName),
-                "Position" => Employees.OrderBy(e => e.Position),
-                _ => Employees
+                "Nombre" => Employees.OrderBy(e => e.FirstName).ToList(),
+                "Apellido" => Employees.OrderBy(e => e.LastName).ToList(),
+                "Puesto" => Employees.OrderBy(e => e.Position).ToList(),
+                _ => Employees.ToList()
             };
-
-            Employees = new ObservableCollection<Models.Employee>(sortedEmployees);
-            OnPropertyChanged(nameof(Employees));
+            Employees.Clear();
+            foreach (var e in sorted) Employees.Add(e);
         }
 
         private void OpenAddEmployee()
         {
-            var addEmployeeView = new AddEmployeeView
-            {
-                DataContext = new AddEmployeeViewModel(_context)
-            };
-            addEmployeeView.ShowDialog();
-            LoadEmployees();
+            var w = new AddEmployeeView { DataContext = new AddEmployeeViewModel(_context) };
+            if (w.ShowDialog() == true) LoadEmployees();
         }
 
-        private void OpenEditEmployee()
+        private void OpenEditEmployeeWithParam(Models.Employee emp)
         {
-            if (SelectedEmployee == null) return;
-
-            var editEmployeeView = new EditEmployeeView
-            {
-                DataContext = new EditEmployeeViewModel(SelectedEmployee, _context)
-            };
-            editEmployeeView.ShowDialog();
-            LoadEmployees();
+            if (emp == null) return;
+            SelectedEmployee = emp;
+            var w = new EditEmployeeView { DataContext = new EditEmployeeViewModel(emp, _context) };
+            if (w.ShowDialog() == true) LoadEmployees();
         }
 
-        private bool CanEditEmployee() => SelectedEmployee != null;
+        private void DeleteEmployeeWithParam(Models.Employee emp)
+        {
+            if (emp == null) return;
+            if (MessageBox.Show($"¿Seguro que quieres eliminar al empleado {emp.FirstName} {emp.LastName}?", "Confirmar Eliminación", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
+            {
+                try
+                {
+                    _context.Employee.Remove(emp);
+                    _context.SaveChanges();
+                    LoadEmployees();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error al eliminar el empleado: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+        }
     }
 }

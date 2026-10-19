@@ -36,7 +36,7 @@
                 <TextBlock Text="Nombre" FontSize="12" FontWeight="SemiBold"
                            Foreground="{StaticResource Brush.TextSecondary}"
                            Margin="0,8,0,6"/>
-                <TextBox Text="{Binding EditingTreatment.Name, UpdateSourceTrigger=PropertyChanged}"
+                <TextBox Style="{StaticResource FormTextBoxStyle}" Text="{Binding EditingTreatment.Name, UpdateSourceTrigger=PropertyChanged}"
                          Height="38" Padding="10,0" FontSize="14"
                          Background="{StaticResource Brush.Surface}"
                          Foreground="{StaticResource Brush.TextPrimary}"
@@ -47,7 +47,7 @@
                 <TextBlock Text="Descripción" FontSize="12" FontWeight="SemiBold"
                            Foreground="{StaticResource Brush.TextSecondary}"
                            Margin="0,16,0,6"/>
-                <TextBox Text="{Binding EditingTreatment.Description, UpdateSourceTrigger=PropertyChanged}"
+                <TextBox Style="{StaticResource FormTextBoxStyle}" Text="{Binding EditingTreatment.Description, UpdateSourceTrigger=PropertyChanged}"
                          Height="90" Padding="10,8" FontSize="14"
                          Background="{StaticResource Brush.Surface}"
                          Foreground="{StaticResource Brush.TextPrimary}"
@@ -65,7 +65,7 @@
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-                    <TextBox Grid.Column="0"
+                    <TextBox Style="{StaticResource FormTextBoxStyle}" Grid.Column="0"
                              Text="{Binding EditingTreatment.Price, UpdateSourceTrigger=PropertyChanged}"
                              Height="38" Padding="10,0" FontSize="14"
                              Background="{StaticResource Brush.Surface}"
@@ -83,7 +83,7 @@
                 <TextBlock Text="Duración (minutos)" FontSize="12" FontWeight="SemiBold"
                            Foreground="{StaticResource Brush.TextSecondary}"
                            Margin="0,16,0,6"/>
-                <TextBox Text="{Binding EditingTreatment.Duration, Converter={StaticResource TimeSpanToStringConverter}, UpdateSourceTrigger=PropertyChanged}"
+                <TextBox Style="{StaticResource FormTextBoxStyle}" Text="{Binding EditingTreatment.Duration, Converter={StaticResource TimeSpanToStringConverter}, UpdateSourceTrigger=PropertyChanged}"
                          Height="38" Padding="10,0" FontSize="14"
                          Background="{StaticResource Brush.Surface}"
                          Foreground="{StaticResource Brush.TextPrimary}"
@@ -115,3 +115,4 @@
         </Border>
     </Grid>
 </Window>
+

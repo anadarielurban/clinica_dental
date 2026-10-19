@@ -2,7 +2,7 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="clr-namespace:DentalClinicWPF.ViewModels.Appointment"
-        Title="Agregar Cita" Height="750" Width="500" WindowStartupLocation="CenterOwner">
+        Title="Agregar Cita" Height="750" Width="500" WindowStartupLocation="CenterOwner" Background="{StaticResource Brush.Background}" FontFamily="{StaticResource Font.Primary}">
 
     <Grid Margin="20">
         <Grid.RowDefinitions>
@@ -66,8 +66,9 @@
 
         <!-- Buttons -->
         <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10">
-            <Button Content="Cancelar" Command="{Binding CancelCommand}" Width="100" Margin="5" />
-            <Button Content="Guardar" Command="{Binding SaveCommand}" Width="100" Margin="5" />
+            <Button Style="{StaticResource Modern.Button.Secondary}" Content="Cancelar" Command="{Binding CancelCommand}" Width="100" Margin="5" />
+            <Button Style="{StaticResource Modern.Button.Primary}" Content="Guardar" Command="{Binding SaveCommand}" Width="100" Margin="5" />
         </StackPanel>
     </Grid>
 </Window>
+

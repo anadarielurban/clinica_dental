@@ -45,7 +45,7 @@
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
                         <TextBlock Grid.Column="0" Text="&#xE721;" FontFamily="Segoe MDL2 Assets" FontSize="14" Foreground="{StaticResource Brush.TextMuted}" VerticalAlignment="Center" Margin="12,0,8,0"/>
-                        <TextBox Grid.Column="1" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" Background="Transparent" BorderThickness="0" FontSize="13" Foreground="{StaticResource Brush.TextPrimary}" VerticalContentAlignment="Center" ToolTip="Buscar por paciente, dentista o medicamento"/>
+                        <TextBox Style="{StaticResource FormTextBoxStyle}" Grid.Column="1" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" Background="Transparent" BorderThickness="0" FontSize="13" Foreground="{StaticResource Brush.TextPrimary}" VerticalContentAlignment="Center" ToolTip="Buscar por paciente, dentista o medicamento"/>
                         <Button Grid.Column="2" Content="&#xE711;" FontFamily="Segoe MDL2 Assets" FontSize="10" Width="28" Height="28" Margin="0,0,6,0" Padding="0" Background="Transparent" BorderThickness="0" Foreground="{StaticResource Brush.TextMuted}" Cursor="Hand" ToolTip="Limpiar" Click="ClearSearch_Click" VerticalAlignment="Center"/>
                     </Grid>
                 </Border>
@@ -147,3 +147,4 @@
         </Border>
     </Grid>
 </UserControl>
+

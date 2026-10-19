@@ -36,7 +36,7 @@
                 <TextBlock Text="Nombre" FontSize="12" FontWeight="SemiBold"
                            Foreground="{StaticResource Brush.TextSecondary}"
                            Margin="0,8,0,6"/>
-                <TextBox Text="{Binding Name, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=True}"
+                <TextBox Style="{StaticResource FormTextBoxStyle}" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=True}"
                          Height="38" Padding="10,0" FontSize="14"
                          Background="{StaticResource Brush.Surface}"
                          Foreground="{StaticResource Brush.TextPrimary}"
@@ -47,7 +47,7 @@
                 <TextBlock Text="Descripción" FontSize="12" FontWeight="SemiBold"
                            Foreground="{StaticResource Brush.TextSecondary}"
                            Margin="0,16,0,6"/>
-                <TextBox Text="{Binding Description, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=True}"
+                <TextBox Style="{StaticResource FormTextBoxStyle}" Text="{Binding Description, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=True}"
                          Height="90" Padding="10,8" FontSize="14"
                          Background="{StaticResource Brush.Surface}"
                          Foreground="{StaticResource Brush.TextPrimary}"
@@ -65,7 +65,7 @@
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-                    <TextBox Grid.Column="0"
+                    <TextBox Style="{StaticResource FormTextBoxStyle}" Grid.Column="0"
                              Text="{Binding Price, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=True}"
                              Height="38" Padding="10,0" FontSize="14"
                              Background="{StaticResource Brush.Surface}"
@@ -83,7 +83,7 @@
                 <TextBlock Text="Duración (minutos)" FontSize="12" FontWeight="SemiBold"
                            Foreground="{StaticResource Brush.TextSecondary}"
                            Margin="0,16,0,6"/>
-                <TextBox Text="{Binding DurationMinutes, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=True}"
+                <TextBox Style="{StaticResource FormTextBoxStyle}" Text="{Binding DurationMinutes, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=True}"
                          Height="38" Padding="10,0" FontSize="14"
                          Background="{StaticResource Brush.Surface}"
                          Foreground="{StaticResource Brush.TextPrimary}"
@@ -111,3 +111,4 @@
         </Border>
     </Grid>
 </Window>
+

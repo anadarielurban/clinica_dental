@@ -14,13 +14,13 @@ namespace DentalClinicWPF.Models
         [MaxLength(100)]
         public string ContactName { get; set; }
 
-        [MaxLength(15)]
+        [MaxLength(30)]
         public string PhoneNumber { get; set; }
 
         [MaxLength(100)]
         public string Email { get; set; }
 
-        [MaxLength(200)]
+        [MaxLength(250)]
         public string Address { get; set; }
 
         public virtual ICollection<Inventory> Inventories { get; set; }
