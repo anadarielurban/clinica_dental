@@ -30,6 +30,8 @@ namespace DentalClinicWPF
             {
                 using var context = new DentalClinicContext();
                 context.Database.EnsureCreated();
+        context.EnsureMedicalHistorySchema();
+            context.EnsureTreatmentPlanSchema();
             }
             catch (Exception ex)
             {
@@ -42,3 +44,6 @@ namespace DentalClinicWPF
         }
     }
 }
+
+
+

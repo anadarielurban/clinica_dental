@@ -11,6 +11,7 @@ namespace DentalClinicWPF.Data
         public DbSet<Appointment> Appointment { get; set; }
         public DbSet<Invoice> Invoice { get; set; }
         public DbSet<TreatmentPlan> TreatmentPlan { get; set; }
+        public DbSet<Models.TreatmentPlanItem> TreatmentPlanItem { get; set; }
         public DbSet<MedicalRecord> MedicalRecord { get; set; }
         public DbSet<Prescription> Prescription { get; set; }
         public DbSet<Schedule> Schedule { get; set; }
@@ -97,5 +98,122 @@ namespace DentalClinicWPF.Data
                 .HasForeignKey(e => e.RoomID)
                 .OnDelete(DeleteBehavior.SetNull);
         }
+    /// <summary>
+    /// Agrega las columnas de historia clínica a la tabla Patient si no existen.
+    /// No destruye datos existentes. Llamar después de EnsureCreated().
+    /// </summary>
+    public void EnsureMedicalHistorySchema()
+    {
+        try
+        {
+            var conn = Database.GetDbConnection();
+            var wasClosed = conn.State != System.Data.ConnectionState.Open;
+            if (wasClosed) conn.Open();
+
+            var existing = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            using (var cmd = conn.CreateCommand())
+            {
+                cmd.CommandText = "PRAGMA table_info(Patient);";
+                using var reader = cmd.ExecuteReader();
+                while (reader.Read()) existing.Add(reader.GetString(1));
+            }
+
+            var columns = new (string Name, string Def)[]
+            {
+                ("BloodType", "TEXT NULL"),
+                ("HasDiabetes", "INTEGER NOT NULL DEFAULT 0"),
+                ("HasHypertension", "INTEGER NOT NULL DEFAULT 0"),
+                ("HasAllergies", "INTEGER NOT NULL DEFAULT 0"),
+                ("AllergiesDetails", "TEXT NULL"),
+                ("IsPregnant", "INTEGER NOT NULL DEFAULT 0"),
+                ("HasHeartConditions", "INTEGER NOT NULL DEFAULT 0"),
+                ("HasCoagulationIssues", "INTEGER NOT NULL DEFAULT 0"),
+                ("TakesAnticoagulants", "INTEGER NOT NULL DEFAULT 0"),
+                ("IsSmoker", "INTEGER NOT NULL DEFAULT 0"),
+                ("MedicalNotes", "TEXT NULL"),
+                ("EmergencyContactName", "TEXT NULL"),
+                ("EmergencyContactPhone", "TEXT NULL"),
+            };
+
+            foreach (var (name, def) in columns)
+            {
+                if (existing.Contains(name)) continue;
+                using var alter = conn.CreateCommand();
+                alter.CommandText = $"ALTER TABLE Patient ADD COLUMN {name} {def};";
+                alter.ExecuteNonQuery();
+            }
+
+            if (wasClosed) conn.Close();
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"[Migration] Error: {ex.Message}");
+            throw;
+        }
     }
-}
+    
+    public void EnsureTreatmentPlanSchema()
+    {
+        try
+        {
+            var conn = Database.GetDbConnection();
+            var wasClosed = conn.State != System.Data.ConnectionState.Open;
+            if (wasClosed) conn.Open();
+
+            var existing = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            using (var cmd = conn.CreateCommand())
+            {
+                cmd.CommandText = "PRAGMA table_info(TreatmentPlan);";
+                using var reader = cmd.ExecuteReader();
+                while (reader.Read()) existing.Add(reader.GetString(1));
+            }
+
+            var cols = new (string Name, string Def)[]
+            {
+                ("Status", "TEXT NOT NULL DEFAULT 'Borrador'"),
+                ("TotalAmount", "TEXT NOT NULL DEFAULT '0.0'"),
+                ("Observations", "TEXT NULL")
+            };
+
+            foreach (var (name, def) in cols)
+            {
+                if (!existing.Contains(name))
+                {
+                    using var alter = conn.CreateCommand();
+                    alter.CommandText = $"ALTER TABLE TreatmentPlan ADD COLUMN {name} {def};";
+                    alter.ExecuteNonQuery();
+                }
+            }
+
+            // Crear tabla TreatmentPlanItem
+            using (var createCmd = conn.CreateCommand())
+            {
+                createCmd.CommandText = @"
+                    CREATE TABLE IF NOT EXISTS TreatmentPlanItem (
+                        TreatmentPlanItemID INTEGER PRIMARY KEY AUTOINCREMENT,
+                        TreatmentPlanID INTEGER NOT NULL,
+                        TreatmentID INTEGER NOT NULL,
+                        Quantity INTEGER NOT NULL,
+                        UnitPrice TEXT NOT NULL,
+                        FOREIGN KEY(TreatmentPlanID) REFERENCES TreatmentPlan(TreatmentPlanID) ON DELETE CASCADE,
+                        FOREIGN KEY(TreatmentID) REFERENCES Treatment(TreatmentID) ON DELETE CASCADE
+                    );";
+                createCmd.ExecuteNonQuery();
+            }
+
+            if (wasClosed) conn.Close();
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"[Migration] Error: {ex.Message}");
+            throw;
+        }
+    }}
+
+
+    }
+
+
+
+
+

@@ -259,3 +259,4 @@ namespace DentalClinicWPF.ViewModels.Patient
         private bool CanOpenPatientDetail() => SelectedPatient != null;
     }
 }
+

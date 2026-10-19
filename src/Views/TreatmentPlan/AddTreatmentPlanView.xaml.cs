@@ -1,11 +1,12 @@
 ﻿using System.Windows;
 
-namespace DentalClinicWPF.Views.TreatmentPlan;
-
-public partial class AddTreatmentPlanView : Window
+namespace DentalClinicWPF.Views.TreatmentPlan
 {
-    public AddTreatmentPlanView()
+    public partial class AddTreatmentPlanView : Window
     {
-        InitializeComponent();
+        public AddTreatmentPlanView()
+        {
+            InitializeComponent();
+        }
     }
 }

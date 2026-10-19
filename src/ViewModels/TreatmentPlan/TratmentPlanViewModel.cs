@@ -99,7 +99,7 @@ namespace DentalClinicWPF.ViewModels.TreatmentPlan
 
         private void OpenAdd()
         {
-            var w = new Views.TreatmentPlan.AddTreatmentPlanView { DataContext = new AddTreatmentPlanViewModel(_context) };
+            var w = new Views.TreatmentPlan.AddTreatmentPlanView { DataContext = new AddTreatmentPlanViewModel(_context, _context.Patient.FirstOrDefault()) };
             if (w.ShowDialog() == true) LoadData();
         }
 
@@ -122,3 +122,5 @@ namespace DentalClinicWPF.ViewModels.TreatmentPlan
         }
     }
 }
+
+

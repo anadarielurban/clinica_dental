@@ -54,12 +54,20 @@
                             <TextBlock Text="Agendar Cita"/>
                         </StackPanel>
                     </Button>
-                    <Button Command="{Binding PrintRecordCommand}" Style="{StaticResource Modern.Button.Secondary}">
+                    <StackPanel Orientation="Horizontal">
+                <Button Command="{Binding PrintRecordCommand}" Style="{StaticResource Modern.Button.Secondary}">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="&#xE749;" FontFamily="Segoe MDL2 Assets" Margin="0,0,6,0" VerticalAlignment="Center"/>
                             <TextBlock Text="Imprimir Expediente"/>
                         </StackPanel>
                     </Button>
+                <Button Command="{Binding DownloadExpedientePdfCommand}" Style="{StaticResource Modern.Button.Secondary}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE749;" FontFamily="Segoe MDL2 Assets" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                            <TextBlock Text="Descargar PDF"/>
+                        </StackPanel>
+                    </Button>
+            </StackPanel>
                 </StackPanel>
             </Grid>
         </Border>
@@ -187,7 +195,10 @@
                         <DataGrid Grid.Row="1" ItemsSource="{Binding TreatmentPlans}" SelectedItem="{Binding SelectedTreatmentPlan}" AutoGenerateColumns="False" IsReadOnly="True" RowHeight="44" Background="Transparent" BorderThickness="0" GridLinesVisibility="Horizontal">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="Fecha" Binding="{Binding CreationDate, StringFormat=d}" Width="120"/>
-                                <DataGridTextColumn Header="Detalles" Binding="{Binding Details}" Width="*"/>
+                                <DataGridTextColumn Header="Fecha" Binding="{Binding CreationDate, StringFormat=dd/MM/yyyy}" Width="100"/>
+                    <DataGridTextColumn Header="Estado" Binding="{Binding Status}" Width="100"/>
+                    <DataGridTextColumn Header="Total" Binding="{Binding TotalAmount, StringFormat=C}" Width="100"/>
+                    <DataGridTextColumn Header="Observaciones" Binding="{Binding Observations}" Width="*"/>
                             </DataGrid.Columns>
                         </DataGrid>
                     </Grid>
@@ -249,8 +260,14 @@
                 </Border>
             </TabItem>
 
+        <TabItem Header="Historia Clínica">
+                <local:MedicalHistoryView DataContext="{Binding MedicalHistory}"/>
+            </TabItem>
         </TabControl>
     </Grid>
 </UserControl>
+
+
+
 
 

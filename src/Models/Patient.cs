@@ -36,6 +36,20 @@ namespace DentalClinicWPF.Models
 
         [MaxLength(200, ErrorMessage = "Address cannot exceed 200 characters.")]
         public string Address { get; set; }
+        // ═══ HISTORIA CLÍNICA ═══
+        public string? BloodType { get; set; }
+        public bool HasDiabetes { get; set; }
+        public bool HasHypertension { get; set; }
+        public bool HasAllergies { get; set; }
+        public string? AllergiesDetails { get; set; }
+        public bool IsPregnant { get; set; }
+        public bool HasHeartConditions { get; set; }
+        public bool HasCoagulationIssues { get; set; }
+        public bool TakesAnticoagulants { get; set; }
+        public bool IsSmoker { get; set; }
+        public string? MedicalNotes { get; set; }
+        public string? EmergencyContactName { get; set; }
+        public string? EmergencyContactPhone { get; set; }
 
         [MaxLength(1000, ErrorMessage = "Medical History cannot exceed 1000 characters.")]
         public string MedicalHistory { get; set; } = "No history available";
@@ -51,3 +65,4 @@ namespace DentalClinicWPF.Models
         public string DisplayInfo => $"{FirstName} {LastName} (DOB: {DateOfBirth:yyyy-MM-dd})";
     }
 }
+

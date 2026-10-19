@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Collections.ObjectModel;
+using System.Linq;
 using System.Windows;
-using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.EntityFrameworkCore;
 using DentalClinicWPF.Data;
-using DentalClinicWPF.Models;
 using DentalClinicWPF.ViewModels.Base;
 
 namespace DentalClinicWPF.ViewModels.TreatmentPlan
@@ -11,110 +12,129 @@ namespace DentalClinicWPF.ViewModels.TreatmentPlan
     public class EditTreatmentPlanViewModel : BaseViewModel
     {
         private readonly DentalClinicContext _context;
+        private readonly Models.TreatmentPlan _plan;
 
-        public Models.TreatmentPlan TreatmentPlan { get; private set; }
-        public Models.TreatmentPlan OriginalTreatmentPlan { get; private set; }
+        public ObservableCollection<Models.Treatment> AvailableTreatments { get; set; }
+        public ObservableCollection<TreatmentPlanItemViewModel> Items { get; set; }
 
-        public List<Models.Patient> Patients { get; }
-        public List<Models.Dentist> Dentists { get; }
-
-        public ICommand SaveCommand { get; }
-        public ICommand CancelCommand { get; }
-        public ICommand DeleteCommand { get; }
-
-        public EditTreatmentPlanViewModel(DentalClinicContext context, Models.TreatmentPlan treatmentPlan)
+        private Models.Treatment _selectedTreatment;
+        public Models.Treatment SelectedTreatment
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
-            OriginalTreatmentPlan = treatmentPlan ?? throw new ArgumentNullException(nameof(treatmentPlan));
-            
-            TreatmentPlan = new Models.TreatmentPlan
-            {
-                TreatmentPlanID = treatmentPlan.TreatmentPlanID,
-                PatientID = treatmentPlan.PatientID,
-                DentistID = treatmentPlan.DentistID,
-                CreationDate = treatmentPlan.CreationDate,
-                Details = treatmentPlan.Details
-            };
-
-            Patients = _context.Patient.ToList();
-            Dentists = _context.Dentist.ToList();
-
-            SaveCommand = new RelayCommand(Save);
-            CancelCommand = new RelayCommand(Cancel);
-            DeleteCommand = new RelayCommand(Delete, CanDelete);
+            get => _selectedTreatment;
+            set { _selectedTreatment = value; OnPropertyChanged(nameof(SelectedTreatment)); }
         }
 
-        private bool CanDelete() => OriginalTreatmentPlan != null;
+        private int _quantity = 1;
+        public int Quantity
+        {
+            get => _quantity;
+            set { _quantity = value; OnPropertyChanged(nameof(Quantity)); }
+        }
+
+        private string _observations;
+        public string Observations
+        {
+            get => _observations;
+            set { _observations = value; OnPropertyChanged(nameof(Observations)); }
+        }
+
+        public decimal TotalAmount => Items.Sum(x => x.Subtotal);
+
+        public IRelayCommand AddItemCommand { get; }
+        public IRelayCommand<TreatmentPlanItemViewModel> RemoveItemCommand { get; }
+        public IRelayCommand SaveCommand { get; }
+
+        public EditTreatmentPlanViewModel(DentalClinicContext context, Models.TreatmentPlan plan)
+        {
+            _context = context ?? throw new ArgumentNullException(nameof(context));
+            _plan = plan ?? throw new ArgumentNullException(nameof(plan));
+
+            Items = new ObservableCollection<TreatmentPlanItemViewModel>();
+            AvailableTreatments = new ObservableCollection<Models.Treatment>(_context.Treatment.ToList());
+            Observations = _plan.Observations;
+
+            // Cargar items existentes
+            var dbPlan = _context.TreatmentPlan.Include(p => p.Items).ThenInclude(i => i.Treatment).FirstOrDefault(p => p.TreatmentPlanID == _plan.TreatmentPlanID);
+            if (dbPlan != null && dbPlan.Items != null)
+            {
+                foreach (var item in dbPlan.Items)
+                {
+                    Items.Add(new TreatmentPlanItemViewModel(item.Treatment, item.Quantity));
+                }
+            }
+
+            AddItemCommand = new RelayCommand(AddItem);
+            RemoveItemCommand = new RelayCommand<TreatmentPlanItemViewModel>(RemoveItem);
+            SaveCommand = new RelayCommand(Save);
+        }
+
+        private void AddItem()
+        {
+            if (SelectedTreatment == null || Quantity <= 0)
+            {
+                MessageBox.Show("Seleccione un tratamiento y una cantidad válida.", "Aviso", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            var existing = Items.FirstOrDefault(x => x.Treatment.TreatmentID == SelectedTreatment.TreatmentID);
+            if (existing != null)
+            {
+                existing.Quantity += Quantity;
+                var index = Items.IndexOf(existing);
+                Items[index] = existing;
+            }
+            else
+            {
+                Items.Add(new TreatmentPlanItemViewModel(SelectedTreatment, Quantity));
+            }
+
+            Quantity = 1;
+            OnPropertyChanged(nameof(TotalAmount));
+        }
+
+        private void RemoveItem(TreatmentPlanItemViewModel item)
+        {
+            if (item != null && Items.Contains(item))
+            {
+                Items.Remove(item);
+                OnPropertyChanged(nameof(TotalAmount));
+            }
+        }
 
         private void Save()
         {
+            if (!Items.Any())
+            {
+                MessageBox.Show("Debe haber al menos un tratamiento en el presupuesto.", "Aviso", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
             try
             {
-                if (TreatmentPlan.PatientID == 0 || TreatmentPlan.DentistID == 0)
+                _plan.Observations = Observations;
+                _plan.TotalAmount = TotalAmount;
+
+                // Eliminar items viejos
+                var oldItems = _context.TreatmentPlanItem.Where(i => i.TreatmentPlanID == _plan.TreatmentPlanID).ToList();
+                _context.TreatmentPlanItem.RemoveRange(oldItems);
+
+                // Agregar nuevos
+                foreach (var item in Items)
                 {
-                    MessageBox.Show("Selecciona un paciente y un dentista.", "Error de Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
-                    return;
+                    var entity = item.ToEntity();
+                    entity.TreatmentPlanID = _plan.TreatmentPlanID;
+                    _context.TreatmentPlanItem.Add(entity);
                 }
 
-                // Aktualizowanie oryginalnego obiektu
-                OriginalTreatmentPlan.PatientID = TreatmentPlan.PatientID;
-                OriginalTreatmentPlan.DentistID = TreatmentPlan.DentistID;
-                OriginalTreatmentPlan.Details = TreatmentPlan.Details;
-
-                _context.TreatmentPlan.Update(OriginalTreatmentPlan);
                 _context.SaveChanges();
-
-                MessageBox.Show("¡Plan de tratamiento actualizado!", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
-                CloseWindow(true);
+                MessageBox.Show("Presupuesto actualizado correctamente.", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
+                if (Application.Current.Windows.OfType<Window>().SingleOrDefault(x => x.IsActive) is Window w) { w.DialogResult = true; }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error al guardar el plan: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
-        private void Delete()
-        {
-            var result = MessageBox.Show(
-                "¿Seguro que quieres eliminar este plan de tratamiento? Esta acción no se puede deshacer.",
-                "Confirmar Eliminación",
-                MessageBoxButton.YesNo,
-                MessageBoxImage.Warning);
-
-            if (result == MessageBoxResult.Yes)
-            {
-                try
-                {
-                    _context.TreatmentPlan.Remove(OriginalTreatmentPlan);
-                    _context.SaveChanges();
-
-                    MessageBox.Show("¡Plan de tratamiento eliminado!", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
-                    CloseWindow(true);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Error al eliminar el plan: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-            }
-        }
-
-        private void Cancel()
-        {
-            // Zamknięcie okna bez zapisywania zmian
-            CloseWindow(false);
-        }
-
-        private void CloseWindow(bool dialogResult = false)
-        {
-            foreach (Window window in Application.Current.Windows)
-            {
-                if (window.DataContext == this)
-                {
-                    window.DialogResult = dialogResult;
-                    window.Close();
-                    break;
-                }
+                MessageBox.Show($"Error al actualizar: {ex.Message}\n{ex.InnerException?.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }
 }
+

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
@@ -68,6 +69,9 @@ namespace DentalClinicWPF.ViewModels.Patient.PatientDetail
         public ICommand SaveOdontogramCommand { get; }
         public ICommand SelectToothCommand { get; }
 
+        // ═══ Historia Clínica ═══
+        public MedicalHistoryViewModel MedicalHistory { get; }
+
         // ─── Diente seleccionado (para el panel lateral) ───
         private ToothViewModel _selectedTooth;
         public ToothViewModel SelectedTooth
@@ -76,6 +80,7 @@ namespace DentalClinicWPF.ViewModels.Patient.PatientDetail
             set { if (_selectedTooth == value) return; _selectedTooth = value; OnPropertyChanged(nameof(SelectedTooth)); }
         }
         public ICommand PrintRecordCommand { get; }
+        public ICommand DownloadExpedientePdfCommand { get; }
 
         public PatientDetailViewModel(DentalClinicContext context, Models.Patient patient)
         {
@@ -83,14 +88,21 @@ namespace DentalClinicWPF.ViewModels.Patient.PatientDetail
             Patient = patient ?? throw new ArgumentNullException(nameof(patient));
 
             // Cargar datos de pestañas
-            Appointments = new ObservableCollection<Models.Appointment>(_context.Appointment.Where(a => a.PatientID == patient.PatientID).ToList());
-            Prescriptions = new ObservableCollection<Models.Prescription>(_context.Prescription.Where(p => p.PatientID == patient.PatientID).ToList());
-            TreatmentPlans = new ObservableCollection<Models.TreatmentPlan>(_context.TreatmentPlan.Where(t => t.PatientID == patient.PatientID).ToList());
-            Invoices = new ObservableCollection<Models.Invoice>(_context.Invoice.Where(i => i.Appointment.PatientID == patient.PatientID).ToList());
-            MedicalRecords = new ObservableCollection<Models.MedicalRecord>(_context.MedicalRecord.Where(m => m.PatientID == patient.PatientID).ToList());
+            Appointments = new ObservableCollection<Models.Appointment>();
+            Prescriptions = new ObservableCollection<Models.Prescription>();
+            TreatmentPlans = new ObservableCollection<Models.TreatmentPlan>();
+            Invoices = new ObservableCollection<Models.Invoice>();
+            MedicalRecords = new ObservableCollection<Models.MedicalRecord>();
 
             // Cargar Odontograma
+            MedicalHistory = new MedicalHistoryViewModel(_context, Patient);
+
             LoadOdontogram();
+            LoadTreatmentPlans();
+            LoadAppointments();
+            LoadPrescriptions();
+            LoadInvoices();
+            LoadMedicalRecords();
 
             // Comando Guardar Odontograma
             SaveOdontogramCommand = new RelayCommand(() => {
@@ -111,19 +123,20 @@ namespace DentalClinicWPF.ViewModels.Patient.PatientDetail
             });
 
             PrintRecordCommand = new RelayCommand(PrintRecord);
+            DownloadExpedientePdfCommand = new RelayCommand(DownloadExpedientePdf);
 
             // Comandos de Citas
             AddAppointmentCommand = new RelayCommand(() => {
                 try {
                     var w = new AddAppointmentView { DataContext = new ViewModels.Appointment.AddAppointmentViewModel(_context) };
-                    if (w.ShowDialog() == true) { }
+                    if (w.ShowDialog() == true) { LoadAppointments();  }
                 } catch (Exception ex) { MessageBox.Show(ex.Message); }
             });
             EditAppointmentCommand = new RelayCommand(() => {
                 if (SelectedAppointment == null) { MessageBox.Show("Selecciona una cita de la tabla primero.", "Aviso", MessageBoxButton.OK, MessageBoxImage.Warning); return; }
                 try {
                     var w = new EditAppointmentView { DataContext = new ViewModels.Appointment.EditAppointmentViewModel(_context, SelectedAppointment) };
-                    if (w.ShowDialog() == true) { }
+                    if (w.ShowDialog() == true) { LoadAppointments();  }
                 } catch (Exception ex) { MessageBox.Show($"Error al editar la cita: {ex.Message}", "Error"); }
             });
             PreviewAppointmentCommand = new RelayCommand(() => {
@@ -135,14 +148,14 @@ namespace DentalClinicWPF.ViewModels.Patient.PatientDetail
             AddPrescriptionCommand = new RelayCommand(() => {
                 try {
                     var w = new AddPrescriptionView { DataContext = new ViewModels.Prescription.AddPrescriptionViewModel(_context) };
-                    if (w.ShowDialog() == true) { }
+                    if (w.ShowDialog() == true) { LoadAppointments();  }
                 } catch (Exception ex) { MessageBox.Show(ex.Message); }
             });
             EditPrescriptionCommand = new RelayCommand(() => {
                 if (SelectedPrescription == null) { MessageBox.Show("Selecciona una receta de la tabla primero.", "Aviso", MessageBoxButton.OK, MessageBoxImage.Warning); return; }
                 try {
                     var w = new EditPrescriptionView { DataContext = new ViewModels.Prescription.EditPrescriptionViewModel(SelectedPrescription, _context) };
-                    if (w.ShowDialog() == true) { }
+                    if (w.ShowDialog() == true) { LoadAppointments();  }
                 } catch (Exception ex) { MessageBox.Show($"Error al editar la receta: {ex.Message}", "Error"); }
             });
             PreviewPrescriptionCommand = new RelayCommand(() => {
@@ -154,34 +167,64 @@ namespace DentalClinicWPF.ViewModels.Patient.PatientDetail
             // Comandos de Planes
             AddTreatmentPlanCommand = new RelayCommand(() => {
                 try {
-                    var w = new AddTreatmentPlanView { DataContext = new ViewModels.TreatmentPlan.AddTreatmentPlanViewModel(_context) };
-                    if (w.ShowDialog() == true) { }
+                    var w = new AddTreatmentPlanView { DataContext = new ViewModels.TreatmentPlan.AddTreatmentPlanViewModel(_context, Patient) };
+                    if (w.ShowDialog() == true) {
+                        LoadTreatmentPlans();
+            LoadAppointments();
+            LoadPrescriptions();
+            LoadInvoices();
+            LoadMedicalRecords(); // <-- Recargar tabla
+                    }
                 } catch (Exception ex) { MessageBox.Show(ex.Message); }
             });
             EditTreatmentPlanCommand = new RelayCommand(() => {
                 if (SelectedTreatmentPlan == null) { MessageBox.Show("Selecciona un plan de la tabla primero.", "Aviso", MessageBoxButton.OK, MessageBoxImage.Warning); return; }
                 try {
                     var w = new EditTreatmentPlanView { DataContext = new ViewModels.TreatmentPlan.EditTreatmentPlanViewModel(_context, SelectedTreatmentPlan) };
-                    if (w.ShowDialog() == true) { }
+                    if (w.ShowDialog() == true) {
+                        LoadTreatmentPlans();
+            LoadAppointments();
+            LoadPrescriptions();
+            LoadInvoices();
+            LoadMedicalRecords(); // <-- Recargar tabla
+                    }
                 } catch (Exception ex) { MessageBox.Show($"Error al editar el plan: {ex.Message}", "Error"); }
             });
             PreviewTreatmentPlanCommand = new RelayCommand(() => {
                 if (SelectedTreatmentPlan == null) { MessageBox.Show("Selecciona un plan primero.", "Aviso", MessageBoxButton.OK, MessageBoxImage.Warning); return; }
-                MessageBox.Show($"Plan: {SelectedTreatmentPlan.Details}", "Detalles del Plan");
+                var sb = new System.Text.StringBuilder();
+                sb.AppendLine($"Fecha: {SelectedTreatmentPlan.CreationDate:dd/MM/yyyy}");
+                sb.AppendLine($"Estado: {SelectedTreatmentPlan.Status}");
+                sb.AppendLine("--------------------------------------------------");
+                if (SelectedTreatmentPlan.Items != null && SelectedTreatmentPlan.Items.Count > 0)
+                {
+                    foreach (var item in SelectedTreatmentPlan.Items)
+                    {
+                        var name = item.Treatment != null ? item.Treatment.Name : "Tratamiento";
+                        sb.AppendLine($"• {name} (x{item.Quantity}) - {item.Subtotal:C}");
+                    }
+                }
+                else
+                {
+                    sb.AppendLine("(No hay tratamientos cargados)");
+                }
+                sb.AppendLine("--------------------------------------------------");
+                sb.AppendLine($"TOTAL: {SelectedTreatmentPlan.TotalAmount:C}");
+                MessageBox.Show(sb.ToString(), "Detalles del Presupuesto");
             });
 
             // Comandos de Facturas
             AddInvoiceCommand = new RelayCommand(() => {
                 try {
                     var w = new AddInvoiceView { DataContext = new ViewModels.Invoice.AddInvoiceViewModel(_context) };
-                    if (w.ShowDialog() == true) { }
+                    if (w.ShowDialog() == true) { LoadAppointments();  }
                 } catch (Exception ex) { MessageBox.Show(ex.Message); }
             });
             EditInvoiceCommand = new RelayCommand(() => {
                 if (SelectedInvoice == null) { MessageBox.Show("Selecciona una factura de la tabla primero.", "Aviso", MessageBoxButton.OK, MessageBoxImage.Warning); return; }
                 try {
                     var w = new EditInvoiceView { DataContext = new ViewModels.Invoice.EditInvoiceViewModel(_context, SelectedInvoice) };
-                    if (w.ShowDialog() == true) { }
+                    if (w.ShowDialog() == true) { LoadAppointments();  }
                 } catch (Exception ex) { MessageBox.Show($"Error al editar la factura: {ex.Message}", "Error"); }
             });
             PreviewInvoiceCommand = new RelayCommand(() => {
@@ -193,20 +236,63 @@ namespace DentalClinicWPF.ViewModels.Patient.PatientDetail
             AddMedicalRecordCommand = new RelayCommand(() => {
                 try {
                     var w = new AddMedicalRecordView { DataContext = new ViewModels.MedicalRecord.AddMedicalRecordViewModel(_context) };
-                    if (w.ShowDialog() == true) { }
+                    if (w.ShowDialog() == true) { LoadAppointments();  }
                 } catch (Exception ex) { MessageBox.Show(ex.Message); }
             });
             EditMedicalRecordCommand = new RelayCommand(() => {
                 if (SelectedMedicalRecord == null) { MessageBox.Show("Selecciona un expediente de la tabla primero.", "Aviso", MessageBoxButton.OK, MessageBoxImage.Warning); return; }
                 try {
                     var w = new EditMedicalRecordView { DataContext = new ViewModels.MedicalRecord.EditMedicalRecordViewModel(_context, SelectedMedicalRecord) };
-                    if (w.ShowDialog() == true) { }
+                    if (w.ShowDialog() == true) { LoadAppointments();  }
                 } catch (Exception ex) { MessageBox.Show($"Error al editar el expediente: {ex.Message}", "Error"); }
             });
             PreviewMedicalRecordCommand = new RelayCommand(() => {
                 if (SelectedMedicalRecord == null) { MessageBox.Show("Selecciona un expediente primero.", "Aviso", MessageBoxButton.OK, MessageBoxImage.Warning); return; }
                 MessageBox.Show($"Expediente: {SelectedMedicalRecord.Notes}", "Detalles");
             });
+        }
+
+        private void LoadAppointments()
+        {
+            Appointments.Clear();
+            foreach (var a in _context.Appointment.Where(a => a.PatientID == Patient.PatientID).ToList())
+                Appointments.Add(a);
+        }
+
+        private void LoadPrescriptions()
+        {
+            Prescriptions.Clear();
+            foreach (var p in _context.Prescription.Where(p => p.PatientID == Patient.PatientID).ToList())
+                Prescriptions.Add(p);
+        }
+
+        private void LoadInvoices()
+        {
+            Invoices.Clear();
+            foreach (var i in _context.Invoice.Where(i => i.Appointment.PatientID == Patient.PatientID).ToList())
+                Invoices.Add(i);
+        }
+
+        private void LoadMedicalRecords()
+        {
+            MedicalRecords.Clear();
+            foreach (var m in _context.MedicalRecord.Where(m => m.PatientID == Patient.PatientID).ToList())
+                MedicalRecords.Add(m);
+        }
+
+        private void LoadTreatmentPlans()
+        {
+            TreatmentPlans.Clear();
+            var plans = _context.TreatmentPlan
+                .Include(t => t.Items)
+                .ThenInclude(i => i.Treatment)
+                .Where(t => t.PatientID == Patient.PatientID)
+                .ToList();
+            
+            foreach (var plan in plans)
+            {
+                TreatmentPlans.Add(plan);
+            }
         }
 
         private void LoadOdontogram()
@@ -228,14 +314,9 @@ namespace DentalClinicWPF.ViewModels.Patient.PatientDetail
             collection.Add(new ToothViewModel(record));
         }
 
-private void PrintRecord()
+private FlowDocument BuildExpedienteDocument()
         {
-            try
-            {
-                PrintDialog printDialog = new PrintDialog();
-                if (printDialog.ShowDialog() != true) return;
-
-                // ── Paleta ─────────────────────────────────────────
+            // ── Paleta ─────────────────────────────────────────
                 var tealBrush   = new SolidColorBrush(Color.FromRgb(20, 184, 166));
                 var tealDark    = new SolidColorBrush(Color.FromRgb(13, 148, 136));
                 var darkSlate   = new SolidColorBrush(Color.FromRgb(30, 41, 59));
@@ -247,7 +328,7 @@ private void PrintRecord()
 
                 FlowDocument doc = new FlowDocument
                 {
-                    PagePadding = new Thickness(40, 30, 40, 30),
+                    PagePadding = new Thickness(40, 25, 40, 20),
                     ColumnWidth = double.PositiveInfinity,
                     FontFamily = new FontFamily("Segoe UI"),
                     FontSize = 10,
@@ -327,6 +408,169 @@ private void PrintRecord()
                 AddInfoRow("Dirección", Patient.Address, false);
 
                 doc.Blocks.Add(infoTable);
+
+                // ═══════════════ 2.5 HISTORIA CLÍNICA ═══════════════
+                var conditions = new List<string>();
+                if (Patient.HasDiabetes) conditions.Add("Diabetes");
+                if (Patient.HasHypertension) conditions.Add("Hipertensión");
+                if (Patient.HasHeartConditions) conditions.Add("Problemas cardíacos");
+                if (Patient.HasCoagulationIssues) conditions.Add("Problemas de coagulación");
+                if (Patient.TakesAnticoagulants) conditions.Add("Toma anticoagulantes");
+                if (Patient.IsPregnant) conditions.Add("Embarazo");
+                if (Patient.IsSmoker) conditions.Add("Fumador");
+
+                bool hasAnyHistory = !string.IsNullOrWhiteSpace(Patient.BloodType)
+                                     || conditions.Count > 0
+                                     || Patient.HasAllergies
+                                     || !string.IsNullOrWhiteSpace(Patient.EmergencyContactName)
+                                     || !string.IsNullOrWhiteSpace(Patient.EmergencyContactPhone)
+                                     || !string.IsNullOrWhiteSpace(Patient.MedicalNotes);
+
+                if (hasAnyHistory)
+                {
+                    doc.Blocks.Add(SectionHeader("HISTORIA CLÍNICA", tealBrush, darkSlate));
+
+                    var histBorder = new Border
+                    {
+                        Background = Brushes.White,
+                        BorderBrush = borderGray,
+                        BorderThickness = new Thickness(1),
+                        CornerRadius = new CornerRadius(6),
+                        Padding = new Thickness(14, 12, 14, 12),
+                        Margin = new Thickness(0, 0, 0, 12)
+                    };
+                    var histStack = new StackPanel();
+
+                    // Tipo de sangre
+                    if (!string.IsNullOrWhiteSpace(Patient.BloodType))
+                    {
+                        var btPanel = new StackPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 0, 0, 8) };
+                        btPanel.Children.Add(new TextBlock
+                        {
+                            Text = "Tipo de sangre:  ",
+                            FontWeight = FontWeights.SemiBold,
+                            Foreground = medSlate,
+                            FontSize = 10,
+                            VerticalAlignment = VerticalAlignment.Center
+                        });
+                        btPanel.Children.Add(new Border
+                        {
+                            Background = new SolidColorBrush(Color.FromRgb(220, 38, 38)),
+                            CornerRadius = new CornerRadius(10),
+                            Padding = new Thickness(10, 2, 10, 2),
+                            Child = new TextBlock
+                            {
+                                Text = Patient.BloodType,
+                                Foreground = Brushes.White,
+                                FontWeight = FontWeights.Bold,
+                                FontSize = 10
+                            }
+                        });
+                        histStack.Children.Add(btPanel);
+                    }
+
+                    // Condiciones (chips)
+                    if (conditions.Count > 0)
+                    {
+                        var condPanel = new WrapPanel { Margin = new Thickness(0, 0, 0, 8) };
+                        condPanel.Children.Add(new TextBlock
+                        {
+                            Text = "Condiciones:  ",
+                            FontWeight = FontWeights.SemiBold,
+                            Foreground = medSlate,
+                            FontSize = 10,
+                            VerticalAlignment = VerticalAlignment.Center,
+                            Margin = new Thickness(0, 0, 4, 4)
+                        });
+                        foreach (var c in conditions)
+                        {
+                            condPanel.Children.Add(new Border
+                            {
+                                Background = new SolidColorBrush(Color.FromRgb(254, 243, 199)),
+                                BorderBrush = new SolidColorBrush(Color.FromRgb(251, 191, 36)),
+                                BorderThickness = new Thickness(1),
+                                CornerRadius = new CornerRadius(10),
+                                Padding = new Thickness(8, 2, 8, 2),
+                                Margin = new Thickness(0, 0, 4, 4),
+                                Child = new TextBlock
+                                {
+                                    Text = c,
+                                    Foreground = new SolidColorBrush(Color.FromRgb(120, 53, 15)),
+                                    FontSize = 9,
+                                    FontWeight = FontWeights.SemiBold
+                                }
+                            });
+                        }
+                        histStack.Children.Add(condPanel);
+                    }
+
+                    // Alergias (destacado en rojo)
+                    if (Patient.HasAllergies)
+                    {
+                        var allergyBorder = new Border
+                        {
+                            Background = new SolidColorBrush(Color.FromRgb(254, 226, 226)),
+                            BorderBrush = new SolidColorBrush(Color.FromRgb(220, 38, 38)),
+                            BorderThickness = new Thickness(1),
+                            CornerRadius = new CornerRadius(6),
+                            Padding = new Thickness(10, 6, 10, 6),
+                            Margin = new Thickness(0, 4, 0, 8)
+                        };
+                        var allergyStack = new StackPanel();
+                        allergyStack.Children.Add(new TextBlock
+                        {
+                            Text = "⚠  ALERGIAS",
+                            Foreground = new SolidColorBrush(Color.FromRgb(153, 27, 27)),
+                            FontWeight = FontWeights.Bold,
+                            FontSize = 10
+                        });
+                        allergyStack.Children.Add(new TextBlock
+                        {
+                            Text = string.IsNullOrWhiteSpace(Patient.AllergiesDetails) ? "No especificadas" : Patient.AllergiesDetails,
+                            Foreground = new SolidColorBrush(Color.FromRgb(127, 29, 29)),
+                            FontSize = 10,
+                            TextWrapping = TextWrapping.Wrap,
+                            Margin = new Thickness(0, 2, 0, 0)
+                        });
+                        allergyBorder.Child = allergyStack;
+                        histStack.Children.Add(allergyBorder);
+                    }
+
+                    // Contacto de emergencia
+                    if (!string.IsNullOrWhiteSpace(Patient.EmergencyContactName) || !string.IsNullOrWhiteSpace(Patient.EmergencyContactPhone))
+                    {
+                        var ecText = new TextBlock
+                        {
+                            FontSize = 10,
+                            Foreground = medSlate,
+                            Margin = new Thickness(0, 0, 0, 6),
+                            TextWrapping = TextWrapping.Wrap
+                        };
+                        ecText.Inlines.Add(new Run("Contacto de emergencia:  ") { FontWeight = FontWeights.SemiBold });
+                        var parts = new List<string>();
+                        if (!string.IsNullOrWhiteSpace(Patient.EmergencyContactName)) parts.Add(Patient.EmergencyContactName);
+                        if (!string.IsNullOrWhiteSpace(Patient.EmergencyContactPhone)) parts.Add(Patient.EmergencyContactPhone);
+                        ecText.Inlines.Add(new Run(string.Join("  •  ", parts)));
+                        histStack.Children.Add(ecText);
+                    }
+
+                    // Notas médicas
+                    if (!string.IsNullOrWhiteSpace(Patient.MedicalNotes))
+                    {
+                        var notesText = new TextBlock
+                        {
+                            FontSize = 10,
+                            Foreground = medSlate,
+                            TextWrapping = TextWrapping.Wrap
+                        };
+                        notesText.Inlines.Add(new Run("Notas médicas:  ") { FontWeight = FontWeights.SemiBold });
+                        notesText.Inlines.Add(new Run(Patient.MedicalNotes));
+                        histStack.Children.Add(notesText);
+                    }
+
+                    histBorder.Child = histStack;
+                    doc.Blocks.Add(new BlockUIContainer(histBorder));
+                }
 
                 // ═══════════════ 3. ODONTOGRAMA ═══════════════
                 doc.Blocks.Add(SectionHeader("ODONTOGRAMA", tealBrush, darkSlate));
@@ -449,7 +693,7 @@ private void PrintRecord()
                 var datePara = new Paragraph
                 {
                     TextAlignment = TextAlignment.Right,
-                    Margin = new Thickness(0, 8, 0, 0),
+                    Margin = new Thickness(0, 4, 0, 0),
                     FontSize = 9,
                     Foreground = lightSlate
                 };
@@ -457,7 +701,7 @@ private void PrintRecord()
                 doc.Blocks.Add(datePara);
 
                 // ═══════════════ 6. FIRMA CENTRADA ═══════════════
-                var sigContainer = new Border { Margin = new Thickness(0, 30, 0, 0) };
+                var sigContainer = new Border { Margin = new Thickness(0, 10, 0, 0) };
                 var sigStack = new StackPanel { HorizontalAlignment = HorizontalAlignment.Center, Width = 260 };
                 sigStack.Children.Add(new Border
                 {
@@ -479,7 +723,7 @@ private void PrintRecord()
                     Foreground = lightSlate,
                     FontSize = 9,
                     HorizontalAlignment = HorizontalAlignment.Center,
-                    Margin = new Thickness(0, 4, 0, 0)
+                    Margin = new Thickness(0, 2, 0, 0)
                 });
                 sigContainer.Child = sigStack;
                 doc.Blocks.Add(new BlockUIContainer(sigContainer));
@@ -488,13 +732,23 @@ private void PrintRecord()
                 var footerPara = new Paragraph
                 {
                     TextAlignment = TextAlignment.Center,
-                    Margin = new Thickness(0, 26, 0, 0),
-                    FontSize = 8,
+                    Margin = new Thickness(0, 6, 0, 0),
+                    FontSize = 7.5,
                     Foreground = lightSlate
                 };
                 footerPara.Inlines.Add(new Run("Clínica Dental  •  Documento confidencial  •  Generado automáticamente"));
                 doc.Blocks.Add(footerPara);
+            return doc;
+        }
 
+        private void PrintRecord()
+        {
+            try
+            {
+                PrintDialog printDialog = new PrintDialog();
+                if (printDialog.ShowDialog() != true) return;
+
+                var doc = BuildExpedienteDocument();
                 printDialog.PrintDocument(((IDocumentPaginatorSource)doc).DocumentPaginator,
                     "Expediente Clínico - " + Patient.FullName);
             }
@@ -502,6 +756,40 @@ private void PrintRecord()
             {
                 MessageBox.Show($"Error al imprimir el expediente: {ex.Message}", "Error",
                     MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void DownloadExpedientePdf()
+        {
+            var safeName = string.Join("_", Patient.FullName.Split(
+                System.IO.Path.GetInvalidFileNameChars(),
+                StringSplitOptions.RemoveEmptyEntries));
+
+            var sfd = new Microsoft.Win32.SaveFileDialog
+            {
+                Filter = "Documento PDF (*.pdf)|*.pdf",
+                FileName = $"Expediente_{safeName}_{DateTime.Now:yyyyMMdd}.pdf",
+                Title = "Guardar Expediente Clínico"
+            };
+
+            if (sfd.ShowDialog() != true) return;
+
+            try
+            {
+                Services.ExpedientePdfService.Generate(this, sfd.FileName);
+                MessageBox.Show(
+                    $"Expediente guardado correctamente:\n\n{sfd.FileName}",
+                    "PDF generado",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"Error al generar el PDF:\n\n{ex.Message}\n\n{ex.InnerException?.Message}",
+                    "Error",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
             }
         }
 
@@ -664,6 +952,20 @@ private void PrintRecord()
         }
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
