@@ -151,14 +151,6 @@
                         <TextBlock Text="ADMINISTRACIÓN"
                                    Style="{StaticResource Modern.Caption}"
                                    Margin="20,18,20,6" />
-
-                        <Button Tag="Horarios" Command="{Binding ShowSchedulesCommand}"
-                                Style="{StaticResource Modern.SidebarItem}">
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="&#xE823;" FontFamily="Segoe MDL2 Assets" Width="20" VerticalAlignment="Center"/>
-                                <TextBlock Text="Horarios" Margin="8,0,0,0"/>
-                            </StackPanel>
-                        </Button>
                         <Button Tag="Inventario" Command="{Binding ShowInventoryCommand}"
                                 Style="{StaticResource Modern.SidebarItem}">
                             <StackPanel Orientation="Horizontal">

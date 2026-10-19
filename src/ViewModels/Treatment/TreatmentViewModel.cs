@@ -46,7 +46,8 @@ namespace DentalClinicWPF.ViewModels.Treatment
             {
                 _selectedTreatment = value;
                 OnPropertyChanged();
-                (EditTreatmentCommand as RelayCommand)?.NotifyCanExecuteChanged();
+                (EditTreatmentCommand as RelayCommand<Models.Treatment>)?.NotifyCanExecuteChanged();
+                (DeleteTreatmentCommand as RelayCommand<Models.Treatment>)?.NotifyCanExecuteChanged();
             }
         }
 
@@ -73,6 +74,7 @@ namespace DentalClinicWPF.ViewModels.Treatment
         public ICommand SortCommand { get; }
         public ICommand AddTreatmentCommand { get; }
         public ICommand EditTreatmentCommand { get; }
+        public ICommand DeleteTreatmentCommand { get; }
         public ICommand ReloadCommand { get; }
         public ICommand SearchCommand { get; }
 
@@ -85,7 +87,8 @@ namespace DentalClinicWPF.ViewModels.Treatment
             _searchTimer.Tick += (s, e) => { _searchTimer.Stop(); SearchTreatments(); };
 
             AddTreatmentCommand = new RelayCommand(OpenAddTreatment);
-            EditTreatmentCommand = new RelayCommand(OpenEditTreatment, () => SelectedTreatment != null);
+            EditTreatmentCommand = new RelayCommand<Models.Treatment>(OpenEditTreatmentWithParam, t => t != null);
+            DeleteTreatmentCommand = new RelayCommand<Models.Treatment>(DeleteTreatmentWithParam, t => t != null);
             ReloadCommand = new RelayCommand(ReloadAll);
             SearchCommand = new RelayCommand(SearchTreatments);
             SortCommand = new RelayCommand(SortTreatments);
@@ -155,6 +158,43 @@ namespace DentalClinicWPF.ViewModels.Treatment
         {
             var w = new AddEditTreatmentView { DataContext = new AddEditTreatmentViewModel(_context) };
             if (w.ShowDialog() == true) LoadData();
+        }
+
+        private void OpenEditTreatmentWithParam(Models.Treatment treatment)
+        {
+            if (treatment == null) return;
+            SelectedTreatment = treatment;
+            OpenEditTreatment();
+        }
+
+        private void DeleteTreatmentWithParam(Models.Treatment treatment)
+        {
+            if (treatment == null) return;
+            SelectedTreatment = treatment;
+            DeleteTreatment();
+        }
+
+        private void DeleteTreatment()
+        {
+            if (SelectedTreatment == null) return;
+            var result = System.Windows.MessageBox.Show(
+                $"¿Seguro que quieres eliminar el tratamiento '{SelectedTreatment.Name}'?",
+                "Confirmar Eliminación",
+                System.Windows.MessageBoxButton.YesNo,
+                System.Windows.MessageBoxImage.Warning);
+            if (result == System.Windows.MessageBoxResult.Yes)
+            {
+                try
+                {
+                    _context.Treatment.Remove(SelectedTreatment);
+                    _context.SaveChanges();
+                    LoadData();
+                }
+                catch (Exception ex)
+                {
+                    System.Windows.MessageBox.Show($"Error al eliminar el tratamiento: {ex.Message}", "Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+                }
+            }
         }
 
         private void OpenEditTreatment()

@@ -35,34 +35,34 @@ namespace DentalClinicWPF.ViewModels.TreatmentPlan
 
         private void Save()
         {
+            if (TreatmentPlan.PatientID == 0 || TreatmentPlan.DentistID == 0)
+            {
+                MessageBox.Show("Selecciona un paciente y un dentista.", "Error de Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
             try
             {
-                if (TreatmentPlan.PatientID == 0 || TreatmentPlan.DentistID == 0)
-                {
-                    MessageBox.Show("Selecciona un paciente y un dentista.", "Error de Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
-                    return;
-                }
-
                 _context.TreatmentPlan.Add(TreatmentPlan);
                 _context.SaveChanges();
                 MessageBox.Show("¡Plan de tratamiento agregado correctamente!", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
-                CloseWindow();
+                CloseWindow(true);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error al guardar el plan: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
-        private void Cancel() => CloseWindow();
+        private void Cancel() => CloseWindow(false);
 
-        private void CloseWindow()
+        private void CloseWindow(bool result)
         {
             foreach (Window window in Application.Current.Windows)
             {
                 if (window.DataContext == this)
                 {
-                    window.DialogResult = false;
+                    window.DialogResult = result;
                     window.Close();
                     break;
                 }

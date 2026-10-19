@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
@@ -20,11 +21,7 @@ namespace DentalClinicWPF.ViewModels.Schedule
         public ObservableCollection<Models.Schedule> Schedules
         {
             get => _schedules;
-            private set
-            {
-                _schedules = value;
-                OnPropertyChanged();
-            }
+            private set { _schedules = value; OnPropertyChanged(); }
         }
 
         private Models.Schedule _selectedSchedule;
@@ -35,62 +32,46 @@ namespace DentalClinicWPF.ViewModels.Schedule
             {
                 _selectedSchedule = value;
                 OnPropertyChanged();
-                (EditScheduleCommand as RelayCommand)?.NotifyCanExecuteChanged();
+                (EditScheduleCommand as RelayCommand<Models.Schedule>)?.NotifyCanExecuteChanged();
+                (DeleteScheduleCommand as RelayCommand<Models.Schedule>)?.NotifyCanExecuteChanged();
             }
         }
 
         private string _searchText;
-        public string SearchText
-        {
-            get => _searchText;
-            set
-            {
-                _searchText = value;
-                OnPropertyChanged();
-            }
-        }
+        public string SearchText { get => _searchText; set { _searchText = value; OnPropertyChanged(); } }
 
-        // Właściwości do sortowania
         public ObservableCollection<string> SortOptions { get; } = new ObservableCollection<string>
         {
-            "Dentist",
-            "Fecha de Inicio",
-            "Fecha de Fin",
-            "Día Libre"
+            "Dentista", "Fecha de Inicio", "Fecha de Fin", "Día Libre"
         };
         public string SelectedSortOption { get; set; }
         public ICommand SortCommand { get; }
-
         public ICommand AddScheduleCommand { get; }
         public ICommand EditScheduleCommand { get; }
+        public ICommand DeleteScheduleCommand { get; }
         public ICommand ReloadSchedulesCommand { get; }
         public ICommand SearchCommand { get; }
 
         public ScheduleViewModel(DentalClinicContext context)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
-
             Schedules = new ObservableCollection<Models.Schedule>();
 
             AddScheduleCommand = new RelayCommand(OpenAddSchedule);
-            EditScheduleCommand = new RelayCommand(OpenEditSchedule, CanEditOrDeleteSchedule);
+            EditScheduleCommand = new RelayCommand<Models.Schedule>(OpenEditScheduleWithParam, s => s != null);
+            DeleteScheduleCommand = new RelayCommand<Models.Schedule>(DeleteScheduleWithParam, s => s != null);
             ReloadSchedulesCommand = new RelayCommand(ReloadSchedules);
             SearchCommand = new RelayCommand(SearchSchedules);
-            SortCommand = new RelayCommand(SortSchedules); // Komenda sortowania
+            SortCommand = new RelayCommand(SortSchedules);
 
             ReloadSchedules();
         }
-
-        private bool CanEditOrDeleteSchedule() => SelectedSchedule != null;
 
         private void ReloadSchedules()
         {
             try
             {
-                var schedules = _context.Schedule
-                    .Include(s => s.Dentist) // Ensure related Dentist data is loaded
-                    .ToList();
-
+                var schedules = _context.Schedule.Include(s => s.Dentist).ToList();
                 Schedules = new ObservableCollection<Models.Schedule>(schedules);
             }
             catch (Exception ex)
@@ -103,28 +84,16 @@ namespace DentalClinicWPF.ViewModels.Schedule
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(SearchText))
-                {
-                    ReloadSchedules();
-                    return;
-                }
-
-                var filteredSchedules = _context.Schedule
-                    .Include(s => s.Dentist)
-                    .AsEnumerable()
+                if (string.IsNullOrWhiteSpace(SearchText)) { ReloadSchedules(); return; }
+                var term = SearchText.ToLower();
+                var filtered = _context.Schedule.Include(s => s.Dentist).ToList()
                     .Where(s =>
-                        (!string.IsNullOrWhiteSpace(s.Dentist?.FirstName) &&
-                         s.Dentist.FirstName.Contains(SearchText, StringComparison.OrdinalIgnoreCase)) ||
-                        (!string.IsNullOrWhiteSpace(s.Dentist?.LastName) &&
-                         s.Dentist.LastName.Contains(SearchText, StringComparison.OrdinalIgnoreCase)) ||
-                        (s.StartDate.ToString("yyyy-MM-dd").Contains(SearchText)) ||
-                        (s.EndDate.ToString("yyyy-MM-dd").Contains(SearchText)) ||
-                        (s.StartTime.ToString(@"hh\:mm").Contains(SearchText)) ||
-                        (s.EndTime.ToString(@"hh\:mm").Contains(SearchText)) ||
-                        (s.IsDayOff && "Día Libre".Contains(SearchText, StringComparison.OrdinalIgnoreCase)))
+                        (s.Dentist?.FirstName?.ToLower().Contains(term) ?? false) ||
+                        (s.Dentist?.LastName?.ToLower().Contains(term) ?? false) ||
+                        s.StartDate.ToString("yyyy-MM-dd").Contains(SearchText) ||
+                        s.EndDate.ToString("yyyy-MM-dd").Contains(SearchText))
                     .ToList();
-
-                Schedules = new ObservableCollection<Models.Schedule>(filteredSchedules);
+                Schedules = new ObservableCollection<Models.Schedule>(filtered);
             }
             catch (Exception ex)
             {
@@ -132,63 +101,53 @@ namespace DentalClinicWPF.ViewModels.Schedule
             }
         }
 
-
         private void SortSchedules()
         {
-            if (string.IsNullOrEmpty(SelectedSortOption) || Schedules == null)
-                return;
-
-            IEnumerable<Models.Schedule> sortedSchedules = SelectedSortOption switch
+            if (string.IsNullOrEmpty(SelectedSortOption) || Schedules == null) return;
+            var sorted = SelectedSortOption switch
             {
-                "Dentist" => Schedules.OrderBy(s => s.Dentist.LastName).ThenBy(s => s.Dentist.FirstName),
-                "Fecha de Inicio" => Schedules.OrderBy(s => s.StartDate),
-                "Fecha de Fin" => Schedules.OrderBy(s => s.EndDate),
-                "Día Libre" => Schedules.OrderBy(s => s.IsDayOff),
-                _ => Schedules
+                "Dentista" => Schedules.OrderBy(s => s.Dentist?.LastName).ThenBy(s => s.Dentist?.FirstName).ToList(),
+                "Fecha de Inicio" => Schedules.OrderBy(s => s.StartDate).ToList(),
+                "Fecha de Fin" => Schedules.OrderBy(s => s.EndDate).ToList(),
+                "Día Libre" => Schedules.OrderBy(s => s.IsDayOff).ToList(),
+                _ => Schedules.ToList()
             };
-
-            Schedules = new ObservableCollection<Models.Schedule>(sortedSchedules);
-            OnPropertyChanged(nameof(Schedules));
+            Schedules = new ObservableCollection<Models.Schedule>(sorted);
         }
 
         private void OpenAddSchedule()
         {
-            var addScheduleWindow = new AddScheduleView
-            {
-                DataContext = new AddScheduleViewModel(_context)
-            };
-
-            if (addScheduleWindow.ShowDialog() == true)
-            {
-                ReloadSchedules();
-            }
+            var w = new AddScheduleView { DataContext = new AddScheduleViewModel(_context) };
+            if (w.ShowDialog() == true) ReloadSchedules();
         }
 
-        private void OpenEditSchedule()
+        private void OpenEditScheduleWithParam(Models.Schedule schedule)
         {
-            if (SelectedSchedule == null) return;
-
-            var editScheduleWindow = new EditScheduleView
-            {
-                DataContext = new EditScheduleViewModel(_context, SelectedSchedule)
-            };
-
-            if (editScheduleWindow.ShowDialog() == true)
-            {
-                ReloadSchedules();
-            }
+            if (schedule == null) return;
+            SelectedSchedule = schedule;
+            var w = new EditScheduleView { DataContext = new EditScheduleViewModel(_context, SelectedSchedule) };
+            if (w.ShowDialog() == true) ReloadSchedules();
         }
 
-        private bool WorkDaysInRange(Models.Schedule schedule)
+        private void DeleteScheduleWithParam(Models.Schedule schedule)
         {
-            DateTime current = schedule.StartDate.Date;
-            while (current <= schedule.EndDate.Date)
+            if (schedule == null) return;
+            var result = MessageBox.Show(
+                "¿Seguro que quieres eliminar este horario?",
+                "Confirmar Eliminación", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+            if (result == MessageBoxResult.Yes)
             {
-                if (current.DayOfWeek == DayOfWeek.Saturday || current.DayOfWeek == DayOfWeek.Sunday)
-                    return false;
-                current = current.AddDays(1);
+                try
+                {
+                    _context.Schedule.Remove(schedule);
+                    _context.SaveChanges();
+                    ReloadSchedules();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error al eliminar el horario: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
-            return true;
         }
     }
 }

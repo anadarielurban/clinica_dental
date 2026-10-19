@@ -1,45 +1,113 @@
 ﻿<Window x:Class="DentalClinicWPF.Views.Treatment.AddEditTreatmentView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Agregar/Editar Tratamiento" Height="520" Width="600"
-        WindowStartupLocation="CenterOwner">
+        Title="Agregar Tratamiento"
+        Height="620" Width="540"
+        WindowStartupLocation="CenterOwner"
+        Background="{StaticResource Brush.Background}"
+        FontFamily="{StaticResource Font.Primary}">
 
-    <Grid Margin="20">
+    <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <!-- Input Fields -->
-        <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto">
+        <!-- Header -->
+        <Border Grid.Row="0" Background="{StaticResource Brush.Surface}"
+                BorderBrush="{StaticResource Brush.Border}" BorderThickness="0,0,0,1"
+                Padding="24,20">
             <StackPanel>
-                <!-- Name -->
-                <Label Content="Nombre" Style="{StaticResource FormLabelStyle}" />
-                <TextBox Text="{Binding Name, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=True}" 
-                         Style="{StaticResource FormTextBoxStyle}" />
+                <TextBlock Text="Agregar Tratamiento"
+                           FontSize="20" FontWeight="Bold"
+                           Foreground="{StaticResource Brush.TextPrimary}"/>
+                <TextBlock Text="Ingresa los datos del nuevo tratamiento"
+                           FontSize="12"
+                           Foreground="{StaticResource Brush.TextMuted}"
+                           Margin="0,4,0,0"/>
+            </StackPanel>
+        </Border>
 
-                <!-- Description -->
-                <Label Content="Descripción" Style="{StaticResource FormLabelStyle}" />
-                <TextBox Text="{Binding Description, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=True}" 
-                         Style="{StaticResource FormTextBoxStyle}" 
-                         AcceptsReturn="True" Height="100" TextWrapping="Wrap" />
+        <!-- Formulario -->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Padding="24,16">
+            <StackPanel>
 
-                <!-- Price -->
-                <Label Content="Precio (MXN)" Style="{StaticResource FormLabelStyle}" />
-                <TextBox Text="{Binding Price, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=True}" 
-                         Style="{StaticResource FormTextBoxStyle}" />
+                <TextBlock Text="Nombre" FontSize="12" FontWeight="SemiBold"
+                           Foreground="{StaticResource Brush.TextSecondary}"
+                           Margin="0,8,0,6"/>
+                <TextBox Text="{Binding Name, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=True}"
+                         Height="38" Padding="10,0" FontSize="14"
+                         Background="{StaticResource Brush.Surface}"
+                         Foreground="{StaticResource Brush.TextPrimary}"
+                         BorderBrush="{StaticResource Brush.Border}"
+                         BorderThickness="1"
+                         VerticalContentAlignment="Center"/>
 
-                <!-- Duration -->
-                <Label Content="Duración (minutos)" Style="{StaticResource FormLabelStyle}" />
-                <TextBox Text="{Binding DurationMinutes, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=True}" 
-                         Style="{StaticResource FormTextBoxStyle}" />
+                <TextBlock Text="Descripción" FontSize="12" FontWeight="SemiBold"
+                           Foreground="{StaticResource Brush.TextSecondary}"
+                           Margin="0,16,0,6"/>
+                <TextBox Text="{Binding Description, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=True}"
+                         Height="90" Padding="10,8" FontSize="14"
+                         Background="{StaticResource Brush.Surface}"
+                         Foreground="{StaticResource Brush.TextPrimary}"
+                         BorderBrush="{StaticResource Brush.Border}"
+                         BorderThickness="1"
+                         AcceptsReturn="True"
+                         TextWrapping="Wrap"
+                         VerticalScrollBarVisibility="Auto"/>
+
+                <TextBlock Text="Precio (MXN)" FontSize="12" FontWeight="SemiBold"
+                           Foreground="{StaticResource Brush.TextSecondary}"
+                           Margin="0,16,0,6"/>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBox Grid.Column="0"
+                             Text="{Binding Price, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=True}"
+                             Height="38" Padding="10,0" FontSize="14"
+                             Background="{StaticResource Brush.Surface}"
+                             Foreground="{StaticResource Brush.TextPrimary}"
+                             BorderBrush="{StaticResource Brush.Border}"
+                             BorderThickness="1"
+                             VerticalContentAlignment="Center"/>
+                    <TextBlock Grid.Column="1" Text="MXN"
+                               FontSize="13" FontWeight="SemiBold"
+                               Foreground="{StaticResource Brush.TextMuted}"
+                               VerticalAlignment="Center"
+                               Margin="12,0,0,0"/>
+                </Grid>
+
+                <TextBlock Text="Duración (minutos)" FontSize="12" FontWeight="SemiBold"
+                           Foreground="{StaticResource Brush.TextSecondary}"
+                           Margin="0,16,0,6"/>
+                <TextBox Text="{Binding DurationMinutes, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=True}"
+                         Height="38" Padding="10,0" FontSize="14"
+                         Background="{StaticResource Brush.Surface}"
+                         Foreground="{StaticResource Brush.TextPrimary}"
+                         BorderBrush="{StaticResource Brush.Border}"
+                         BorderThickness="1"
+                         VerticalContentAlignment="Center"
+                         Margin="0,0,0,16"/>
+
             </StackPanel>
         </ScrollViewer>
 
-        <!-- Buttons -->
-        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10">
-            <Button Content="Cancelar" Command="{Binding CancelCommand}" Width="100" Margin="5" />
-            <Button Content="Guardar" Command="{Binding SaveCommand}" Width="100" Margin="5" />
-        </StackPanel>
+        <!-- Footer -->
+        <Border Grid.Row="2" Background="{StaticResource Brush.Surface}"
+                BorderBrush="{StaticResource Brush.Border}" BorderThickness="0,1,0,0"
+                Padding="24,16">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Content="Cancelar"
+                        Command="{Binding CancelCommand}"
+                        Style="{StaticResource Modern.Button.Secondary}"
+                        Margin="0,0,10,0"/>
+                <Button Content="Guardar"
+                        Command="{Binding SaveCommand}"
+                        Style="{StaticResource Modern.Button.Primary}"/>
+            </StackPanel>
+        </Border>
     </Grid>
 </Window>

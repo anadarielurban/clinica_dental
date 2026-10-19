@@ -72,7 +72,7 @@ namespace DentalClinicWPF.ViewModels
             ShowTreatmentPlansCommand = new RelayCommand(() => OpenTab("Planes de Tratamiento", new TreatmentPlanViewModel(_context)));
             ShowMedicalRecordsCommand = new RelayCommand(() => OpenTab("Expedientes", new MedicalRecordViewModel(_context)));
             ShowPrescriptionsCommand = new RelayCommand(() => OpenTab("Recetas", new PrescriptionViewModel(_context, OpenTab)));
-            ShowSchedulesCommand = new RelayCommand(() => OpenTab("Horarios", new ScheduleViewModel(_context)));
+            // ShowSchedulesCommand = new RelayCommand(() => OpenTab("Horarios", new ScheduleViewModel(_context))); // Módulo deshabilitado
             ShowInventoryCommand = new RelayCommand(() => OpenTab("Inventario", new InventoryViewModel(_context)));
             ShowSuppliersCommand = new RelayCommand(() => OpenTab("Proveedores", new SupplierViewModel(_context)));
             ShowLabOrdersCommand = new RelayCommand(() => OpenTab("Órdenes de Laboratorio", new LabOrderViewModel(_context)));

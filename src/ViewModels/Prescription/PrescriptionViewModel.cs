@@ -14,7 +14,7 @@ namespace DentalClinicWPF.ViewModels.Prescription
     public class PrescriptionViewModel : BaseViewModel
     {
         private readonly DentalClinicContext _context;
-        private readonly Action<string, BaseViewModel> _openTabAction; // Akcja otwierania zakładki
+        private readonly Action<string, BaseViewModel> _openTabAction;
 
         public ObservableCollection<Models.Prescription> Prescriptions { get; set; }
         private Models.Prescription _selectedPrescription;
@@ -25,38 +25,28 @@ namespace DentalClinicWPF.ViewModels.Prescription
             {
                 _selectedPrescription = value;
                 OnPropertyChanged();
-                (EditPrescriptionCommand as RelayCommand)?.NotifyCanExecuteChanged();
-                (OpenPrescriptionDetailCommand as RelayCommand)?.NotifyCanExecuteChanged();
+                (EditPrescriptionCommand as RelayCommand<Models.Prescription>)?.NotifyCanExecuteChanged();
+                (DeletePrescriptionCommand as RelayCommand<Models.Prescription>)?.NotifyCanExecuteChanged();
+                (OpenPrescriptionDetailCommand as RelayCommand<Models.Prescription>)?.NotifyCanExecuteChanged();
             }
         }
 
         private string _searchText;
-        public string SearchText
-        {
-            get => _searchText;
-            set { _searchText = value; OnPropertyChanged(); }
-        }
+        public string SearchText { get => _searchText; set { _searchText = value; OnPropertyChanged(); } }
 
-        // Właściwości do sortowania
         public ObservableCollection<string> SortOptions { get; } = new ObservableCollection<string>
         {
-            "Paciente",
-            "Dentista",
-            "Fecha de Emisión",
-            "Medication"
+            "Paciente", "Dentista", "Fecha de Emisión", "Medicamento"
         };
         public string SelectedSortOption { get; set; }
         public ICommand SortCommand { get; }
-
         public ICommand AddPrescriptionCommand { get; private set; }
         public ICommand EditPrescriptionCommand { get; private set; }
+        public ICommand DeletePrescriptionCommand { get; private set; }
         public ICommand ReloadPrescriptionsCommand { get; private set; }
         public ICommand SearchCommand { get; private set; }
-        
-        // Nowa komenda otwierania szczegółów recepty
-        public ICommand OpenPrescriptionDetailCommand { get; }
+        public ICommand OpenPrescriptionDetailCommand { get; private set; }
 
-        // Konstruktor – dodatkowo przyjmujemy Action openTabAction, która otwiera zakładkę
         public PrescriptionViewModel(DentalClinicContext context, Action<string, BaseViewModel> openTabAction)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
@@ -66,141 +56,105 @@ namespace DentalClinicWPF.ViewModels.Prescription
             InitializeCommands();
             SortCommand = new RelayCommand(SortPrescriptions);
             LoadPrescriptions();
-            
-            // Inicjalizacja komendy otwierania szczegółów recepty
-            OpenPrescriptionDetailCommand = new RelayCommand(OpenPrescriptionDetail, () => SelectedPrescription != null);
         }
 
         private void InitializeCommands()
         {
             AddPrescriptionCommand = new RelayCommand(OpenAddPrescription);
-            EditPrescriptionCommand = new RelayCommand(OpenEditPrescription, () => SelectedPrescription != null);
+            EditPrescriptionCommand = new RelayCommand<Models.Prescription>(OpenEditPrescriptionWithParam, p => p != null);
+            DeletePrescriptionCommand = new RelayCommand<Models.Prescription>(DeletePrescriptionWithParam, p => p != null);
             ReloadPrescriptionsCommand = new RelayCommand(LoadPrescriptions);
             SearchCommand = new RelayCommand(SearchPrescriptions);
+            OpenPrescriptionDetailCommand = new RelayCommand<Models.Prescription>(OpenDetailWithParam, p => p != null);
         }
 
         private void LoadPrescriptions()
         {
             try
             {
-                var prescriptionsFromDb = _context.Prescription
-                    .Include(p => p.Patient)
-                    .Include(p => p.Dentist)
-                    .ToList();
-
+                var list = _context.Prescription.Include(p => p.Patient).Include(p => p.Dentist).ToList();
                 Prescriptions.Clear();
-                foreach (var prescription in prescriptionsFromDb)
-                {
-                    Prescriptions.Add(prescription);
-                }
+                foreach (var p in list) Prescriptions.Add(p);
                 OnPropertyChanged(nameof(Prescriptions));
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error loading prescriptions: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error al cargar las recetas: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
         private void SortPrescriptions()
         {
-            if (string.IsNullOrEmpty(SelectedSortOption) || Prescriptions == null)
-                return;
-
-            IEnumerable<Models.Prescription> sortedPrescriptions = SelectedSortOption switch
+            if (string.IsNullOrEmpty(SelectedSortOption) || Prescriptions == null) return;
+            var sorted = SelectedSortOption switch
             {
-                "Paciente" => Prescriptions.OrderBy(p => p.Patient.LastName).ThenBy(p => p.Patient.FirstName),
-                "Dentista" => Prescriptions.OrderBy(p => p.Dentist.LastName).ThenBy(p => p.Dentist.FirstName),
-                "Fecha de Emisión" => Prescriptions.OrderBy(p => p.DateIssued),
-                "Medication" => Prescriptions.OrderBy(p => p.Medication),
-                _ => Prescriptions
+                "Paciente" => Prescriptions.OrderBy(p => p.Patient?.LastName).ThenBy(p => p.Patient?.FirstName).ToList(),
+                "Dentista" => Prescriptions.OrderBy(p => p.Dentist?.LastName).ThenBy(p => p.Dentist?.FirstName).ToList(),
+                "Fecha de Emisión" => Prescriptions.OrderBy(p => p.DateIssued).ToList(),
+                "Medicamento" => Prescriptions.OrderBy(p => p.Medication).ToList(),
+                _ => Prescriptions.ToList()
             };
-
-            Prescriptions = new ObservableCollection<Models.Prescription>(sortedPrescriptions);
-            OnPropertyChanged(nameof(Prescriptions));
+            Prescriptions.Clear();
+            foreach (var p in sorted) Prescriptions.Add(p);
         }
 
         private void OpenAddPrescription()
         {
-            try
-            {
-                var addWindow = new Views.Prescription.AddPrescriptionView
-                {
-                    DataContext = new AddPrescriptionViewModel(_context)
-                };
-                if (addWindow.ShowDialog() == true)
-                {
-                    LoadPrescriptions();
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error opening Add Prescription window: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+            var w = new Views.Prescription.AddPrescriptionView { DataContext = new AddPrescriptionViewModel(_context) };
+            if (w.ShowDialog() == true) LoadPrescriptions();
         }
 
-        private void OpenEditPrescription()
+        private void OpenEditPrescriptionWithParam(Models.Prescription p)
         {
-            if (SelectedPrescription == null)
+            if (p == null) return;
+            SelectedPrescription = p;
+            var w = new Views.Prescription.EditPrescriptionView { DataContext = new EditPrescriptionViewModel(p, _context) };
+            if (w.ShowDialog() == true) LoadPrescriptions();
+        }
+
+        private void DeletePrescriptionWithParam(Models.Prescription p)
+        {
+            if (p == null) return;
+            var result = MessageBox.Show(
+                $"¿Seguro que quieres eliminar la receta #{p.PrescriptionID}?",
+                "Confirmar Eliminación", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+            if (result == MessageBoxResult.Yes)
             {
-                MessageBox.Show("Please select a prescription to edit.", "Sin Selección", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-            try
-            {
-                var editWindow = new Views.Prescription.EditPrescriptionView
+                try
                 {
-                    DataContext = new EditPrescriptionViewModel(SelectedPrescription, _context)
-                };
-                if (editWindow.ShowDialog() == true)
-                {
+                    _context.Prescription.Remove(p);
+                    _context.SaveChanges();
                     LoadPrescriptions();
                 }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error opening Edit Prescription window: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error al eliminar la receta: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
         }
 
         private void SearchPrescriptions()
         {
-            if (string.IsNullOrWhiteSpace(SearchText))
-            {
-                LoadPrescriptions();
-                return;
-            }
-            try
-            {
-                var filteredPrescriptions = _context.Prescription
-                    .Include(p => p.Patient)
-                    .Include(p => p.Dentist)
-                    .Where(p =>
-                        (p.Patient.FirstName.Contains(SearchText) || p.Patient.LastName.Contains(SearchText)) ||
-                        (p.Dentist.FirstName.Contains(SearchText) || p.Dentist.LastName.Contains(SearchText)) ||
-                        p.Medication.Contains(SearchText))
-                    .ToList();
-
-                Prescriptions.Clear();
-                foreach (var prescription in filteredPrescriptions)
-                {
-                    Prescriptions.Add(prescription);
-                }
-                OnPropertyChanged(nameof(Prescriptions));
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error searching prescriptions: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+            if (string.IsNullOrWhiteSpace(SearchText)) { LoadPrescriptions(); return; }
+            var term = SearchText.ToLower();
+            var filtered = _context.Prescription.Include(p => p.Patient).Include(p => p.Dentist).ToList()
+                .Where(p =>
+                    (p.Patient?.FirstName?.ToLower().Contains(term) ?? false) ||
+                    (p.Patient?.LastName?.ToLower().Contains(term) ?? false) ||
+                    (p.Dentist?.FirstName?.ToLower().Contains(term) ?? false) ||
+                    (p.Dentist?.LastName?.ToLower().Contains(term) ?? false) ||
+                    (p.Medication?.ToLower().Contains(term) ?? false))
+                .ToList();
+            Prescriptions.Clear();
+            foreach (var p in filtered) Prescriptions.Add(p);
         }
 
-        // Metoda otwierająca szczegóły recepty jako zakładkę
-        private void OpenPrescriptionDetail()
+        private void OpenDetailWithParam(Models.Prescription p)
         {
-            if (SelectedPrescription == null)
-                return;
-
-            var detailViewModel = new PrescriptionDetailViewModel(_context, SelectedPrescription);
-            _openTabAction.Invoke($"Prescription: {SelectedPrescription.PrescriptionID}", detailViewModel);
+            if (p == null) return;
+            SelectedPrescription = p;
+            var vm = new PrescriptionDetailViewModel(_context, p);
+            _openTabAction.Invoke($"Prescription: {p.PrescriptionID}", vm);
         }
     }
 }

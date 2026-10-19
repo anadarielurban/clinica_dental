@@ -7,7 +7,6 @@ using CommunityToolkit.Mvvm.Input;
 using DentalClinicWPF.Data;
 using DentalClinicWPF.Models;
 using DentalClinicWPF.ViewModels.Base;
-using DentalClinicWPF.Views.TreatmentPlan;
 using Microsoft.EntityFrameworkCore;
 
 namespace DentalClinicWPF.ViewModels.TreatmentPlan
@@ -16,9 +15,9 @@ namespace DentalClinicWPF.ViewModels.TreatmentPlan
     {
         private readonly DentalClinicContext _context;
 
-        public ObservableCollection<Models.TreatmentPlan> TreatmentPlans { get; set; }
-        private Models.TreatmentPlan _selectedTreatmentPlan;
+        public ObservableCollection<Models.TreatmentPlan> TreatmentPlans { get; private set; }
 
+        private Models.TreatmentPlan _selectedTreatmentPlan;
         public Models.TreatmentPlan SelectedTreatmentPlan
         {
             get => _selectedTreatmentPlan;
@@ -26,32 +25,20 @@ namespace DentalClinicWPF.ViewModels.TreatmentPlan
             {
                 _selectedTreatmentPlan = value;
                 OnPropertyChanged();
-                ((RelayCommand)EditTreatmentPlanCommand).NotifyCanExecuteChanged();
-                ((RelayCommand)DeleteTreatmentPlanCommand).NotifyCanExecuteChanged();
+                (EditTreatmentPlanCommand as RelayCommand<Models.TreatmentPlan>)?.NotifyCanExecuteChanged();
+                (DeleteTreatmentPlanCommand as RelayCommand<Models.TreatmentPlan>)?.NotifyCanExecuteChanged();
             }
         }
 
         private string _searchText;
-        public string SearchText
-        {
-            get => _searchText;
-            set
-            {
-                _searchText = value;
-                OnPropertyChanged();
-            }
-        }
+        public string SearchText { get => _searchText; set { _searchText = value; OnPropertyChanged(); } }
 
-        // Właściwości do sortowania
         public ObservableCollection<string> SortOptions { get; } = new ObservableCollection<string>
         {
-            "Patient",
-            "Dentist",
-            "Fecha de Creación"
+            "Fecha de Creación", "Paciente", "Dentista"
         };
         public string SelectedSortOption { get; set; }
         public ICommand SortCommand { get; }
-
         public ICommand AddTreatmentPlanCommand { get; }
         public ICommand EditTreatmentPlanCommand { get; }
         public ICommand DeleteTreatmentPlanCommand { get; }
@@ -61,139 +48,77 @@ namespace DentalClinicWPF.ViewModels.TreatmentPlan
         public TreatmentPlanViewModel(DentalClinicContext context)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
+            TreatmentPlans = new ObservableCollection<Models.TreatmentPlan>();
 
-            ReloadTreatmentPlansCommand = new RelayCommand(ReloadTreatmentPlans);
-            AddTreatmentPlanCommand = new RelayCommand(OpenAddTreatmentPlan);
-            EditTreatmentPlanCommand = new RelayCommand(OpenEditTreatmentPlan, () => SelectedTreatmentPlan != null);
-            DeleteTreatmentPlanCommand = new RelayCommand(DeleteTreatmentPlan, () => SelectedTreatmentPlan != null);
-            SearchCommand = new RelayCommand(SearchTreatmentPlans);
-            SortCommand = new RelayCommand(SortTreatmentPlans); // Komenda sortowania
+            AddTreatmentPlanCommand = new RelayCommand(OpenAdd);
+            EditTreatmentPlanCommand = new RelayCommand<Models.TreatmentPlan>(OpenEditWithParam, t => t != null);
+            DeleteTreatmentPlanCommand = new RelayCommand<Models.TreatmentPlan>(DeleteWithParam, t => t != null);
+            ReloadTreatmentPlansCommand = new RelayCommand(LoadData);
+            SearchCommand = new RelayCommand(SearchData);
+            SortCommand = new RelayCommand(SortData);
 
-            ReloadTreatmentPlans();
+            LoadData();
         }
 
-        private void OpenAddTreatmentPlan()
-        {
-            var addWindow = new AddTreatmentPlanView
-            {
-                DataContext = new AddTreatmentPlanViewModel(_context),
-                Owner = Application.Current.MainWindow
-            };
-
-            if (addWindow.ShowDialog() == true)
-                ReloadTreatmentPlans();
-        }
-
-        private void OpenEditTreatmentPlan()
-        {
-            if (SelectedTreatmentPlan == null)
-            {
-                MessageBox.Show("Selecciona un plan de tratamiento para editar.", "Sin Selección", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-
-            var editWindow = new EditTreatmentPlanView
-            {
-                DataContext = new EditTreatmentPlanViewModel(_context, SelectedTreatmentPlan),
-                Owner = Application.Current.MainWindow
-            };
-
-            if (editWindow.ShowDialog() == true)
-                ReloadTreatmentPlans();
-        }
-
-        private void DeleteTreatmentPlan()
-        {
-            if (SelectedTreatmentPlan == null)
-            {
-                MessageBox.Show("Selecciona un plan de tratamiento para eliminar.", "Sin Selección", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-
-            var result = MessageBox.Show(
-                "¿Seguro que quieres eliminar este plan de tratamiento? Esta acción no se puede deshacer.",
-                "Confirmar Eliminación",
-                MessageBoxButton.YesNo,
-                MessageBoxImage.Warning);
-
-            if (result == MessageBoxResult.Yes)
-            {
-                try
-                {
-                    _context.TreatmentPlan.Remove(SelectedTreatmentPlan);
-                    _context.SaveChanges();
-                    TreatmentPlans.Remove(SelectedTreatmentPlan);
-                    MessageBox.Show("¡Plan de tratamiento eliminado!", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Error al eliminar el plan: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-            }
-        }
-
-        private void ReloadTreatmentPlans()
+        private void LoadData()
         {
             try
             {
-                var plans = _context.TreatmentPlan
-                    .Include(tp => tp.Patient)
-                    .Include(tp => tp.Dentist)
-                    .ToList();
-
-                TreatmentPlans = new ObservableCollection<Models.TreatmentPlan>(plans);
-                OnPropertyChanged(nameof(TreatmentPlans));
+                var list = _context.TreatmentPlan.Include(t => t.Patient).Include(t => t.Dentist).ToList();
+                TreatmentPlans.Clear();
+                foreach (var t in list) TreatmentPlans.Add(t);
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error al cargar los planes: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+            catch (Exception ex) { MessageBox.Show($"Error al cargar: {ex.Message}"); }
         }
 
-        private void SearchTreatmentPlans()
+        private void SearchData()
         {
-            try
-            {
-                if (string.IsNullOrWhiteSpace(SearchText))
-                {
-                    ReloadTreatmentPlans();
-                    return;
-                }
-
-                var filteredPlans = _context.TreatmentPlan
-                    .Include(tp => tp.Patient)
-                    .Include(tp => tp.Dentist)
-                    .Where(tp =>
-                        tp.Patient.FirstName.Contains(SearchText) ||
-                        tp.Patient.LastName.Contains(SearchText) ||
-                        tp.Dentist.FirstName.Contains(SearchText) ||
-                        tp.Dentist.LastName.Contains(SearchText))
-                    .ToList();
-
-                TreatmentPlans = new ObservableCollection<Models.TreatmentPlan>(filteredPlans);
-                OnPropertyChanged(nameof(TreatmentPlans));
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error al buscar planes: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+            if (string.IsNullOrWhiteSpace(SearchText)) { LoadData(); return; }
+            var term = SearchText.ToLower();
+            var filtered = _context.TreatmentPlan.Include(t => t.Patient).Include(t => t.Dentist).ToList()
+                .Where(t => (t.Patient?.FirstName?.ToLower().Contains(term) ?? false) ||
+                            (t.Patient?.LastName?.ToLower().Contains(term) ?? false) ||
+                            (t.Dentist?.LastName?.ToLower().Contains(term) ?? false)).ToList();
+            TreatmentPlans.Clear();
+            foreach (var t in filtered) TreatmentPlans.Add(t);
         }
 
-        private void SortTreatmentPlans()
+        private void SortData()
         {
-            if (string.IsNullOrEmpty(SelectedSortOption) || TreatmentPlans == null)
-                return;
-
-            IEnumerable<Models.TreatmentPlan> sortedPlans = SelectedSortOption switch
+            if (string.IsNullOrEmpty(SelectedSortOption)) return;
+            var sorted = SelectedSortOption switch
             {
-                "Patient" => TreatmentPlans.OrderBy(tp => tp.Patient.LastName).ThenBy(tp => tp.Patient.FirstName),
-                "Dentist" => TreatmentPlans.OrderBy(tp => tp.Dentist.LastName).ThenBy(tp => tp.Dentist.FirstName),
-                "Fecha de Creación" => TreatmentPlans.OrderBy(tp => tp.CreationDate),
-                _ => TreatmentPlans
+                "Fecha de Creación" => TreatmentPlans.OrderBy(t => t.CreationDate).ToList(),
+                "Paciente" => TreatmentPlans.OrderBy(t => t.Patient?.LastName).ToList(),
+                "Dentista" => TreatmentPlans.OrderBy(t => t.Dentist?.LastName).ToList(),
+                _ => TreatmentPlans.ToList()
             };
+            TreatmentPlans.Clear();
+            foreach (var t in sorted) TreatmentPlans.Add(t);
+        }
 
-            TreatmentPlans = new ObservableCollection<Models.TreatmentPlan>(sortedPlans);
-            OnPropertyChanged(nameof(TreatmentPlans));
+        private void OpenAdd()
+        {
+            var w = new Views.TreatmentPlan.AddTreatmentPlanView { DataContext = new AddTreatmentPlanViewModel(_context) };
+            if (w.ShowDialog() == true) LoadData();
+        }
+
+        private void OpenEditWithParam(Models.TreatmentPlan plan)
+        {
+            if (plan == null) return;
+            SelectedTreatmentPlan = plan;
+            var w = new Views.TreatmentPlan.EditTreatmentPlanView { DataContext = new EditTreatmentPlanViewModel(_context, plan) };
+            if (w.ShowDialog() == true) LoadData();
+        }
+
+        private void DeleteWithParam(Models.TreatmentPlan plan)
+        {
+            if (plan == null) return;
+            if (MessageBox.Show($"¿Seguro que quieres eliminar este plan de tratamiento?", "Confirmar", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
+            {
+                try { _context.TreatmentPlan.Remove(plan); _context.SaveChanges(); LoadData(); }
+                catch (Exception ex) { MessageBox.Show($"Error al eliminar: {ex.Message}"); }
+            }
         }
     }
 }

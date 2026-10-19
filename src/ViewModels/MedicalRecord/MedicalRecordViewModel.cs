@@ -7,7 +7,6 @@ using CommunityToolkit.Mvvm.Input;
 using DentalClinicWPF.Data;
 using DentalClinicWPF.Models;
 using DentalClinicWPF.ViewModels.Base;
-using DentalClinicWPF.Views.MedicalRecord;
 using Microsoft.EntityFrameworkCore;
 
 namespace DentalClinicWPF.ViewModels.MedicalRecord
@@ -16,7 +15,7 @@ namespace DentalClinicWPF.ViewModels.MedicalRecord
     {
         private readonly DentalClinicContext _context;
 
-        public ObservableCollection<Models.MedicalRecord> MedicalRecords { get; set; } = new();
+        public ObservableCollection<Models.MedicalRecord> MedicalRecords { get; private set; }
 
         private Models.MedicalRecord _selectedMedicalRecord;
         public Models.MedicalRecord SelectedMedicalRecord
@@ -26,182 +25,101 @@ namespace DentalClinicWPF.ViewModels.MedicalRecord
             {
                 _selectedMedicalRecord = value;
                 OnPropertyChanged();
-                (EditCommand as RelayCommand)?.NotifyCanExecuteChanged();
+                (EditCommand as RelayCommand<Models.MedicalRecord>)?.NotifyCanExecuteChanged();
+                (DeleteCommand as RelayCommand<Models.MedicalRecord>)?.NotifyCanExecuteChanged();
             }
         }
 
-        private string _searchText = string.Empty;
-        public string SearchText
-        {
-            get => _searchText;
-            set
-            {
-                _searchText = value;
-                OnPropertyChanged();
-            }
-        }
+        private string _searchText;
+        public string SearchText { get => _searchText; set { _searchText = value; OnPropertyChanged(); } }
 
-        // Właściwości do sortowania
         public ObservableCollection<string> SortOptions { get; } = new ObservableCollection<string>
         {
-            "ID Registro",
-            "Paciente",
-            "Dentista",
-            "Fecha"
+            "ID Registro", "Paciente", "Dentista", "Fecha"
         };
         public string SelectedSortOption { get; set; }
         public ICommand SortCommand { get; }
-
         public ICommand AddCommand { get; }
         public ICommand EditCommand { get; }
+        public ICommand DeleteCommand { get; }
         public ICommand ReloadCommand { get; }
         public ICommand SearchCommand { get; }
 
         public MedicalRecordViewModel(DentalClinicContext context)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
+            MedicalRecords = new ObservableCollection<Models.MedicalRecord>();
 
-            AddCommand = new RelayCommand(OpenAddView);
-            EditCommand = new RelayCommand(OpenEditView, () => SelectedMedicalRecord != null);
-            ReloadCommand = new RelayCommand(LoadMedicalRecords);
-            SearchCommand = new RelayCommand(Search);
-            SortCommand = new RelayCommand(SortMedicalRecords); // Komenda sortowania
+            AddCommand = new RelayCommand(OpenAdd);
+            EditCommand = new RelayCommand<Models.MedicalRecord>(OpenEditWithParam, r => r != null);
+            DeleteCommand = new RelayCommand<Models.MedicalRecord>(DeleteWithParam, r => r != null);
+            ReloadCommand = new RelayCommand(LoadData);
+            SearchCommand = new RelayCommand(SearchData);
+            SortCommand = new RelayCommand(SortData);
 
-            LoadMedicalRecords();
+            LoadData();
         }
 
-        private void LoadMedicalRecords()
+        private void LoadData()
         {
             try
             {
-                var records = _context.MedicalRecord
-                    .Include(mr => mr.Patient)
-                    .Include(mr => mr.Dentist)
-                    .ToList();
-
-                MedicalRecords = new ObservableCollection<Models.MedicalRecord>(
-                    records.Select(mr => new Models.MedicalRecord
-                    {
-                        RecordID = mr.RecordID,
-                        PatientID = mr.PatientID,
-                        Patient = mr.Patient ?? new Models.Patient
-                        {
-                            FirstName = "Unknown",
-                            LastName = "Paciente",
-                            DateOfBirth = DateTime.MinValue
-                        },
-                        DentistID = mr.DentistID,
-                        Dentist = mr.Dentist ?? new Models.Dentist
-                        {
-                            FirstName = "Unknown",
-                            LastName = "Dentista",
-                            Specialization = "N/A"
-                        },
-                        Date = mr.Date,
-                        Notes = string.IsNullOrEmpty(mr.Notes) ? "Sin notas disponibles" : mr.Notes,
-                        Attachments = mr.Attachments ?? Array.Empty<byte>()
-                    })
-                );
-
-                OnPropertyChanged(nameof(MedicalRecords));
+                var list = _context.MedicalRecord.Include(m => m.Patient).Include(m => m.Dentist).ToList();
+                MedicalRecords.Clear();
+                foreach (var r in list) MedicalRecords.Add(r);
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error al cargar los expedientes: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+            catch (Exception ex) { MessageBox.Show($"Error al cargar: {ex.Message}"); }
         }
 
-        private void SortMedicalRecords()
+        private void SearchData()
         {
-            if (string.IsNullOrEmpty(SelectedSortOption) || MedicalRecords == null)
-                return;
+            if (string.IsNullOrWhiteSpace(SearchText)) { LoadData(); return; }
+            var term = SearchText.ToLower();
+            var filtered = _context.MedicalRecord.Include(m => m.Patient).Include(m => m.Dentist).ToList()
+                .Where(m => (m.Patient?.FirstName?.ToLower().Contains(term) ?? false) ||
+                            (m.Patient?.LastName?.ToLower().Contains(term) ?? false) ||
+                            (m.Notes?.ToLower().Contains(term) ?? false) ||
+                            m.RecordID.ToString().Contains(term)).ToList();
+            MedicalRecords.Clear();
+            foreach (var r in filtered) MedicalRecords.Add(r);
+        }
 
-            IEnumerable<Models.MedicalRecord> sortedRecords = SelectedSortOption switch
+        private void SortData()
+        {
+            if (string.IsNullOrEmpty(SelectedSortOption)) return;
+            var sorted = SelectedSortOption switch
             {
-                "ID Registro" => MedicalRecords.OrderBy(mr => mr.RecordID),
-                "Paciente" => MedicalRecords.OrderBy(mr => mr.Patient.LastName)
-                                           .ThenBy(mr => mr.Patient.FirstName),
-                "Dentista" => MedicalRecords.OrderBy(mr => mr.Dentist.LastName)
-                                           .ThenBy(mr => mr.Dentist.FirstName),
-                "Fecha" => MedicalRecords.OrderBy(mr => mr.Date),
-                _ => MedicalRecords
+                "ID Registro" => MedicalRecords.OrderBy(m => m.RecordID).ToList(),
+                "Paciente" => MedicalRecords.OrderBy(m => m.Patient?.LastName).ToList(),
+                "Dentista" => MedicalRecords.OrderBy(m => m.Dentist?.LastName).ToList(),
+                "Fecha" => MedicalRecords.OrderBy(m => m.Date).ToList(),
+                _ => MedicalRecords.ToList()
             };
-
-            MedicalRecords = new ObservableCollection<Models.MedicalRecord>(sortedRecords);
-            OnPropertyChanged(nameof(MedicalRecords));
+            MedicalRecords.Clear();
+            foreach (var r in sorted) MedicalRecords.Add(r);
         }
 
-        private void OpenAddView()
+        private void OpenAdd()
         {
-            var addView = new AddMedicalRecordView
-            {
-                DataContext = new AddMedicalRecordViewModel(_context),
-                Owner = Application.Current.MainWindow
-            };
-
-            if (addView.ShowDialog() == true)
-            {
-                LoadMedicalRecords();
-            }
+            var w = new Views.MedicalRecord.AddMedicalRecordView { DataContext = new AddMedicalRecordViewModel(_context) };
+            if (w.ShowDialog() == true) LoadData();
         }
 
-        private void OpenEditView()
+        private void OpenEditWithParam(Models.MedicalRecord record)
         {
-            if (SelectedMedicalRecord == null) return;
-
-            var editView = new EditMedicalRecordView
-            {
-                DataContext = new EditMedicalRecordViewModel(_context, SelectedMedicalRecord),
-                Owner = Application.Current.MainWindow
-            };
-
-            if (editView.ShowDialog() == true)
-            {
-                LoadMedicalRecords();
-            }
+            if (record == null) return;
+            SelectedMedicalRecord = record;
+            var w = new Views.MedicalRecord.EditMedicalRecordView { DataContext = new EditMedicalRecordViewModel(_context, record) };
+            if (w.ShowDialog() == true) LoadData();
         }
 
-        private void Search()
+        private void DeleteWithParam(Models.MedicalRecord record)
         {
-            try
+            if (record == null) return;
+            if (MessageBox.Show($"¿Seguro que quieres eliminar el expediente #{record.RecordID}?", "Confirmar", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
             {
-                if (string.IsNullOrWhiteSpace(SearchText))
-                {
-                    LoadMedicalRecords();
-                    return;
-                }
-
-                var filtered = _context.MedicalRecord
-                    .Include(mr => mr.Patient)
-                    .Where(mr =>
-                        (mr.Patient != null && (
-                            mr.Patient.FirstName.Contains(SearchText) ||
-                            mr.Patient.LastName.Contains(SearchText)
-                        )) ||
-                        (!string.IsNullOrEmpty(mr.Notes) && mr.Notes.Contains(SearchText)) ||
-                        mr.RecordID.ToString().Contains(SearchText))
-                    .ToList();
-
-                MedicalRecords = new ObservableCollection<Models.MedicalRecord>(filtered.Select(mr => new Models.MedicalRecord
-                {
-                    RecordID = mr.RecordID,
-                    PatientID = mr.PatientID,
-                    Patient = mr.Patient ?? new Models.Patient
-                    {
-                        FirstName = "Unknown",
-                        LastName = "Paciente",
-                        DateOfBirth = DateTime.MinValue
-                    },
-                    Date = mr.Date,
-                    Notes = mr.Notes ?? "Sin notas disponibles",
-                    Attachments = mr.Attachments ?? Array.Empty<byte>()
-                }));
-
-                OnPropertyChanged(nameof(MedicalRecords));
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error durante la búsqueda: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                try { _context.MedicalRecord.Remove(record); _context.SaveChanges(); LoadData(); }
+                catch (Exception ex) { MessageBox.Show($"Error al eliminar: {ex.Message}"); }
             }
         }
     }

@@ -2,13 +2,13 @@
 using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Controls;
 using CommunityToolkit.Mvvm.Input;
 using DentalClinicWPF.Data;
 using DentalClinicWPF.Models;
 using DentalClinicWPF.ViewModels.Base;
-using DentalClinicWPF.Views.Prescription; // For PrescriptionPreviewWindow
-using System.Printing;
-using System.Windows.Controls;
+using DentalClinicWPF.Views.Prescription;
 using PdfSharpCore.Drawing;
 using PdfSharpCore.Pdf;
 
@@ -20,7 +20,6 @@ namespace DentalClinicWPF.ViewModels.Prescription
 
         public Models.Prescription Prescription { get; }
 
-        // Commands
         public ICommand PrintCommand { get; }
         public ICommand ExportPdfCommand { get; }
         public ICommand PreviewCommand { get; }
@@ -35,174 +34,241 @@ namespace DentalClinicWPF.ViewModels.Prescription
             PreviewCommand = new RelayCommand(PreviewPrescription);
         }
 
-        // 1) Print Logic
         private void PrintPrescription()
         {
             try
             {
-                // Build FlowDocument for preview
                 FlowDocument doc = BuildFlowDocument(Prescription);
-
-                // Initialize PrintDialog
                 PrintDialog printDialog = new PrintDialog();
-
-                // Optionally: Set printer settings
-                // printDialog.PrintQueue = new PrintQueue(new PrintServer(), "YourPrinterName");
-
-                // Show print dialog
-                bool? result = printDialog.ShowDialog();
-                if (result == true)
+                if (printDialog.ShowDialog() == true)
                 {
-                    // Print FlowDocument
                     IDocumentPaginatorSource idpSource = doc;
                     printDialog.PrintDocument(idpSource.DocumentPaginator, "Imprimiendo Receta");
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ocurrió un error al imprimir:\n{ex.Message}",
-                                "Error de Impresión",
-                                MessageBoxButton.OK,
-                                MessageBoxImage.Error);
+                MessageBox.Show($"Ocurrió un error al imprimir:\n{ex.Message}", "Error de Impresión", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
-        // 2) Export to PDF Logic
         private void ExportPrescriptionAsPdf()
         {
             try
             {
-                // Initialize SaveFileDialog
                 Microsoft.Win32.SaveFileDialog saveFileDialog = new Microsoft.Win32.SaveFileDialog
                 {
-                    FileName = $"Prescription_{Prescription.PrescriptionID}",
+                    FileName = $"Receta_{Prescription.PrescriptionID}",
                     DefaultExt = ".pdf",
                     Filter = "Documentos PDF (.pdf)|*.pdf"
                 };
 
-                bool? result = saveFileDialog.ShowDialog();
-
-                if (result != true)
-                    return; // User canceled
-
+                if (saveFileDialog.ShowDialog() != true) return;
                 string fileName = saveFileDialog.FileName;
 
                 using (var document = new PdfDocument())
                 {
-                    document.Info.Title = "Exportar Receta";
-
-                    // Create a page
+                    document.Info.Title = $"Receta {Prescription.PrescriptionID}";
                     PdfPage page = document.AddPage();
                     XGraphics gfx = XGraphics.FromPdfPage(page);
 
-                    // Fonts
-                    XFont fontRegular = new XFont("Segoe UI", 12, XFontStyle.Regular);
-                    XFont fontBold = new XFont("Segoe UI", 12, XFontStyle.Bold);
-                    XFont fontTitle = new XFont("Segoe UI", 16, XFontStyle.Bold);
+                    // Colors & Fonts
+                    XColor teal = XColor.FromArgb(20, 184, 166);
+                    XColor darkGray = XColor.FromArgb(51, 65, 85);
+                    XColor lightGray = XColor.FromArgb(226, 232, 240);
+                    
+                    XFont fontTitle = new XFont("Arial", 22, XFontStyle.Bold);
+                    XFont fontSubtitle = new XFont("Arial", 14, XFontStyle.Bold);
+                    XFont fontHeader = new XFont("Arial", 12, XFontStyle.Bold);
+                    XFont fontBody = new XFont("Arial", 11, XFontStyle.Regular);
+                    XFont fontSmall = new XFont("Arial", 9, XFontStyle.Regular);
+                    XFont fontRx = new XFont("Times New Roman", 36, XFontStyle.Bold);
 
-                    double xPos = 50;
-                    double yPos = 50;
-                    double lineSpacing = 25;
+                    double margin = 40;
+                    double width = page.Width - (2 * margin);
+                    double y = margin;
 
-                    // Title
-                    gfx.DrawString("Detalles de la Receta",
-                                   fontTitle,
-                                   XBrushes.Black,
-                                   new XRect(xPos, yPos, page.Width - 2 * xPos, 40),
-                                   XStringFormats.TopCenter);
-                    yPos += 50;
+                    // 1. Header Banner (Teal)
+                    gfx.DrawRectangle(new XSolidBrush(teal), 0, 0, page.Width, 90);
+                    gfx.DrawString("Clínica Dental", fontTitle, XBrushes.White, new XRect(0, 25, page.Width, 30), XStringFormats.TopCenter);
+                    gfx.DrawString("Receta Médica", fontSubtitle, XBrushes.White, new XRect(0, 55, page.Width, 20), XStringFormats.TopCenter);
+                    
+                    y += 110; // Start below banner
 
-                    // Prescription ID
-                    gfx.DrawString("ID de Receta:", fontBold, XBrushes.Black, xPos, yPos);
-                    gfx.DrawString($"{Prescription.PrescriptionID}", fontRegular, XBrushes.Black, xPos + 150, yPos);
-                    yPos += lineSpacing;
+                    // 2. Doctor Info (Top Right)
+                    gfx.DrawString("Dr(a). " + (Prescription.Dentist?.FullName ?? "Médico Tratante"), fontHeader, new XSolidBrush(darkGray), page.Width - margin - 200, y, XStringFormats.TopRight);
+                    gfx.DrawString(Prescription.Dentist?.Specialization ?? "Odontología", fontBody, XBrushes.Gray, page.Width - margin - 200, y + 15, XStringFormats.TopRight);
+                    
+                    y += 50;
 
-                    // Patient
-                    gfx.DrawString("Patient:", fontBold, XBrushes.Black, xPos, yPos);
-                    gfx.DrawString($"{Prescription.Patient?.DisplayInfo}", fontRegular, XBrushes.Black, xPos + 150, yPos);
-                    yPos += lineSpacing;
+                    // 3. Patient Info Box (Light Gray Box with Border)
+                    gfx.DrawRectangle(new XSolidBrush(XColor.FromArgb(248, 250, 252)), margin, y, width, 60);
+                    gfx.DrawRectangle(new XPen(lightGray, 1), margin, y, width, 60);
+                    
+                    gfx.DrawString("PACIENTE", fontSmall, XBrushes.Gray, margin + 10, y + 10);
+                    gfx.DrawString(Prescription.Patient?.FullName ?? "Paciente General", fontHeader, new XSolidBrush(darkGray), margin + 10, y + 25);
+                    
+                    gfx.DrawString("FECHA", fontSmall, XBrushes.Gray, margin + width - 200, y + 10);
+                    gfx.DrawString(Prescription.DateIssued.ToString("dd/MM/yyyy"), fontBody, new XSolidBrush(darkGray), margin + width - 200, y + 25);
+                    
+                    gfx.DrawString("EDAD", fontSmall, XBrushes.Gray, margin + width - 100, y + 10);
+                    gfx.DrawString($"{CalculateAge(Prescription.Patient?.DateOfBirth ?? DateTime.Today)} años", fontBody, new XSolidBrush(darkGray), margin + width - 100, y + 25);
 
-                    // Dentist
-                    gfx.DrawString("Dentist:", fontBold, XBrushes.Black, xPos, yPos);
-                    gfx.DrawString($"{Prescription.Dentist?.DisplayInfo}", fontRegular, XBrushes.Black, xPos + 150, yPos);
-                    yPos += lineSpacing;
+                    y += 90;
 
-                    // Date Issued
-                    gfx.DrawString("Fecha de Emisión:", fontBold, XBrushes.Black, xPos, yPos);
-                    gfx.DrawString($"{Prescription.DateIssued:yyyy-MM-dd}", fontRegular, XBrushes.Black, xPos + 150, yPos);
-                    yPos += lineSpacing;
+                    // 4. Rx Symbol
+                    gfx.DrawString("Rx", fontRx, new XSolidBrush(teal), margin, y);
+                    y += 50;
 
-                    // Medication
-                    gfx.DrawString("Medication:", fontBold, XBrushes.Black, xPos, yPos);
-                    gfx.DrawString($"{Prescription.Medication}", fontRegular, XBrushes.Black, xPos + 150, yPos);
-                    yPos += lineSpacing;
+                    // 5. Prescription Details
+                    gfx.DrawString("MEDICAMENTO", fontSmall, XBrushes.Gray, margin, y);
+                    gfx.DrawString(Prescription.Medication ?? "-", fontSubtitle, new XSolidBrush(darkGray), margin, y + 15);
+                    y += 50;
 
-                    // Dosage
-                    gfx.DrawString("Dosage:", fontBold, XBrushes.Black, xPos, yPos);
-                    gfx.DrawString($"{Prescription.Dosage}", fontRegular, XBrushes.Black, xPos + 150, yPos);
-                    yPos += lineSpacing;
+                    gfx.DrawString("DOSIS", fontSmall, XBrushes.Gray, margin, y);
+                    gfx.DrawString(Prescription.Dosage ?? "-", fontBody, new XSolidBrush(darkGray), margin, y + 15);
+                    y += 50;
 
-                    // Instructions
-                    gfx.DrawString("Instructions:", fontBold, XBrushes.Black, xPos, yPos);
-                    yPos += lineSpacing;
-                    XRect instructionsRect = new XRect(xPos + 150, yPos, page.Width - (xPos + 200), page.Height - yPos - 50);
-                    gfx.DrawString($"{Prescription.Instructions}", fontRegular, XBrushes.Black, instructionsRect, XStringFormats.TopLeft);
+                    gfx.DrawString("INSTRUCCIONES", fontSmall, XBrushes.Gray, margin, y);
+                    XRect instRect = new XRect(margin, y + 15, width, 150);
+                    gfx.DrawString(Prescription.Instructions ?? "-", fontBody, new XSolidBrush(darkGray), instRect, XStringFormats.TopLeft);
 
-                    // Save the document
+                    // 6. Footer Signature
+                    double sigY = page.Height - 100;
+                    gfx.DrawLine(new XPen(XBrushes.Gray, 1), margin + (width/2) - 100, sigY, margin + (width/2) + 100, sigY);
+                    gfx.DrawString("Firma y Sello", fontBody, XBrushes.Gray, new XRect(margin + (width/2) - 100, sigY + 10, 200, 20), XStringFormats.TopCenter);
+
+                    // Bottom line
+                    gfx.DrawLine(new XPen(lightGray, 1), margin, page.Height - 40, page.Width - margin, page.Height - 40);
+                    gfx.DrawString("Documento generado por Clínica Dental", fontSmall, XBrushes.LightGray, new XRect(margin, page.Height - 35, width, 20), XStringFormats.TopCenter);
+
                     document.Save(fileName);
                 }
 
-                MessageBox.Show($"PDF exportado correctamente:\n{fileName}",
-                                "Exportar a PDF",
-                                MessageBoxButton.OK,
-                                MessageBoxImage.Information);
+                MessageBox.Show($"PDF exportado correctamente:\n{fileName}", "Exportar a PDF", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ocurrió un error al exportar a PDF:\n{ex.Message}",
-                                "Error al Exportar PDF",
-                                MessageBoxButton.OK,
-                                MessageBoxImage.Error);
+                MessageBox.Show($"Ocurrió un error al exportar a PDF:\n{ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
-        // 3) Preview Logic
+        private int CalculateAge(DateTime dob)
+        {
+            var today = DateTime.Today;
+            var age = today.Year - dob.Year;
+            if (dob.Date > today.AddYears(-age)) age--;
+            return age;
+        }
+
         private void PreviewPrescription()
         {
             var previewWindow = new PrescriptionPreviewWindow(Prescription);
             previewWindow.ShowDialog();
         }
 
-        // Helper method to build a FlowDocument for printing or preview
         private FlowDocument BuildFlowDocument(Models.Prescription prescription)
         {
             var doc = new FlowDocument
             {
-                PagePadding = new Thickness(40),
-                FontFamily = new System.Windows.Media.FontFamily("Segoe UI"),
-                FontSize = 14
+                PagePadding = new Thickness(50),
+                FontFamily = new FontFamily("Segoe UI"),
+                FontSize = 13,
+                ColumnWidth = double.PositiveInfinity
             };
 
-            // Title
-            var titlePara = new Paragraph
+            // Teal Header Banner
+            var banner = new Border
             {
-                FontSize = 18,
-                FontWeight = FontWeights.Bold,
-                TextAlignment = TextAlignment.Center
+                Background = new SolidColorBrush(Color.FromRgb(20, 184, 166)), // Teal
+                Padding = new Thickness(20),
+                Margin = new Thickness(-50, -50, -50, 30)
             };
-            titlePara.Inlines.Add("Detalles de la Receta");
-            doc.Blocks.Add(titlePara);
+            var bannerText = new StackPanel { HorizontalAlignment = HorizontalAlignment.Center };
+            bannerText.Children.Add(new TextBlock { Text = "Clínica Dental", FontSize = 24, FontWeight = FontWeights.Bold, Foreground = Brushes.White, HorizontalAlignment = HorizontalAlignment.Center });
+            bannerText.Children.Add(new TextBlock { Text = "Receta Médica", FontSize = 14, Foreground = Brushes.White, Margin = new Thickness(0, 4, 0, 0), HorizontalAlignment = HorizontalAlignment.Center });
+            banner.Child = bannerText;
+            doc.Blocks.Add(new BlockUIContainer(banner));
 
-            // Information Paragraph
-            var info = new Paragraph();
-            info.Inlines.Add(new Run($"Prescription ID: {prescription.PrescriptionID}\n"));
-            info.Inlines.Add(new Run($"Patient: {prescription.Patient?.DisplayInfo}\n"));
-            info.Inlines.Add(new Run($"Dentist: {prescription.Dentist?.DisplayInfo}\n"));
-            info.Inlines.Add(new Run($"Date Issued: {prescription.DateIssued:yyyy-MM-dd}\n"));
-            info.Inlines.Add(new Run($"Medication: {prescription.Medication}\n"));
-            info.Inlines.Add(new Run($"Dosage: {prescription.Dosage}\n"));
-            info.Inlines.Add(new Run($"Instructions: {prescription.Instructions}\n"));
-            doc.Blocks.Add(info);
+            // Doctor Info
+            var docInfo = new Paragraph { TextAlignment = TextAlignment.Right, Margin = new Thickness(0, 0, 0, 20) };
+            docInfo.Inlines.Add(new Run($"Dr(a). {prescription.Dentist?.FullName ?? "Médico Tratante"}\n") { FontWeight = FontWeights.Bold, FontSize = 14 });
+            docInfo.Inlines.Add(new Run($"{prescription.Dentist?.Specialization ?? "Odontología"}") { Foreground = Brushes.Gray });
+            doc.Blocks.Add(docInfo);
+
+            // Patient Info Box
+            var patientBox = new Border
+            {
+                Background = new SolidColorBrush(Color.FromRgb(248, 250, 252)),
+                BorderBrush = new SolidColorBrush(Color.FromRgb(226, 232, 240)),
+                BorderThickness = new Thickness(1),
+                Padding = new Thickness(15),
+                Margin = new Thickness(0, 0, 0, 30)
+            };
+            var patientGrid = new Grid();
+            patientGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+            patientGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+            patientGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+
+            var patientStack = new StackPanel();
+            patientStack.Children.Add(new TextBlock { Text = "PACIENTE", FontSize = 10, Foreground = Brushes.Gray });
+            patientStack.Children.Add(new TextBlock { Text = prescription.Patient?.FullName ?? "Paciente", FontSize = 14, FontWeight = FontWeights.Bold, Margin = new Thickness(0, 2, 0, 0) });
+
+            var ageStack = new StackPanel { Margin = new Thickness(10, 0, 0, 0) };
+            ageStack.Children.Add(new TextBlock { Text = "EDAD", FontSize = 10, Foreground = Brushes.Gray });
+            ageStack.Children.Add(new TextBlock { Text = $"{CalculateAge(prescription.Patient?.DateOfBirth ?? DateTime.Today)} años", FontSize = 14, Margin = new Thickness(0, 2, 0, 0) });
+
+            var dateStack = new StackPanel();
+            dateStack.Children.Add(new TextBlock { Text = "FECHA", FontSize = 10, Foreground = Brushes.Gray });
+            dateStack.Children.Add(new TextBlock { Text = prescription.DateIssued.ToString("dd/MM/yyyy"), FontSize = 14, Margin = new Thickness(0, 2, 0, 0) });
+
+            Grid.SetColumn(patientStack, 0);
+            Grid.SetColumn(ageStack, 1);
+            Grid.SetColumn(dateStack, 2);
+            patientGrid.Children.Add(patientStack);
+            patientGrid.Children.Add(ageStack);
+            patientGrid.Children.Add(dateStack);
+
+            patientBox.Child = patientGrid;
+            doc.Blocks.Add(new BlockUIContainer(patientBox));
+
+            // Rx Symbol
+            var rxPara = new Paragraph { Margin = new Thickness(0, 0, 0, 15) };
+            rxPara.Inlines.Add(new Run("Rx") { FontFamily = new FontFamily("Times New Roman"), FontSize = 40, FontWeight = FontWeights.Bold, Foreground = new SolidColorBrush(Color.FromRgb(20, 184, 166)) });
+            doc.Blocks.Add(rxPara);
+
+            // Prescription details
+            var medLabel = new Paragraph { Margin = new Thickness(0, 0, 0, 2) };
+            medLabel.Inlines.Add(new Run("MEDICAMENTO") { FontSize = 10, Foreground = Brushes.Gray, FontWeight = FontWeights.Bold });
+            doc.Blocks.Add(medLabel);
+
+            var medText = new Paragraph { Margin = new Thickness(0, 0, 0, 20) };
+            medText.Inlines.Add(new Run(prescription.Medication ?? "-") { FontSize = 16, FontWeight = FontWeights.Bold });
+            doc.Blocks.Add(medText);
+
+            var doseLabel = new Paragraph { Margin = new Thickness(0, 0, 0, 2) };
+            doseLabel.Inlines.Add(new Run("DOSIS") { FontSize = 10, Foreground = Brushes.Gray, FontWeight = FontWeights.Bold });
+            doc.Blocks.Add(doseLabel);
+
+            var doseText = new Paragraph { Margin = new Thickness(0, 0, 0, 20) };
+            doseText.Inlines.Add(new Run(prescription.Dosage ?? "-") { FontSize = 13 });
+            doc.Blocks.Add(doseText);
+
+            var instLabel = new Paragraph { Margin = new Thickness(0, 0, 0, 2) };
+            instLabel.Inlines.Add(new Run("INSTRUCCIONES") { FontSize = 10, Foreground = Brushes.Gray, FontWeight = FontWeights.Bold });
+            doc.Blocks.Add(instLabel);
+
+            var instText = new Paragraph { Margin = new Thickness(0, 0, 0, 60) };
+            instText.Inlines.Add(new Run(prescription.Instructions ?? "-") { FontSize = 13 });
+            doc.Blocks.Add(instText);
+
+            // Signature
+            var sigGrid = new Grid { Width = 200, HorizontalAlignment = HorizontalAlignment.Center };
+            var sigStack = new StackPanel();
+            sigStack.Children.Add(new Border { BorderBrush = Brushes.Gray, BorderThickness = new Thickness(0, 0, 0, 1), Margin = new Thickness(0, 0, 0, 5), Width = 200 });
+            sigStack.Children.Add(new TextBlock { Text = "Firma y Sello", FontSize = 11, Foreground = Brushes.Gray, HorizontalAlignment = HorizontalAlignment.Center });
+            sigGrid.Children.Add(sigStack);
+            doc.Blocks.Add(new BlockUIContainer(sigGrid));
 
             return doc;
         }

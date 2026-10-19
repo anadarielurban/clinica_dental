@@ -1,28 +1,15 @@
-﻿using DentalClinicWPF.Models;
-using DentalClinicWPF.ViewModels.Prescription;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
+using DentalClinicWPF.ViewModels.Prescription;
 
 namespace DentalClinicWPF.Views.Prescription
 {
     public partial class PrescriptionView : UserControl
     {
-        public PrescriptionView()
+        public PrescriptionView() { InitializeComponent(); }
+        private void ClearSearch_Click(object sender, RoutedEventArgs e)
         {
-            InitializeComponent();
-        }
-
-        private void DataGridRow_MouseDoubleClick(object sender, MouseButtonEventArgs e)
-        {
-            if (sender is DataGridRow row && row.Item is Models.Prescription prescription)
-            {
-                if (DataContext is PrescriptionViewModel viewModel)
-                {
-                    viewModel.SelectedPrescription = prescription;
-                    viewModel.OpenPrescriptionDetailCommand.Execute(null);
-                }
-            }
+            if (DataContext is PrescriptionViewModel vm) vm.SearchText = string.Empty;
         }
     }
 }

@@ -1,116 +1,105 @@
 ﻿<UserControl x:Class="DentalClinicWPF.Views.Prescription.PrescriptionDetailView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              mc:Ignorable="d"
-             d:DesignHeight="400" d:DesignWidth="600">
+             d:DesignHeight="600" d:DesignWidth="1000"
+             Background="{StaticResource Brush.Background}">
 
-    <!-- Merge your resource dictionaries for subtle styling. 
-         Adjust the Source path to your actual style file. -->
-    <UserControl.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <!-- Example: 
-                <ResourceDictionary Source="pack://application:,,,/DentalClinicWPF;component/Styles/Prescription.xaml"/> 
-                -->
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
-    </UserControl.Resources>
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="28">
+        <StackPanel>
 
-    <!-- Light background for the view -->
-    <Grid Background="#FFFFFF">
+            <!-- Header con Botones -->
+            <Grid Margin="0,0,0,24">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0">
+                    <TextBlock Text="Detalles de la Receta" FontSize="24" FontWeight="Bold" Foreground="{StaticResource Brush.TextPrimary}"/>
+                    <TextBlock Text="Información completa de la prescripción médica" FontSize="13" Foreground="{StaticResource Brush.TextSecondary}" Margin="0,4,0,0"/>
+                </StackPanel>
+                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                    <Button Command="{Binding PreviewCommand}" Style="{StaticResource Modern.Button.Secondary}" Margin="0,0,10,0">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE7B3;" FontFamily="Segoe MDL2 Assets" FontSize="13" VerticalAlignment="Center"/>
+                            <TextBlock Text="Vista Previa" Margin="6,0,0,0"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Command="{Binding PrintCommand}" Style="{StaticResource Modern.Button.Secondary}" Margin="0,0,10,0">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE749;" FontFamily="Segoe MDL2 Assets" FontSize="13" VerticalAlignment="Center"/>
+                            <TextBlock Text="Imprimir" Margin="6,0,0,0"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Command="{Binding ExportPdfCommand}" Style="{StaticResource Modern.Button.Primary}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE8A5;" FontFamily="Segoe MDL2 Assets" FontSize="13" VerticalAlignment="Center"/>
+                            <TextBlock Text="Exportar PDF" Margin="6,0,0,0"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </Grid>
 
-        <!-- Outer border for a subtle, card-like appearance -->
-        <Border BorderThickness="1" BorderBrush="#DDDDDD" CornerRadius="6" 
-                Background="#FAFAFA" Padding="20" Margin="10">
-
-            <StackPanel>
-                <!-- Header / Title -->
-                <TextBlock Text="Detalles de la Receta"
-                           FontSize="20"
-                           FontWeight="Bold"
-                           Foreground="#333333"
-                           Margin="0,0,0,10"/>
-
-                <!-- Using a 2-column Grid for label-value pairs -->
+            <!-- Tarjeta 1: Info General -->
+            <Border Background="{StaticResource Brush.Surface}" CornerRadius="12" Padding="24" Margin="0,0,0,20">
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="140" />
-                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
 
-                    <!-- Prescription ID -->
-                    <TextBlock Text="ID de Receta:" FontWeight="Bold" Grid.Row="0" Grid.Column="0" 
-                               Margin="0,0,0,5" />
-                    <TextBlock Text="{Binding Prescription.PrescriptionID}" Grid.Row="0" Grid.Column="1" 
-                               Margin="0,0,0,5" />
+                    <!-- ID y Fecha -->
+                    <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,0,20">
+                        <TextBlock Text="ID DE RECETA" FontSize="11" FontWeight="SemiBold" Foreground="{StaticResource Brush.TextMuted}"/>
+                        <TextBlock Text="{Binding Prescription.PrescriptionID}" FontSize="16" FontWeight="SemiBold" Foreground="{StaticResource Brush.TextPrimary}" Margin="0,4,0,0"/>
+                    </StackPanel>
+                    <StackPanel Grid.Row="0" Grid.Column="1" Margin="0,0,0,20">
+                        <TextBlock Text="FECHA DE EMISIÓN" FontSize="11" FontWeight="SemiBold" Foreground="{StaticResource Brush.TextMuted}"/>
+                        <TextBlock Text="{Binding Prescription.DateIssued, StringFormat=dd/MM/yyyy}" FontSize="16" FontWeight="SemiBold" Foreground="{StaticResource Brush.TextPrimary}" Margin="0,4,0,0"/>
+                    </StackPanel>
 
-                    <!-- Patient -->
-                    <TextBlock Text="Paciente:" FontWeight="Bold" Grid.Row="1" Grid.Column="0" 
-                               Margin="0,5,0,5" />
-                    <TextBlock Text="{Binding Prescription.Patient.DisplayInfo}" Grid.Row="1" Grid.Column="1" 
-                               Margin="0,5,0,5" />
-
-                    <!-- Dentist -->
-                    <TextBlock Text="Dentista:" FontWeight="Bold" Grid.Row="2" Grid.Column="0" 
-                               Margin="0,5,0,5" />
-                    <TextBlock Text="{Binding Prescription.Dentist.DisplayInfo}" Grid.Row="2" Grid.Column="1"
-                               Margin="0,5,0,5"/>
-
-                    <!-- Date Issued -->
-                    <TextBlock Text="Fecha de Emisión:" FontWeight="Bold" Grid.Row="3" Grid.Column="0" 
-                               Margin="0,5,0,5"/>
-                    <TextBlock Text="{Binding Prescription.DateIssued, StringFormat={}{0:yyyy-MM-dd}}" 
-                               Grid.Row="3" Grid.Column="1" Margin="0,5,0,5"/>
-
-                    <!-- Medication -->
-                    <TextBlock Text="Medicamento:" FontWeight="Bold" Grid.Row="4" Grid.Column="0" 
-                               Margin="0,5,0,5"/>
-                    <TextBlock Text="{Binding Prescription.Medication}" 
-                               Grid.Row="4" Grid.Column="1" Margin="0,5,0,5"/>
-
-                    <!-- Dosage -->
-                    <TextBlock Text="Dosis:" FontWeight="Bold" Grid.Row="5" Grid.Column="0" 
-                               Margin="0,5,0,5"/>
-                    <TextBlock Text="{Binding Prescription.Dosage}" 
-                               Grid.Row="5" Grid.Column="1" Margin="0,5,0,5"/>
-
-                    <!-- Instructions -->
-                    <TextBlock Text="Instrucciones:" FontWeight="Bold" Grid.Row="6" Grid.Column="0" 
-                               Margin="0,5,0,5"/>
-                    <TextBlock Text="{Binding Prescription.Instructions}"
-                               TextWrapping="Wrap" 
-                               Grid.Row="6" Grid.Column="1" Margin="0,5,0,5"/>
+                    <!-- Paciente y Dentista -->
+                    <StackPanel Grid.Row="1" Grid.Column="0">
+                        <TextBlock Text="PACIENTE" FontSize="11" FontWeight="SemiBold" Foreground="{StaticResource Brush.TextMuted}"/>
+                        <TextBlock Text="{Binding Prescription.Patient.FullName}" FontSize="16" FontWeight="SemiBold" Foreground="{StaticResource Brush.TextPrimary}" Margin="0,4,0,0"/>
+                        <TextBlock Text="{Binding Prescription.Patient.DateOfBirth, StringFormat='Fecha Nac: {0:dd/MM/yyyy}'}" FontSize="12" Foreground="{StaticResource Brush.TextSecondary}" Margin="0,2,0,0"/>
+                    </StackPanel>
+                    <StackPanel Grid.Row="1" Grid.Column="1">
+                        <TextBlock Text="DENTISTA" FontSize="11" FontWeight="SemiBold" Foreground="{StaticResource Brush.TextMuted}"/>
+                        <TextBlock Text="{Binding Prescription.Dentist.FullName}" FontSize="16" FontWeight="SemiBold" Foreground="{StaticResource Brush.TextPrimary}" Margin="0,4,0,0"/>
+                        <TextBlock Text="{Binding Prescription.Dentist.Specialization}" FontSize="12" Foreground="{StaticResource Brush.TextSecondary}" Margin="0,2,0,0"/>
+                    </StackPanel>
                 </Grid>
+            </Border>
 
-                <!-- Buttons: Preview, Print, and Export PDF -->
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,20,0,0">
-                    <Button Content="Vista Previa"
-                            Command="{Binding PreviewCommand}"
-                            Margin="0,0,10,0"
-                            Width="80"/>
+            <!-- Tarjeta 2: Medicamentos -->
+            <Border Background="{StaticResource Brush.Surface}" CornerRadius="12" Padding="24">
+                <StackPanel>
+                    <TextBlock Text="DETALLES DE LA PRESCRIPCIÓN" FontSize="11" FontWeight="SemiBold" Foreground="{StaticResource Brush.TextMuted}" Margin="0,0,0,20"/>
 
-                    <Button Content="Imprimir"
-                            Command="{Binding PrintCommand}"
-                            Margin="0,0,10,0"
-                            Width="80"/>
+                    <StackPanel Margin="0,0,0,20">
+                        <TextBlock Text="Medicamento" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource Brush.TextSecondary}"/>
+                        <TextBlock Text="{Binding Prescription.Medication}" FontSize="18" FontWeight="Bold" Foreground="{StaticResource Brush.PrimaryPressed}" Margin="0,4,0,0"/>
+                    </StackPanel>
 
-                    <Button Content="Exportar PDF"
-                            Command="{Binding ExportPdfCommand}"
-                            Width="100"/>
+                    <StackPanel Margin="0,0,0,20">
+                        <TextBlock Text="Dosis" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource Brush.TextSecondary}"/>
+                        <TextBlock Text="{Binding Prescription.Dosage}" FontSize="14" Foreground="{StaticResource Brush.TextPrimary}" Margin="0,4,0,0"/>
+                    </StackPanel>
+
+                    <StackPanel>
+                        <TextBlock Text="Instrucciones" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource Brush.TextSecondary}"/>
+                        <TextBlock Text="{Binding Prescription.Instructions}" FontSize="14" Foreground="{StaticResource Brush.TextPrimary}" TextWrapping="Wrap" Margin="0,4,0,0"/>
+                    </StackPanel>
                 </StackPanel>
+            </Border>
 
-            </StackPanel>
-        </Border>
-    </Grid>
+        </StackPanel>
+    </ScrollViewer>
 </UserControl>

@@ -3,46 +3,109 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:local="clr-namespace:DentalClinicWPF.Views.TreatmentPlan"
-             mc:Ignorable="d"
-             d:DesignHeight="600" d:DesignWidth="800">
-    <Grid Margin="10">
+             mc:Ignorable="d" d:DesignHeight="600" d:DesignWidth="1000"
+             Background="{StaticResource Brush.Background}">
+    <Grid Margin="28">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- Toolbar -->
-        <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,10">
-            <TextBox Width="300" 
-                     Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" 
-                     ToolTip="Buscar por paciente o dentista" />
-            <Button Content="Buscar" Command="{Binding SearchCommand}" Margin="10,0,0,0" Width="100" />
-            <Button Content="Recargar" Command="{Binding ReloadTreatmentPlansCommand}" Margin="10,0,0,0" Width="100" />
-            <Button Content="Agregar Plan de Tratamiento" Command="{Binding AddTreatmentPlanCommand}" Width="150" Margin="10,0,0,0" />
-            <Button Content="Editar Plan de Tratamiento" Command="{Binding EditTreatmentPlanCommand}" 
-                    Width="150" Margin="10,0,0,0" 
-                    IsEnabled="{Binding SelectedTreatmentPlan, Converter={StaticResource NullToBoolConverter}}" />
-        </StackPanel>
+        <Grid Grid.Row="0" Margin="0,0,0,20">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <StackPanel Grid.Column="0">
+                <TextBlock Text="Planes de Tratamiento" FontSize="24" FontWeight="Bold" Foreground="{StaticResource Brush.TextPrimary}"/>
+                <TextBlock Text="Gestión de planes de tratamiento" FontSize="13" Foreground="{StaticResource Brush.TextSecondary}" Margin="0,4,0,0"/>
+            </StackPanel>
+            <Button Grid.Column="1" Command="{Binding AddTreatmentPlanCommand}" Style="{StaticResource Modern.Button.Primary}" VerticalAlignment="Center">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="&#xE710;" FontFamily="Segoe MDL2 Assets" FontSize="14" VerticalAlignment="Center"/>
+                    <TextBlock Text="Agregar Plan" Margin="8,0,0,0"/>
+                </StackPanel>
+            </Button>
+        </Grid>
 
-        <!-- Sortowanie -->
-        <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="0,0,0,10">
-            <ComboBox Width="150" ItemsSource="{Binding SortOptions}" 
-                      SelectedItem="{Binding SelectedSortOption}" 
-                      ToolTip="Seleccionar criterio de ordenamiento" />
-            <Button Content="Ordenar" Command="{Binding SortCommand}" Width="100" />
-        </StackPanel>
+        <Border Grid.Row="1" Background="{StaticResource Brush.Surface}" CornerRadius="12" Padding="16" Margin="0,0,0,16">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <Border Grid.Column="0" Background="{StaticResource Brush.Background}" CornerRadius="8" Height="38" BorderBrush="{StaticResource Brush.Border}" BorderThickness="1">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="&#xE721;" FontFamily="Segoe MDL2 Assets" FontSize="14" Foreground="{StaticResource Brush.TextMuted}" VerticalAlignment="Center" Margin="12,0,8,0"/>
+                        <TextBox Grid.Column="1" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" Background="Transparent" BorderThickness="0" FontSize="13" Foreground="{StaticResource Brush.TextPrimary}" VerticalContentAlignment="Center" ToolTip="Buscar"/>
+                        <Button Grid.Column="2" Content="&#xE711;" FontFamily="Segoe MDL2 Assets" FontSize="10" Width="28" Height="28" Margin="0,0,6,0" Padding="0" Background="Transparent" BorderThickness="0" Foreground="{StaticResource Brush.TextMuted}" Cursor="Hand" Click="ClearSearch_Click" VerticalAlignment="Center"/>
+                    </Grid>
+                </Border>
+                <Button Grid.Column="1" Command="{Binding ReloadTreatmentPlansCommand}" Style="{StaticResource Modern.Button.Secondary}" Margin="8,0,0,0">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="&#xE72C;" FontFamily="Segoe MDL2 Assets" FontSize="13" VerticalAlignment="Center"/>
+                        <TextBlock Text="Recargar" Margin="6,0,0,0"/>
+                    </StackPanel>
+                </Button>
+            </Grid>
+        </Border>
 
-        <!-- Treatment Plan List -->
-        <DataGrid Grid.Row="2" ItemsSource="{Binding TreatmentPlans}" AutoGenerateColumns="False"
-                  SelectedItem="{Binding SelectedTreatmentPlan, Mode=TwoWay}" IsReadOnly="True" SelectionMode="Single">
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="Paciente" Binding="{Binding Patient.DisplayInfo}" Width="*" />
-                <DataGridTextColumn Header="Dentista" Binding="{Binding Dentist.DisplayInfo}" Width="*" />
-                <DataGridTextColumn Header="Fecha de Creación" Binding="{Binding CreationDate, StringFormat=d}" Width="150" />
-                <DataGridTextColumn Header="Detalles" Binding="{Binding Details}" Width="2*" />
-            </DataGrid.Columns>
-        </DataGrid>
+        <Border Grid.Row="2" Background="{StaticResource Brush.Surface}" CornerRadius="12" Padding="0">
+            <Grid>
+                <DataGrid ItemsSource="{Binding TreatmentPlans}" AutoGenerateColumns="False" SelectedItem="{Binding SelectedTreatmentPlan, Mode=TwoWay}" IsReadOnly="True" SelectionMode="Single" BorderThickness="0" Background="Transparent" RowBackground="Transparent" AlternatingRowBackground="#F8FAFC" HeadersVisibility="Column" GridLinesVisibility="Horizontal" HorizontalGridLinesBrush="{StaticResource Brush.Border}" RowHeight="44" Margin="8">
+                    <DataGrid.ColumnHeaderStyle>
+                        <Style TargetType="DataGridColumnHeader">
+                            <Setter Property="Background" Value="Transparent"/><Setter Property="Foreground" Value="{StaticResource Brush.TextSecondary}"/><Setter Property="FontWeight" Value="SemiBold"/><Setter Property="FontSize" Value="12"/><Setter Property="Padding" Value="12,10"/><Setter Property="BorderThickness" Value="0,0,0,1"/><Setter Property="BorderBrush" Value="{StaticResource Brush.Border}"/><Setter Property="HorizontalContentAlignment" Value="Left"/>
+                        </Style>
+                    </DataGrid.ColumnHeaderStyle>
+                    <DataGrid.CellStyle>
+                        <Style TargetType="DataGridCell">
+                            <Setter Property="BorderThickness" Value="0"/><Setter Property="Padding" Value="12,0"/><Setter Property="Foreground" Value="{StaticResource Brush.TextPrimary}"/><Setter Property="VerticalContentAlignment" Value="Center"/>
+                        </Style>
+                    </DataGrid.CellStyle>
+                    <DataGrid.RowStyle>
+                        <Style TargetType="DataGridRow">
+                            <Setter Property="Background" Value="Transparent"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True"><Setter Property="Background" Value="#F1F5F9"/></Trigger>
+                                <Trigger Property="IsSelected" Value="True"><Setter Property="Background" Value="#CCFBF1"/></Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </DataGrid.RowStyle>
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Paciente" Binding="{Binding Patient.DisplayInfo}" Width="*"/>
+                        <DataGridTextColumn Header="Dentista" Binding="{Binding Dentist.DisplayInfo}" Width="*"/>
+                        <DataGridTextColumn Header="Fecha Creación" Binding="{Binding CreationDate, StringFormat=d}" Width="120"/>
+                        <DataGridTextColumn Header="Detalles" Binding="{Binding Details}" Width="2*"/>
+                        <DataGridTemplateColumn Header="Acciones" Width="110">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                        <Button Command="{Binding DataContext.EditTreatmentPlanCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding}" Width="32" Height="32" Margin="0,0,4,0" Background="Transparent" BorderThickness="0" Cursor="Hand" ToolTip="Editar">
+                                            <TextBlock Text="&#xE70F;" FontFamily="Segoe MDL2 Assets" FontSize="14" Foreground="{StaticResource Brush.Primary}"/>
+                                        </Button>
+                                        <Button Command="{Binding DataContext.DeleteTreatmentPlanCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding}" Width="32" Height="32" Background="Transparent" BorderThickness="0" Cursor="Hand" ToolTip="Eliminar">
+                                            <TextBlock Text="&#xE74D;" FontFamily="Segoe MDL2 Assets" FontSize="14" Foreground="{StaticResource Brush.Error}"/>
+                                        </Button>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="{Binding TreatmentPlans.Count, Converter={StaticResource ZeroToVisibleConverter}}">
+                    <TextBlock Text="&#xE8FD;" FontFamily="Segoe MDL2 Assets" FontSize="48" Foreground="{StaticResource Brush.TextMuted}" HorizontalAlignment="Center"/>
+                    <TextBlock Text="Sin planes registrados" FontSize="16" FontWeight="SemiBold" Foreground="{StaticResource Brush.TextSecondary}" HorizontalAlignment="Center" Margin="0,12,0,4"/>
+                    <TextBlock Text="Haz clic en Agregar Plan para empezar" FontSize="12" Foreground="{StaticResource Brush.TextMuted}" HorizontalAlignment="Center"/>
+                </StackPanel>
+            </Grid>
+        </Border>
     </Grid>
 </UserControl>
+
