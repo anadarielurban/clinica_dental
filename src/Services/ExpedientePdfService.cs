@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Media;
@@ -17,7 +17,7 @@ namespace DentalClinicWPF.Services
         static ExpedientePdfService()
         {
             QuestPDF.Settings.License = LicenseType.Community;
-            QuestPDF.Settings.UseSystemFonts = true; // Habilita Segoe UI y otras fuentes de Windows
+             // Habilita Segoe UI y otras fuentes de Windows
         }
 
         public static void Generate(PatientDetailViewModel vm, string outputPath)

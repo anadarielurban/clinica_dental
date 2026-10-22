@@ -17,3 +17,5 @@ obj/
 # === Respaldos personales ===
 *.bak
 *.bak.*
+
+_backup_*

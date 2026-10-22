@@ -39,6 +39,8 @@
              xmlns:equipment1="clr-namespace:DentalClinicWPF.Views.Equipment"
              xmlns:patientDetail="clr-namespace:DentalClinicWPF.Views.Patient.PatientDetail"
              xmlns:patientDetailViewModels="clr-namespace:DentalClinicWPF.ViewModels.Patient.PatientDetail"
+             xmlns:pos="clr-namespace:DentalClinicWPF.ViewModels.Pos"
+             xmlns:posView="clr-namespace:DentalClinicWPF.Views.Pos"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
         <ResourceDictionary>
@@ -122,6 +124,12 @@
             <DataTemplate DataType="{x:Type room:RoomViewModel}">
                 <room1:RoomView />
             </DataTemplate>
+            
+            <!-- DataTemplate del Punto de Venta (NUEVO) -->
+            <DataTemplate DataType="{x:Type pos:PosViewModel}">
+                <posView:PosView />
+            </DataTemplate>
+            
         </ResourceDictionary>
     </Application.Resources>
 </Application>

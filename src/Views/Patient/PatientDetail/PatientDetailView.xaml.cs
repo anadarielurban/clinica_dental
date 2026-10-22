@@ -1,4 +1,4 @@
-﻿using System.Windows;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using DentalClinicWPF.ViewModels.Patient.PatientDetail;
@@ -12,5 +12,20 @@ namespace DentalClinicWPF.Views.Patient.PatientDetail
         {
             InitializeComponent();
         }
-    }
-}
+    
+        private void OpenPrescription_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            if (sender is System.Windows.Controls.Button btn && btn.DataContext is Models.Prescription prescription)
+            {
+                if (DataContext is ViewModels.Patient.PatientDetail.PatientDetailViewModel vm)
+                {
+                    vm.OpenPrescription(prescription);
+                }
+                else
+                {
+                    System.Windows.MessageBox.Show("Error: El DataContext no es el ViewModel esperado.", "Error");
+                }
+            }
+        }}
+
+        }

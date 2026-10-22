@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -21,7 +21,7 @@ using DentalClinicWPF.Views.MedicalRecord;
 
 namespace DentalClinicWPF.ViewModels.Patient.PatientDetail
 {
-    public class PatientDetailViewModel : BaseViewModel
+    public partial class PatientDetailViewModel : BaseViewModel
     {
         private readonly DentalClinicContext _context;
 
@@ -57,6 +57,7 @@ namespace DentalClinicWPF.ViewModels.Patient.PatientDetail
         public ICommand AddTreatmentPlanCommand { get; }
         public ICommand EditTreatmentPlanCommand { get; }
         public ICommand PreviewTreatmentPlanCommand { get; }
+        public ICommand PayTreatmentPlanCommand { get; }
 
         public ICommand AddInvoiceCommand { get; }
         public ICommand EditInvoiceCommand { get; }
@@ -190,6 +191,37 @@ namespace DentalClinicWPF.ViewModels.Patient.PatientDetail
                     }
                 } catch (Exception ex) { MessageBox.Show($"Error al editar el plan: {ex.Message}", "Error"); }
             });
+            PayTreatmentPlanCommand = new RelayCommand(() => {
+                if (SelectedTreatmentPlan == null) { MessageBox.Show("Selecciona un presupuesto primero.", "Aviso", MessageBoxButton.OK, MessageBoxImage.Warning); return; }
+                
+                try {
+                    // 1. Crear la factura
+                    var invoice = new Models.Invoice {
+                        PatientID = Patient.PatientID,
+                        TreatmentPlanID = SelectedTreatmentPlan.TreatmentPlanID,
+                        TotalAmount = SelectedTreatmentPlan.TotalAmount,
+                        AmountPaid = SelectedTreatmentPlan.TotalAmount, // Simulamos pago completo por ahora
+                        PaymentMethod = "Efectivo",
+                        InvoiceDate = DateTime.Now
+                    };
+                    
+                    // 2. Cambiar estado del plan
+                    var planInDb = _context.TreatmentPlan.Find(SelectedTreatmentPlan.TreatmentPlanID);
+                    if (planInDb != null) planInDb.Status = "Pagado";
+
+                    _context.Invoice.Add(invoice);
+                    _context.SaveChanges();
+
+                    MessageBox.Show($"¡Cobro registrado con éxito!\nFolio: #{invoice.InvoiceID}\nTotal: {invoice.TotalAmount:C}", "Cobro Exitoso", MessageBoxButton.OK, MessageBoxImage.Information);
+                    
+                    // Refrescar lista
+                    LoadTreatmentPlans();
+                    LoadInvoices();
+                } catch (Exception ex) {
+                    MessageBox.Show($"Error al cobrar: {ex.Message}\n{ex.InnerException?.Message}", "Error");
+                }
+            });
+
             PreviewTreatmentPlanCommand = new RelayCommand(() => {
                 if (SelectedTreatmentPlan == null) { MessageBox.Show("Selecciona un plan primero.", "Aviso", MessageBoxButton.OK, MessageBoxImage.Warning); return; }
                 var sb = new System.Text.StringBuilder();
@@ -269,7 +301,7 @@ namespace DentalClinicWPF.ViewModels.Patient.PatientDetail
         private void LoadInvoices()
         {
             Invoices.Clear();
-            foreach (var i in _context.Invoice.Where(i => i.Appointment.PatientID == Patient.PatientID).ToList())
+            foreach (var i in _context.Invoice.Where(i => i.PatientID == Patient.PatientID).ToList())
                 Invoices.Add(i);
         }
 
@@ -951,7 +983,10 @@ private FlowDocument BuildExpedienteDocument()
             return legendBorder;
         }
     }
-}
+
+        }
+
+
 
 
 

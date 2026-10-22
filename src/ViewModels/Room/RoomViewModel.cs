@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
@@ -39,7 +39,7 @@ namespace DentalClinicWPF.ViewModels.Room
 
         public ObservableCollection<string> SortOptions { get; } = new ObservableCollection<string>
         {
-            "Número", "Disponibilidad", "Equipos"
+            "NÃºmero", "Disponibilidad", "Equipos"
         };
         public string SelectedSortOption { get; set; }
         public ICommand SortCommand { get; }
@@ -90,7 +90,7 @@ namespace DentalClinicWPF.ViewModels.Room
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error durante la búsqueda: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error durante la bÃºsqueda: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -99,7 +99,7 @@ namespace DentalClinicWPF.ViewModels.Room
             if (string.IsNullOrEmpty(SelectedSortOption) || Rooms == null) return;
             var sorted = SelectedSortOption switch
             {
-                "Número" => Rooms.OrderBy(r => r.RoomNumber).ToList(),
+                "NÃºmero" => Rooms.OrderBy(r => r.RoomNumber).ToList(),
                 "Disponibilidad" => Rooms.OrderBy(r => r.IsAvailable).ToList(),
                 "Equipos" => Rooms.OrderBy(r => r.Equipments?.Count ?? 0).ToList(),
                 _ => Rooms.ToList()
@@ -118,28 +118,40 @@ namespace DentalClinicWPF.ViewModels.Room
         {
             if (room == null) return;
             SelectedRoom = room;
-            var v = new EditRoomView { DataContext = new EditRoomViewModel(SelectedRoom, _context), Owner = Application.Current.MainWindow };
+            var v = new EditRoomView { DataContext = new EditRoomViewModel(_context, SelectedRoom), Owner = Application.Current.MainWindow };
             if (v.ShowDialog() == true) LoadRooms();
         }
 
         private void DeleteRoomWithParam(Models.Room room)
         {
             if (room == null) return;
-            var result = MessageBox.Show(
-                $"¿Seguro que quieres eliminar el consultorio '{room.RoomNumber}'?",
-                "Confirmar Eliminación", MessageBoxButton.YesNo, MessageBoxImage.Warning);
-            if (result == MessageBoxResult.Yes)
+
+            var result = MessageBox.Show($"¿Estás seguro de eliminar el consultorio {room.RoomNumber}?", "Confirmar", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+            if (result != MessageBoxResult.Yes) return;
+
+            try
             {
-                try
+                // 1. Verificar si hay Dentistas o Equipos asignados
+                var hasDentists = _context.Set<Models.Dentist>().Any(d => d.RoomID == room.RoomID);
+                var hasEquipments = _context.Set<Models.Equipment>().Any(e => e.RoomID == room.RoomID);
+
+                if (hasDentists || hasEquipments)
                 {
-                    _context.Room.Remove(room);
-                    _context.SaveChanges();
-                    LoadRooms();
+                    MessageBox.Show("No se puede eliminar el consultorio porque tiene dentistas o equipos asignados. Por favor, reasígnalos a otro consultorio primero.", "Aviso", MessageBoxButton.OK, MessageBoxImage.Information);
+                    return;
                 }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Error al eliminar el consultorio: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
+
+                // 2. Si está vacío, borrar
+                _context.Set<Models.Room>().Remove(room);
+                _context.SaveChanges();
+
+                MessageBox.Show("Consultorio eliminado correctamente.", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
+                LoadRooms(); // Recargar la tabla
+            }
+            catch (Exception ex)
+            {
+                var innerMsg = ex.InnerException?.InnerException?.Message ?? ex.InnerException?.Message ?? ex.Message;
+                MessageBox.Show($"Error al eliminar: {innerMsg}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }

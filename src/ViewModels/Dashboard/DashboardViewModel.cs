@@ -132,7 +132,7 @@ namespace DentalClinicWPF.ViewModels.Dashboard
 
                 // Financial Statistics
                 TotalRevenue = _context.Invoice.Sum(i => i.TotalAmount);
-                UnpaidInvoices = _context.Invoice.Count(i => !i.IsPaid);
+                UnpaidInvoices = _context.Invoice.Count(i => i.AmountPaid < i.TotalAmount);
 
                 // Revenue per Dentist
                 var allDentists = _context.Dentist
@@ -465,3 +465,4 @@ namespace DentalClinicWPF.ViewModels.Dashboard
         }
     }
 }
+

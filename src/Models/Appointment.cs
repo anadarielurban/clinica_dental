@@ -31,7 +31,7 @@ namespace DentalClinicWPF.Models
 
         public string Notes { get; set; }
 
-        public virtual Invoice Invoice { get; set; }
+        public virtual Invoice? Invoice { get; set; }
 
         public string DisplayInfo =>
             $"{AppointmentDate:yyyy-MM-dd} {StartTime:hh\\:mm} - {Patient?.FirstName} {Patient?.LastName}, " +

@@ -312,7 +312,27 @@
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                         <DataGridTextColumn Header="Notas" Binding="{Binding Notes}" Width="*"/>
-                    </DataGrid.Columns>
+                    <DataGridTemplateColumn Header="Acciones" Width="130">
+    <DataGridTemplateColumn.CellTemplate>
+        <DataTemplate>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <!-- Botón Editar -->
+                <Button Command="{Binding DataContext.EditAppointmentCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" Background="Transparent" BorderThickness="0" Cursor="Hand" ToolTip="Editar Cita" Margin="5,0">
+                    <TextBlock Text="✏️" FontSize="14" Foreground="#64748B"/>
+                </Button>
+                <!-- Botón WhatsApp -->
+                <Button Command="{Binding DataContext.SendWhatsAppCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" Background="Transparent" BorderThickness="0" Cursor="Hand" ToolTip="Enviar recordatorio por WhatsApp" Margin="5,0">
+                    <TextBlock Text="📱" FontSize="14" Foreground="#10B981"/>
+                </Button>
+                <!-- Botón Eliminar -->
+                <Button Command="{Binding DataContext.DeleteAppointmentCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" Background="Transparent" BorderThickness="0" Cursor="Hand" ToolTip="Eliminar Cita" Margin="5,0">
+                    <TextBlock Text="🗑️" FontSize="14" Foreground="#EF4444"/>
+                </Button>
+            </StackPanel>
+        </DataTemplate>
+    </DataGridTemplateColumn.CellTemplate>
+</DataGridTemplateColumn>
+        </DataGrid.Columns>
                 </DataGrid>
 
                 <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center"
@@ -329,4 +349,10 @@
         </Border>
     </Grid>
 </UserControl>
+
+
+
+
+
+
 

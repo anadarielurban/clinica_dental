@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
@@ -49,6 +49,7 @@ namespace DentalClinicWPF.ViewModels.Prescription
 
         public PrescriptionViewModel(DentalClinicContext context, Action<string, BaseViewModel> openTabAction)
         {
+        DentalClinicWPF.Events.PrescriptionSelectedEvent.Instance.Subscribe(OnPrescriptionSelectedFromPatientDetail);
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _openTabAction = openTabAction ?? throw new ArgumentNullException(nameof(openTabAction));
 
@@ -156,5 +157,30 @@ namespace DentalClinicWPF.ViewModels.Prescription
             var vm = new PrescriptionDetailViewModel(_context, p);
             _openTabAction.Invoke($"Prescription: {p.PrescriptionID}", vm);
         }
-    }
+    
+        private void OnPrescriptionSelectedFromPatientDetail(DentalClinicWPF.Models.Prescription prescription)
+        {
+            if (prescription == null) return;
+            try
+            {
+                if (this.ReloadPrescriptionsCommand != null && this.ReloadPrescriptionsCommand.CanExecute(null))
+                    this.ReloadPrescriptionsCommand.Execute(null);
+                this.SelectedPrescription = prescription;
+                var detailProp = GetType().GetProperty("OpenPrescriptionDetailCommand");
+                if (detailProp != null)
+                {
+                    var detailCmd = detailProp.GetValue(this) as System.Windows.Input.ICommand;
+                    if (detailCmd != null)
+                    {
+                        if (detailCmd.CanExecute(prescription)) detailCmd.Execute(prescription);
+                        else if (detailCmd.CanExecute(null)) detailCmd.Execute(null);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("Error: " + ex.Message);
+            }
+        }
+}
 }

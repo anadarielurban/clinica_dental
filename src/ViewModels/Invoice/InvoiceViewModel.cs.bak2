@@ -1,0 +1,110 @@
+﻿using System;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Windows;
+using CommunityToolkit.Mvvm.Input;
+using DentalClinicWPF.Data;
+using DentalClinicWPF.Models;
+using DentalClinicWPF.ViewModels.Base;
+using Microsoft.EntityFrameworkCore;
+
+namespace DentalClinicWPF.ViewModels.Invoice
+{
+    public class InvoiceViewModel : BaseViewModel
+    {
+        private readonly DentalClinicContext _context;
+        private List<Models.Invoice> _allInvoices;
+
+        public ObservableCollection<Models.Invoice> Invoices { get; set; }
+
+        private string _searchText;
+        public string SearchText
+        {
+            get => _searchText;
+            set
+            {
+                if (_searchText == value) return;
+                _searchText = value;
+                OnPropertyChanged(nameof(SearchText));
+                FilterInvoices();
+            }
+        }
+
+        private Models.Invoice _selectedInvoice;
+        public Models.Invoice SelectedInvoice
+        {
+            get => _selectedInvoice;
+            set { _selectedInvoice = value; OnPropertyChanged(nameof(SelectedInvoice)); }
+        }
+
+        public IRelayCommand<Models.Invoice> PrintTicketCommand { get; }
+        public IRelayCommand ReloadCommand { get; }
+
+        public InvoiceViewModel(DentalClinicContext context)
+        {
+            _context = context ?? throw new ArgumentNullException(nameof(context));
+            Invoices = new ObservableCollection<Models.Invoice>();
+
+            LoadInvoices();
+
+            PrintTicketCommand = new RelayCommand<Models.Invoice>(PrintTicket);
+            ReloadCommand = new RelayCommand(LoadInvoices);
+        }
+
+        private void LoadInvoices()
+        {
+            _allInvoices = _context.Invoice
+                .Include(i => i.Patient)
+                .Include(i => i.Appointment).ThenInclude(a => a.Dentist)
+                .Include(i => i.Appointment).ThenInclude(a => a.Treatment)
+                .ToList();
+
+            FilterInvoices();
+        }
+
+        private void FilterInvoices()
+        {
+            Invoices.Clear();
+            var filtered = _allInvoices;
+
+            if (!string.IsNullOrWhiteSpace(SearchText))
+            {
+                var search = SearchText.ToLower();
+                filtered = filtered.Where(i => 
+                    (i.Patient?.FullName?.ToLower().Contains(search) ?? false) ||
+                    (i.Appointment?.Dentist?.FullName?.ToLower().Contains(search) ?? false) ||
+                    (i.Appointment?.Treatment?.Name?.ToLower().Contains(search) ?? false)
+                ).ToList();
+            }
+
+            foreach (var inv in filtered)
+            {
+                Invoices.Add(inv);
+            }
+        }
+
+        private void PrintTicket(Models.Invoice invoice)
+        {
+            if (invoice == null) return;
+
+            var sfd = new Microsoft.Win32.SaveFileDialog
+            {
+                Filter = "Documento PDF (*.pdf)|*.pdf",
+                FileName = $"Ticket_{invoice.InvoiceID}_{invoice.Patient?.FullName.Replace(" ", "_")}.pdf",
+                Title = "Guardar Ticket"
+            };
+
+            if (sfd.ShowDialog() != true) return;
+
+            try
+            {
+                Services.TicketPdfService.Generate(invoice, sfd.FileName);
+                MessageBox.Show("Ticket guardado correctamente.", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al generar ticket: {ex.Message}", "Error");
+            }
+        }
+    }
+}

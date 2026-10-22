@@ -1,23 +1,33 @@
-﻿<Window x:Class="DentalClinicWPF.Views.Room.EditRoomView"
+<Window x:Class="DentalClinicWPF.Views.Room.EditRoomView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        mc:Ignorable="d"
-        Title="Editar Consultorio" Height="300" Width="400" WindowStartupLocation="CenterOwner" Background="{StaticResource Brush.Background}" FontFamily="{StaticResource Font.Primary}">
-    <Grid Margin="10">
-        <StackPanel>
-            <Label Content="Número de Consultorio:" />
-            <TextBox Style="{StaticResource FormTextBoxStyle}" Text="{Binding EditingRoom.RoomNumber, UpdateSourceTrigger=PropertyChanged}" Margin="0,5" />
+        Title="Editar Consultorio" Width="400" SizeToContent="Height"
+        WindowStartupLocation="CenterScreen" Background="White" ResizeMode="NoResize">
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/><RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
 
-            <Label Content="Disponible:" />
-            <CheckBox IsChecked="{Binding EditingRoom.IsAvailable}" Margin="0,5" />
+        <TextBlock Grid.Row="0" Text="Nombre / Número:" Margin="0,0,0,5" Foreground="#475569"/>
+        <TextBox Grid.Row="1" Text="{Binding RoomNumber, UpdateSourceTrigger=PropertyChanged}" Padding="10" FontSize="14" BorderBrush="#CBD5E1" BorderThickness="1" Background="White" Margin="0,0,0,10"/>
 
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
-                <Button Style="{StaticResource Modern.Button.Secondary}" Content="Cancelar" Command="{Binding CancelCommand}" Width="100" Margin="5" />
-                <Button Style="{StaticResource Modern.Button.Primary}" Content="Guardar" Command="{Binding SaveCommand}" Width="100" Margin="5" />
-                <Button Style="{StaticResource Modern.Button.Danger}" Content="Eliminar" Command="{Binding DeleteCommand}" Width="100" Margin="5" />
-            </StackPanel>
+        <TextBlock Grid.Row="2" Text="Dirección:" Margin="0,0,0,5" Foreground="#475569"/>
+        <TextBox Grid.Row="3" Text="{Binding Address, UpdateSourceTrigger=PropertyChanged}" Padding="10" FontSize="14" BorderBrush="#CBD5E1" BorderThickness="1" Background="White" Margin="0,0,0,10"/>
+
+        <TextBlock Grid.Row="4" Text="Teléfono:" Margin="0,0,0,5" Foreground="#475569"/>
+        <TextBox Grid.Row="5" Text="{Binding Phone, UpdateSourceTrigger=PropertyChanged}" Padding="10" FontSize="14" BorderBrush="#CBD5E1" BorderThickness="1" Background="White" Margin="0,0,0,10"/>
+
+        <StackPanel Grid.Row="6" Orientation="Horizontal" Margin="0,10,0,20">
+            <TextBlock Text="Disponible:" Margin="0,0,10,0" Foreground="#475569" VerticalAlignment="Center"/>
+            <CheckBox IsChecked="{Binding IsAvailable}" VerticalAlignment="Center"/>
+        </StackPanel>
+
+        <StackPanel Grid.Row="7" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Content="Eliminar" Command="{Binding DeleteCommand}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}" Width="90" Height="35" Margin="0,0,10,0" Background="#EF4444" Foreground="White" BorderThickness="0"/>
+            <Button Content="Cancelar" Command="{Binding CancelCommand}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}" Width="90" Height="35" Margin="0,0,10,0" Background="#F1F5F9" Foreground="#1E293B" BorderThickness="0"/>
+            <Button Content="Guardar" Command="{Binding SaveCommand}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}" Width="90" Height="35" Background="#14B8A6" Foreground="White" BorderThickness="0" FontWeight="SemiBold"/>
         </StackPanel>
     </Grid>
 </Window>
