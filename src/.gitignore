@@ -1,0 +1,13 @@
+## Ignorar archivos de compilación
+[Bb]in/
+[Oo]bj/
+.vs/
+
+## Ignorar base de datos local (no se sube al repo)
+*.db
+*.db-shm
+*.db-wal
+
+## Ignorar archivos de usuario
+*.user
+*.suo

@@ -147,6 +147,12 @@
                                 <TextBlock Text="Facturas" Margin="8,0,0,0"/>
                             </StackPanel>
                         </Button>
+                <Button Command="{Binding ShowPosCommand}" Style="{StaticResource Modern.SidebarItem}" Margin="0,5,0,0">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="🛒" Margin="0,0,10,0" FontSize="16" VerticalAlignment="Center"/>
+                        <TextBlock Text="Punto de Venta" VerticalAlignment="Center" FontWeight="SemiBold"/>
+                    </StackPanel>
+                </Button>
 
                         <TextBlock Text="ADMINISTRACIÓN"
                                    Style="{StaticResource Modern.Caption}"
@@ -278,3 +284,4 @@
 
     </DockPanel>
 </Window>
+

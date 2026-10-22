@@ -1,124 +1,101 @@
-﻿using System;
-using System.Windows;
-using System.Windows.Input;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DentalClinicWPF.Data;
 using DentalClinicWPF.Models;
-using DentalClinicWPF.ViewModels.Base;
+using System;
+using System.Linq;
+using System.Windows;
 
 namespace DentalClinicWPF.ViewModels.Room
 {
-    public class EditRoomViewModel : BaseViewModel
+    public partial class EditRoomViewModel : ObservableObject
     {
         private readonly DentalClinicContext _context;
+        private readonly Models.Room _room;
 
-        public Models.Room OriginalRoom { get; }
-        public Models.Room EditingRoom { get; set; }
+        [ObservableProperty]
+        private string? roomNumber;
 
-        public ICommand SaveCommand { get; }
-        public ICommand CancelCommand { get; }
-        public ICommand DeleteCommand { get; }
+        [ObservableProperty]
+        private string? address;
 
-        public EditRoomViewModel(Models.Room room, DentalClinicContext context)
+        [ObservableProperty]
+        private string? phone;
+
+        [ObservableProperty]
+        private bool isAvailable;
+
+        public EditRoomViewModel(DentalClinicContext context, Models.Room room)
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
-            OriginalRoom = room ?? throw new ArgumentNullException(nameof(room));
+            _context = context;
+            _room = room;
             
-            EditingRoom = new Models.Room
-            {
-                RoomID = room.RoomID,
-                RoomNumber = room.RoomNumber,
-                IsAvailable = room.IsAvailable
-            };
-
-            SaveCommand = new RelayCommand(Save);
-            CancelCommand = new RelayCommand(Cancel);
-            DeleteCommand = new RelayCommand(Delete);
+            RoomNumber = _room.RoomNumber;
+            Address = _room.Address;
+            Phone = _room.Phone;
+            IsAvailable = _room.IsAvailable;
         }
 
-        private void Save()
+        [RelayCommand]
+        private void Save(Window window)
         {
+            if (string.IsNullOrWhiteSpace(RoomNumber))
+            {
+                MessageBox.Show("El nombre/número de consultorio es obligatorio.", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
             try
             {
-                if (string.IsNullOrWhiteSpace(EditingRoom.RoomNumber))
+                _room.RoomNumber = RoomNumber;
+                _room.Address = Address;
+                _room.Phone = Phone;
+                _room.IsAvailable = IsAvailable;
+
+                _context.SaveChanges();
+                window.DialogResult = true;
+                window.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al guardar: {ex.Message}", "Error");
+            }
+        }
+
+        [RelayCommand]
+        private void Delete(Window window)
+        {
+            var result = MessageBox.Show("¿Estás seguro de eliminar este consultorio?", "Confirmar", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+            if (result != MessageBoxResult.Yes) return;
+
+            try
+            {
+                var hasDentists = _context.Set<Models.Dentist>().Any(d => d.RoomID == _room.RoomID);
+                var hasEquipments = _context.Set<Models.Equipment>().Any(e => e.RoomID == _room.RoomID);
+
+                if (hasDentists || hasEquipments)
                 {
-                    MessageBox.Show("El número de consultorio es obligatorio.", "Error de Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show("No se puede eliminar el consultorio porque tiene dentistas o equipos asignados.", "Aviso", MessageBoxButton.OK, MessageBoxImage.Information);
                     return;
                 }
 
-                if (EditingRoom.RoomNumber != OriginalRoom.RoomNumber)
-                {
-                    var exists = _context.Room.Any(r => r.RoomNumber == EditingRoom.RoomNumber && r.RoomID != EditingRoom.RoomID);
-                    if (exists)
-                    {
-                        MessageBox.Show("El número de consultorio ya existe.", "Error de Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
-                        return;
-                    }
-                }
-
-                OriginalRoom.RoomNumber = EditingRoom.RoomNumber;
-                OriginalRoom.IsAvailable = EditingRoom.IsAvailable;
-
-                _context.Room.Update(OriginalRoom);
+                _context.Set<Models.Room>().Remove(_room);
                 _context.SaveChanges();
-
-                MessageBox.Show("¡Consultorio actualizado correctamente!", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
-                CloseWindow(true);
+                
+                window.DialogResult = true;
+                window.Close();
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error al guardar el consultorio: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error al eliminar: {ex.Message}", "Error");
             }
         }
 
-        private void Cancel()
+        [RelayCommand]
+        private void Cancel(Window window)
         {
-            CloseWindow(false);
-        }
-
-        private void Delete()
-        {
-            try
-            {
-                var result = MessageBox.Show(
-                    "¿Seguro que quieres eliminar este consultorio?",
-                    "Confirmar Eliminación",
-                    MessageBoxButton.YesNo,
-                    MessageBoxImage.Warning);
-
-                if (result == MessageBoxResult.Yes)
-                {
-                    var hasDentists = _context.Dentist.Any(d => d.RoomID == OriginalRoom.RoomID);
-                    if (hasDentists)
-                    {
-                        MessageBox.Show("No se puede eliminar un consultorio asignado a un dentista.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                        return;
-                    }
-
-                    _context.Room.Remove(OriginalRoom);
-                    _context.SaveChanges();
-
-                    MessageBox.Show("¡Consultorio eliminado correctamente!", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
-                    CloseWindow(true);
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error al eliminar el consultorio: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
-        private void CloseWindow(bool success)
-        {
-            foreach (Window window in Application.Current.Windows)
-            {
-                if (window.DataContext == this)
-                {
-                    window.DialogResult = success;
-                    window.Close();
-                    break;
-                }
-            }
+            window.DialogResult = false;
+            window.Close();
         }
     }
 }

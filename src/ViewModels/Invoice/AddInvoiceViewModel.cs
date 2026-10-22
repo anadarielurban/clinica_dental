@@ -2,12 +2,10 @@
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
-using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
 using DentalClinicWPF.Data;
 using DentalClinicWPF.Models;
 using DentalClinicWPF.ViewModels.Base;
-using Microsoft.EntityFrameworkCore;
 
 namespace DentalClinicWPF.ViewModels.Invoice
 {
@@ -15,88 +13,70 @@ namespace DentalClinicWPF.ViewModels.Invoice
     {
         private readonly DentalClinicContext _context;
 
-        public Models.Invoice Invoice { get; set; }
-        public ObservableCollection<Models.Appointment> Appointments { get; }
+        public ObservableCollection<Models.Appointment> AvailableAppointments { get; set; }
 
-        public ICommand SaveCommand { get; }
-        public ICommand CancelCommand { get; }
+        private Models.Appointment _selectedAppointment;
+        public Models.Appointment SelectedAppointment
+        {
+            get => _selectedAppointment;
+            set { _selectedAppointment = value; OnPropertyChanged(nameof(SelectedAppointment)); OnPropertyChanged(nameof(TotalAmount)); }
+        }
+
+        private string _paymentMethod = "Efectivo";
+        public string PaymentMethod
+        {
+            get => _paymentMethod;
+            set { _paymentMethod = value; OnPropertyChanged(nameof(PaymentMethod)); }
+        }
+
+        private decimal _amountPaid;
+        public decimal AmountPaid
+        {
+            get => _amountPaid;
+            set { _amountPaid = value; OnPropertyChanged(nameof(AmountPaid)); }
+        }
+
+        public decimal TotalAmount => SelectedAppointment?.Treatment?.Price ?? 0;
+
+        public IRelayCommand SaveCommand { get; }
 
         public AddInvoiceViewModel(DentalClinicContext context)
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
-
-            Invoice = new Models.Invoice
-            {
-                InvoiceDate = DateTime.Now,
-                IsPaid = false,
-                TotalAmount = 0
-            };
-
-            Appointments = new ObservableCollection<Models.Appointment>(_context.Appointment
-                .Include(a => a.Patient)
-                .Include(a => a.Dentist)
-                .Include(a => a.Treatment)
-                .ToList());
-
+            _context = context;
+            AvailableAppointments = new ObservableCollection<Models.Appointment>(_context.Appointment.ToList());
             SaveCommand = new RelayCommand(Save);
-            CancelCommand = new RelayCommand(Cancel);
         }
 
         private void Save()
         {
+            if (SelectedAppointment == null)
+            {
+                MessageBox.Show("Selecciona una cita primero.", "Aviso", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
             try
             {
-                if (!IsInvoiceDataValid())
+                var invoice = new Models.Invoice
                 {
-                    MessageBox.Show("Selecciona una cita y proporciona un monto válido.", "Error de Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
-                    return;
-                }
+                    PatientID = SelectedAppointment.PatientID,
+                    AppointmentID = SelectedAppointment.AppointmentID,
+                    InvoiceDate = DateTime.Now,
+                    TotalAmount = TotalAmount,
+                    AmountPaid = AmountPaid,
+                    PaymentMethod = PaymentMethod
+                };
 
-                _context.Invoice.Add(Invoice);
+                _context.Invoice.Add(invoice);
                 _context.SaveChanges();
 
-                MessageBox.Show("¡Factura creada correctamente!", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
-                CloseWindow(true);
+                MessageBox.Show("Factura guardada correctamente.", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
+                Application.Current.Windows.OfType<Window>().SingleOrDefault(x => x.IsActive)?.Close();
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error al crear la factura: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error: {ex.Message}\n{ex.InnerException?.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-        }
-
-        private void Cancel()
-        {
-            CloseWindow(false);
-        }
-
-        private void CloseWindow(bool dialogResult)
-        {
-            foreach (Window window in Application.Current.Windows)
-            {
-                if (window.DataContext == this)
-                {
-                    window.DialogResult = dialogResult;
-                    window.Close();
-                    break;
-                }
-            }
-        }
-
-        private bool IsInvoiceDataValid()
-        {
-            if (Invoice.AppointmentID == 0)
-            {
-                MessageBox.Show("Selecciona una cita.", "Error de Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return false;
-            }
-
-            if (Invoice.TotalAmount <= 0)
-            {
-                MessageBox.Show("El monto total debe ser mayor a cero.", "Error de Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return false;
-            }
-
-            return true;
         }
     }
 }

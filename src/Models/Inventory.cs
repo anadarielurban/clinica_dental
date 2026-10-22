@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DentalClinicWPF.Models
 {
@@ -7,19 +8,22 @@ namespace DentalClinicWPF.Models
         [Key]
         public int InventoryID { get; set; }
 
-        [Required, MaxLength(100)]
+        [Required]
         public string ProductName { get; set; }
 
-        [Required]
         public int Quantity { get; set; }
+
+        [Column(TypeName = "decimal(10, 2)")]
+        public decimal? Price { get; set; }
 
         public int ReorderLevel { get; set; }
 
-        [Required]
-        public int SupplierID { get; set; }
-        public virtual Supplier Supplier { get; set; }
+        public int? SupplierID { get; set; }
+        [ForeignKey(nameof(SupplierID))]
+        public virtual Supplier? Supplier { get; set; }
 
         public int? RoomID { get; set; }
-        public virtual Room Room { get; set; }
+        [ForeignKey(nameof(RoomID))]
+        public virtual Room? Room { get; set; }
     }
 }

@@ -1,0 +1,83 @@
+<UserControl x:Class="DentalClinicWPF.Views.Patient.PatientDetail.RadiographyView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid Background="#F8FAFC" Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        
+        <!-- Encabezado y Botón -->
+        <StackPanel Orientation="Horizontal" Margin="0,0,0,15">
+            <TextBlock Text="Galería de Radiografías" FontSize="18" FontWeight="Bold" Foreground="#1E293B" VerticalAlignment="Center" Margin="0,0,20,0"/>
+            <Button Content="+ Subir Imagen" Command="{Binding UploadImageCommand}" 
+                    Background="#14B8A6" Foreground="White" Padding="15,8" 
+                    BorderThickness="0" FontWeight="SemiBold" Cursor="Hand">
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="Button">
+                                    <Border Background="{TemplateBinding Background}" CornerRadius="6">
+                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                        <Style.Triggers>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Background" Value="#CBD5E1"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+        </StackPanel>
+        
+        <!-- Contenedor principal -->
+        <Grid Grid.Row="1">
+            <!-- Empty State -->
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" IsHitTestVisible="False">
+                <StackPanel.Style>
+                    <Style TargetType="StackPanel">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Radiographies.Count}" Value="0">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </StackPanel.Style>
+                <TextBlock Text="📸" FontSize="40" HorizontalAlignment="Center" Margin="0,0,0,10"/>
+                <TextBlock Text="No hay radiografías o imágenes guardadas" FontSize="16" Foreground="#64748B" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+                <TextBlock Text="Haz clic en '+ Subir Imagen' para agregar una." FontSize="13" Foreground="#94A3B8" HorizontalAlignment="Center" Margin="0,5,0,0"/>
+            </StackPanel>
+
+            <!-- Lista de imágenes -->
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <ListBox ItemsSource="{Binding Radiographies}" Background="Transparent" BorderThickness="0" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                    <ListBox.ItemsPanel>
+                        <ItemsPanelTemplate><WrapPanel /></ItemsPanelTemplate>
+                    </ListBox.ItemsPanel>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Border Background="White" CornerRadius="8" Margin="5" Padding="10" Width="200" Height="220" Cursor="Hand" ToolTip="Doble clic para abrir en grande">
+                                <Border.InputBindings>
+                                    <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding DataContext.OpenImageCommand, RelativeSource={RelativeSource AncestorType=ListBox}}" CommandParameter="{Binding}"/>
+                                </Border.InputBindings>
+                                <Border.Effect>
+                                    <DropShadowEffect Color="Black" Opacity="0.05" BlurRadius="10" ShadowDepth="1"/>
+                                </Border.Effect>
+                                <StackPanel>
+                                    <Image Source="{Binding FilePath}" Height="160" Stretch="Uniform" />
+                                    <TextBlock Text="{Binding Description}" TextTrimming="CharacterEllipsis" HorizontalAlignment="Center" Margin="0,10,0,0" Foreground="#475569" FontWeight="SemiBold"/>
+                                    <TextBlock Text="{Binding Date, StringFormat='{}{0:dd/MM/yyyy}'}" HorizontalAlignment="Center" Foreground="#94A3B8" FontSize="11" Margin="0,5,0,0"/>
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </ScrollViewer>
+        </Grid>
+    </Grid>
+</UserControl>

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Windows;
 using System.Windows.Threading;
 using DentalClinicWPF.Data;
@@ -32,6 +32,10 @@ namespace DentalClinicWPF
                 context.Database.EnsureCreated();
         context.EnsureMedicalHistorySchema();
             context.EnsureTreatmentPlanSchema();
+            context.EnsureInvoicePosSchema();
+            context.EnsureInvoiceCashSchema();
+                context.EnsureRoomPhoneSchema();
+                context.EnsureClinicalSchema();
             }
             catch (Exception ex)
             {
@@ -44,6 +48,8 @@ namespace DentalClinicWPF
         }
     }
 }
+
+
 
 
 

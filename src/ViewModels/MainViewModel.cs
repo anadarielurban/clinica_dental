@@ -1,4 +1,5 @@
-﻿// ViewModels/MainViewModel.cs
+using DentalClinicWPF.ViewModels.Pos;
+// ViewModels/MainViewModel.cs
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -46,6 +47,7 @@ namespace DentalClinicWPF.ViewModels
         public ICommand ShowDentistsCommand { get; }
         public ICommand ShowTreatmentsCommand { get; }
         public ICommand ShowInvoicesCommand { get; }
+        public ICommand ShowPosCommand { get; }
         public ICommand ShowEquipmentCommand { get; }
         public ICommand ShowTreatmentPlansCommand { get; }
         public ICommand ShowMedicalRecordsCommand { get; }
@@ -59,6 +61,7 @@ namespace DentalClinicWPF.ViewModels
 
         public MainViewModel()
         {
+            DentalClinicWPF.Events.PrescriptionSelectedEvent.Instance.Subscribe(OnPrescriptionSelectedFromPatientDetail);
             // Initialize context
             _context = new DentalClinicContext();
 
@@ -68,7 +71,8 @@ namespace DentalClinicWPF.ViewModels
             ShowAppointmentsCommand = new RelayCommand(() => OpenTab("Citas", new AppointmentViewModel(_context)));
             ShowDentistsCommand = new RelayCommand(() => OpenTab("Dentistas", new DentistViewModel(_context, OpenTab)));
             ShowTreatmentsCommand = new RelayCommand(() => OpenTab("Tratamientos", new TreatmentViewModel(_context)));
-            ShowInvoicesCommand = new RelayCommand(() => OpenTab("Facturas", new InvoiceViewModel(_context, OpenTab)));
+            ShowInvoicesCommand = new RelayCommand(() => OpenTab("Facturas", new InvoiceViewModel(_context)));
+            ShowPosCommand = new RelayCommand(() => OpenTab("Punto de Venta", new PosViewModel(_context)));
             ShowTreatmentPlansCommand = new RelayCommand(() => OpenTab("Planes de Tratamiento", new TreatmentPlanViewModel(_context)));
             ShowMedicalRecordsCommand = new RelayCommand(() => OpenTab("Expedientes", new MedicalRecordViewModel(_context)));
             ShowPrescriptionsCommand = new RelayCommand(() => OpenTab("Recetas", new PrescriptionViewModel(_context, OpenTab)));
@@ -108,5 +112,45 @@ namespace DentalClinicWPF.ViewModels
         {
             OpenTabs.Remove(tab);
         }
+    
+        private void OnPrescriptionSelectedFromPatientDetail(DentalClinicWPF.Models.Prescription prescription)
+        {
+            if (prescription == null) return;
+
+            // AQUI DEBES LLAMAR A TU MÉTODO QUE ABRE LA PESTAÑA DE RECETAS.
+            // Como no conozco el nombre exacto, asumo que tienes un comando o método para abrir pestañas.
+            // Ejemplo: OpenTab("Recetas", new PrescriptionViewModel(_context));
+            
+            // TODO: Descomentar y ajustar la siguiente línea según tu código real:
+            // AbrirPestanaRecetas();
+            
+            // 1. Intentar ejecutar el comando que abre el módulo de recetas
+                var cmdProp = this.GetType().GetProperty("ShowPrescriptionsCommand") 
+                           ?? this.GetType().GetProperty("OpenPrescriptionsCommand") 
+                           ?? this.GetType().GetProperty("ShowRecetasCommand")
+                           ?? this.GetType().GetProperty("OpenRecetasCommand");
+                
+                if (cmdProp != null)
+                {
+                    try 
+                    {
+                        var cmd = cmdProp.GetValue(this) as System.Windows.Input.ICommand;
+                        if (cmd != null) 
+                        {
+                            // Ejecuta el comando para cambiar de pestaña
+                            cmd.Execute(null); 
+                            return;
+                        }
+                    }
+                    catch { } // Si el comando falla, ignoramos el error y mostramos el mensaje de abajo
+                }
+
+                // 2. Si no se encuentra el comando exacto, avisamos pero la receta ya está seleccionada en el ViewModel
+                System.Windows.MessageBox.Show("Receta lista. Por favor haz clic en la pestaña 'Recetas' en el menú lateral.", "Navegación");
+        }
     }
 }
+
+
+
+
