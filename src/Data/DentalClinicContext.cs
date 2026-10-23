@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using Microsoft.EntityFrameworkCore;
@@ -6,7 +6,7 @@ using DentalClinicWPF.Models;
 
 namespace DentalClinicWPF.Data
 {
-    public class DentalClinicContext : DbContext
+    public partial class DentalClinicContext : DbContext
     {
         public DbSet<Models.Patient> Patient { get; set; }
         public DbSet<Models.Dentist> Dentist { get; set; }
@@ -34,11 +34,12 @@ namespace DentalClinicWPF.Data
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlite("Data Source=DentalClinic.db");
+                var dbPath = System.IO.Path.Combine(AppContext.BaseDirectory, "DentalClinic.db");
+                optionsBuilder.UseSqlite($"Data Source={dbPath}");
             }
         }
 
-        // â•â•â• MIGRACIÃ“N 1: HISTORIA CLÃNICA â•â•â•
+        // Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â MIGRACIÃƒâ€œN 1: HISTORIA CLÃƒÂNICA Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
         public void EnsureMedicalHistorySchema()
         {
             try
@@ -91,7 +92,7 @@ namespace DentalClinicWPF.Data
             }
         }
 
-        // â•â•â• MIGRACIÃ“N 2: PRESUPUESTOS â•â•â•
+        // Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â MIGRACIÃƒâ€œN 2: PRESUPUESTOS Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
         public void EnsureTreatmentPlanSchema()
         {
             try
@@ -150,7 +151,7 @@ namespace DentalClinicWPF.Data
             }
         }
 
-        // â•â•â• MIGRACIÃ“N 3: POS / FACTURACIÃ“N â•â•â•
+        // Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â MIGRACIÃƒâ€œN 3: POS / FACTURACIÃƒâ€œN Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
         public void EnsureInvoicePosSchema()
         {
             try
@@ -193,7 +194,7 @@ namespace DentalClinicWPF.Data
             }
         }
 
-        // â•â•â• MIGRACIÃ“N 4: EFECTIVO Y CAMBIO â•â•â•
+        // Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â MIGRACIÃƒâ€œN 4: EFECTIVO Y CAMBIO Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
         public void EnsureInvoiceCashSchema()
         {
             try

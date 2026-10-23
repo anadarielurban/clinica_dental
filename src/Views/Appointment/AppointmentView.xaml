@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              mc:Ignorable="d"
-             d:DesignHeight="700" d:DesignWidth="1100"
+             d:DesignHeight="750" d:DesignWidth="1100"
              Background="{StaticResource Brush.Background}">
 
     <Grid Margin="28">
@@ -13,6 +13,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/> <!-- Fila para paginación -->
         </Grid.RowDefinitions>
 
         <!-- HEADER -->
@@ -22,11 +23,11 @@
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             <StackPanel Grid.Column="0">
-                <TextBlock Text="Citas" FontSize="24" FontWeight="Bold"
-                           Foreground="{StaticResource Brush.TextPrimary}"/>
-                <TextBlock Text="Gestión de citas" FontSize="13"
-                           Foreground="{StaticResource Brush.TextSecondary}" Margin="0,4,0,0"/>
+                <TextBlock Text="Citas" FontSize="24" FontWeight="Bold" Foreground="{StaticResource Brush.TextPrimary}"/>
+                <TextBlock Text="Gestión de citas" FontSize="13" Foreground="{StaticResource Brush.TextSecondary}" Margin="0,4,0,0"/>
             </StackPanel>
+
+            <!-- SOLO BOTÓN AGREGAR (Se quitó Exportar) -->
             <Button Grid.Column="1" Command="{Binding AddAppointmentCommand}"
                     Style="{StaticResource Modern.Button.Primary}" VerticalAlignment="Center">
                 <StackPanel Orientation="Horizontal">
@@ -36,42 +37,66 @@
             </Button>
         </Grid>
 
-        <!-- TOOLBAR -->
-        <Border Grid.Row="1" Background="{StaticResource Brush.Surface}"
-                CornerRadius="12" Padding="16" Margin="0,0,0,16">
+        <!-- TOOLBAR (Búsqueda y Toggle de Vista) -->
+        <Border Grid.Row="1" Background="{StaticResource Brush.Surface}" CornerRadius="12" Padding="16" Margin="0,0,0,16">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <Border Grid.Column="0" Background="{StaticResource Brush.Background}"
-                        CornerRadius="8" Height="38"
-                        BorderBrush="{StaticResource Brush.Border}" BorderThickness="1">
+                
+                <Border Grid.Column="0" Background="{StaticResource Brush.Background}" CornerRadius="8" Height="38"
+                        BorderBrush="{StaticResource Brush.Border}" BorderThickness="1" Margin="0,0,16,0">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Column="0" Text="&#xE721;" FontFamily="Segoe MDL2 Assets"
-                                   FontSize="14" Foreground="{StaticResource Brush.TextMuted}"
-                                   VerticalAlignment="Center" Margin="12,0,8,0"/>
-                        <TextBox Style="{StaticResource FormTextBoxStyle}" Grid.Column="1"
-                                 Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
-                                 Background="Transparent" BorderThickness="0" FontSize="13"
-                                 Foreground="{StaticResource Brush.TextPrimary}"
-                                 VerticalContentAlignment="Center"
-                                 ToolTip="Buscar por paciente, dentista o tratamiento"/>
-                        <Button Grid.Column="2" Content="&#xE711;" FontFamily="Segoe MDL2 Assets"
-                                FontSize="10" Width="28" Height="28" Margin="0,0,6,0" Padding="0"
-                                Background="Transparent" BorderThickness="0"
-                                Foreground="{StaticResource Brush.TextMuted}" Cursor="Hand"
-                                ToolTip="Limpiar" Click="ClearSearch_Click" VerticalAlignment="Center"/>
+                        <TextBlock Grid.Column="0" Text="&#xE721;" FontFamily="Segoe MDL2 Assets" FontSize="14" Foreground="{StaticResource Brush.TextMuted}" VerticalAlignment="Center" Margin="12,0,8,0"/>
+                        <TextBox Style="{StaticResource FormTextBoxStyle}" Grid.Column="1" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                                 Background="Transparent" BorderThickness="0" FontSize="13" Foreground="{StaticResource Brush.TextPrimary}"
+                                 VerticalContentAlignment="Center" ToolTip="Buscar por paciente, dentista o tratamiento"/>
                     </Grid>
                 </Border>
-                <Button Grid.Column="2" Command="{Binding ReloadCommand}"
-                        Style="{StaticResource Modern.Button.Secondary}" Margin="8,0,0,0">
+
+                <Border Grid.Column="1" Background="{StaticResource Brush.Background}" CornerRadius="8" Padding="4">
+                    <StackPanel Orientation="Horizontal">
+                        <Button Command="{Binding SwitchViewCommand}" Content="Semanal" Padding="15,6" BorderThickness="0" Cursor="Hand">
+                            <Button.Style>
+                                <Style TargetType="Button">
+                                    <Setter Property="Background" Value="Transparent"/>
+                                    <Setter Property="Foreground" Value="{StaticResource Brush.TextSecondary}"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsWeeklyView}" Value="True">
+                                            <Setter Property="Background" Value="{StaticResource Brush.Surface}"/>
+                                            <Setter Property="Foreground" Value="{StaticResource Brush.Primary}"/>
+                                            <Setter Property="FontWeight" Value="SemiBold"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+                        <Button Command="{Binding SwitchViewCommand}" Content="Mensual" Padding="15,6" BorderThickness="0" Cursor="Hand">
+                            <Button.Style>
+                                <Style TargetType="Button">
+                                    <Setter Property="Background" Value="Transparent"/>
+                                    <Setter Property="Foreground" Value="{StaticResource Brush.TextSecondary}"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsMonthlyView}" Value="True">
+                                            <Setter Property="Background" Value="{StaticResource Brush.Surface}"/>
+                                            <Setter Property="Foreground" Value="{StaticResource Brush.Primary}"/>
+                                            <Setter Property="FontWeight" Value="SemiBold"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+                    </StackPanel>
+                </Border>
+
+                <Button Grid.Column="2" Command="{Binding ReloadCommand}" Style="{StaticResource Modern.Button.Secondary}" Margin="16,0,0,0">
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="&#xE72C;" FontFamily="Segoe MDL2 Assets" FontSize="13" VerticalAlignment="Center"/>
                         <TextBlock Text="Recargar" Margin="6,0,0,0"/>
@@ -80,12 +105,10 @@
             </Grid>
         </Border>
 
-        <!-- WEEK STRIP -->
-        <Border Grid.Row="2" Background="{StaticResource Brush.Surface}"
-                CornerRadius="12" Padding="16" Margin="0,0,0,16">
+        <!-- VISTA SEMANAL -->
+        <Border Grid.Row="2" Background="{StaticResource Brush.Surface}" CornerRadius="12" Padding="16" Margin="0,0,0,16"
+                Visibility="{Binding IsWeeklyView, Converter={StaticResource BoolToVisibilityConverter}}">
             <StackPanel>
-
-                <!-- Navigation -->
                 <Grid Margin="0,0,0,14">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
@@ -93,36 +116,21 @@
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-                    <Button Grid.Column="0" Command="{Binding PreviousWeekCommand}"
-                            Style="{StaticResource Modern.Button.Secondary}"
-                            Width="42" Height="32" MinWidth="0" Padding="0">
-                        <TextBlock Text="&#xE76B;" FontFamily="Segoe MDL2 Assets"
-                                   FontSize="12" Foreground="{StaticResource Brush.TextSecondary}"/>
+                    <Button Grid.Column="0" Command="{Binding PreviousWeekCommand}" Style="{StaticResource Modern.Button.Secondary}" Width="42" Height="32" MinWidth="0" Padding="0">
+                        <TextBlock Text="&#xE76B;" FontFamily="Segoe MDL2 Assets" FontSize="12" Foreground="{StaticResource Brush.TextSecondary}"/>
                     </Button>
-                    <TextBlock Grid.Column="1" Text="{Binding WeekRangeLabel}"
-                               HorizontalAlignment="Center" VerticalAlignment="Center"
-                               FontSize="14" FontWeight="SemiBold"
-                               Foreground="{StaticResource Brush.TextPrimary}"/>
-                    <Button Grid.Column="2" Command="{Binding NextWeekCommand}"
-                            Style="{StaticResource Modern.Button.Secondary}"
-                            Width="42" Height="32" MinWidth="0" Padding="0"
-                            Margin="0,0,8,0">
-                        <TextBlock Text="&#xE76C;" FontFamily="Segoe MDL2 Assets"
-                                   FontSize="12" Foreground="{StaticResource Brush.TextSecondary}"/>
+                    <TextBlock Grid.Column="1" Text="{Binding WeekRangeLabel}" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource Brush.TextPrimary}"/>
+                    <Button Grid.Column="2" Command="{Binding NextWeekCommand}" Style="{StaticResource Modern.Button.Secondary}" Width="42" Height="32" MinWidth="0" Padding="0" Margin="0,0,8,0">
+                        <TextBlock Text="&#xE76C;" FontFamily="Segoe MDL2 Assets" FontSize="12" Foreground="{StaticResource Brush.TextSecondary}"/>
                     </Button>
-                    <Button Grid.Column="3" Command="{Binding ClearDayFilterCommand}"
-                            Style="{StaticResource Modern.Button.Secondary}"
-                            Visibility="{Binding HasDayFilter, Converter={StaticResource BoolToVisibilityConverter}}">
+                    <Button Grid.Column="3" Command="{Binding ClearDayFilterCommand}" Style="{StaticResource Modern.Button.Secondary}" Visibility="{Binding HasDayFilter, Converter={StaticResource BoolToVisibilityConverter}}">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="{Binding DayFilterLabel}"
-                                       FontSize="12" VerticalAlignment="Center"/>
-                            <TextBlock Text="&#xE711;" FontFamily="Segoe MDL2 Assets"
-                                       FontSize="10" Margin="8,0,0,0" VerticalAlignment="Center"/>
+                            <TextBlock Text="{Binding DayFilterLabel}" FontSize="12" VerticalAlignment="Center"/>
+                            <TextBlock Text="&#xE711;" FontFamily="Segoe MDL2 Assets" FontSize="10" Margin="8,0,0,0" VerticalAlignment="Center"/>
                         </StackPanel>
                     </Button>
                 </Grid>
 
-                <!-- Day cards -->
                 <ItemsControl ItemsSource="{Binding WeekDays}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
@@ -131,18 +139,8 @@
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Button Command="{Binding DataContext.FilterByDayCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                                    CommandParameter="{Binding}"
-                                    Margin="3"
-                                    Padding="0"
-                                    Background="Transparent"
-                                    BorderThickness="0"
-                                    Cursor="Hand">
-                                <Border Background="{StaticResource Brush.Background}"
-                                        CornerRadius="10"
-                                        Padding="8,10"
-                                        BorderBrush="Transparent"
-                                        BorderThickness="2">
+                            <Button Command="{Binding DataContext.FilterByDayCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" CommandParameter="{Binding}" Margin="3" Padding="0" Background="Transparent" BorderThickness="0" Cursor="Hand">
+                                <Border Background="{StaticResource Brush.Background}" CornerRadius="10" Padding="8,10" BorderBrush="Transparent" BorderThickness="2">
                                     <Border.Style>
                                         <Style TargetType="Border">
                                             <Style.Triggers>
@@ -156,19 +154,9 @@
                                         </Style>
                                     </Border.Style>
                                     <StackPanel>
-                                        <TextBlock Text="{Binding DayName}"
-                                                   FontSize="11" FontWeight="SemiBold"
-                                                   Foreground="{StaticResource Brush.TextMuted}"
-                                                   HorizontalAlignment="Center"/>
-                                        <TextBlock Text="{Binding DayNumber}"
-                                                   FontSize="20" FontWeight="Bold"
-                                                   Foreground="{StaticResource Brush.TextPrimary}"
-                                                   HorizontalAlignment="Center"
-                                                   Margin="0,2,0,6"/>
-                                        <Border Background="{StaticResource Brush.Primary}"
-                                                CornerRadius="10"
-                                                Padding="8,2"
-                                                HorizontalAlignment="Center">
+                                        <TextBlock Text="{Binding DayName}" FontSize="11" FontWeight="SemiBold" Foreground="{StaticResource Brush.TextMuted}" HorizontalAlignment="Center"/>
+                                        <TextBlock Text="{Binding DayNumber}" FontSize="20" FontWeight="Bold" Foreground="{StaticResource Brush.TextPrimary}" HorizontalAlignment="Center" Margin="0,2,0,6"/>
+                                        <Border Background="{StaticResource Brush.Primary}" CornerRadius="10" Padding="8,2" HorizontalAlignment="Center">
                                             <Border.Style>
                                                 <Style TargetType="Border">
                                                     <Setter Property="Visibility" Value="Visible"/>
@@ -179,10 +167,7 @@
                                                     </Style.Triggers>
                                                 </Style>
                                             </Border.Style>
-                                            <TextBlock Text="{Binding AppointmentCount}"
-                                                       FontSize="11" FontWeight="SemiBold"
-                                                       Foreground="White"
-                                                       HorizontalAlignment="Center"/>
+                                            <TextBlock Text="{Binding AppointmentCount}" FontSize="11" FontWeight="SemiBold" Foreground="White" HorizontalAlignment="Center"/>
                                         </Border>
                                     </StackPanel>
                                 </Border>
@@ -190,19 +175,103 @@
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
-
             </StackPanel>
         </Border>
-        <Border Grid.Row="3" Background="{StaticResource Brush.Surface}" CornerRadius="12" Padding="0">
+
+        <!-- VISTA MENSUAL -->
+        <Border Grid.Row="2" Background="{StaticResource Brush.Surface}" CornerRadius="12" Padding="16" Margin="0,0,0,16"
+                Visibility="{Binding IsMonthlyView, Converter={StaticResource BoolToVisibilityConverter}}">
+            <StackPanel>
+                <Grid Margin="0,0,0,14">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <Button Grid.Column="0" Command="{Binding PreviousMonthCommand}" Style="{StaticResource Modern.Button.Secondary}" Width="42" Height="32" MinWidth="0" Padding="0">
+                        <TextBlock Text="&#xE76B;" FontFamily="Segoe MDL2 Assets" FontSize="12" Foreground="{StaticResource Brush.TextSecondary}"/>
+                    </Button>
+                    <TextBlock Grid.Column="1" Text="{Binding MonthYearLabel}" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="16" FontWeight="Bold" Foreground="{StaticResource Brush.TextPrimary}"/>
+                    <Button Grid.Column="2" Command="{Binding NextMonthCommand}" Style="{StaticResource Modern.Button.Secondary}" Width="42" Height="32" MinWidth="0" Padding="0">
+                        <TextBlock Text="&#xE76C;" FontFamily="Segoe MDL2 Assets" FontSize="12" Foreground="{StaticResource Brush.TextSecondary}"/>
+                    </Button>
+                </Grid>
+
+                <UniformGrid Columns="7" Margin="0,0,0,8">
+                    <TextBlock Text="LUN" HorizontalAlignment="Center" FontWeight="SemiBold" Foreground="{StaticResource Brush.TextMuted}"/>
+                    <TextBlock Text="MAR" HorizontalAlignment="Center" FontWeight="SemiBold" Foreground="{StaticResource Brush.TextMuted}"/>
+                    <TextBlock Text="MIÉ" HorizontalAlignment="Center" FontWeight="SemiBold" Foreground="{StaticResource Brush.TextMuted}"/>
+                    <TextBlock Text="JUE" HorizontalAlignment="Center" FontWeight="SemiBold" Foreground="{StaticResource Brush.TextMuted}"/>
+                    <TextBlock Text="VIE" HorizontalAlignment="Center" FontWeight="SemiBold" Foreground="{StaticResource Brush.TextMuted}"/>
+                    <TextBlock Text="SÁB" HorizontalAlignment="Center" FontWeight="SemiBold" Foreground="{StaticResource Brush.TextMuted}"/>
+                    <TextBlock Text="DOM" HorizontalAlignment="Center" FontWeight="SemiBold" Foreground="{StaticResource Brush.TextMuted}"/>
+                </UniformGrid>
+
+                <!-- CALENDARIO MENSUAL -->
+                <ItemsControl ItemsSource="{Binding MonthDays}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <UniformGrid Columns="7" Rows="6"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border BorderBrush="{StaticResource Brush.Border}" BorderThickness="1,1,0,0" Padding="5" Height="90">
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Setter Property="Background" Value="Transparent"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsCurrentMonth}" Value="False">
+                                                <Setter Property="Opacity" Value="0.3"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding IsToday}" Value="True">
+                                                <Setter Property="Background" Value="{StaticResource Brush.PrimarySoft}"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+                                <StackPanel>
+                                    <TextBlock Text="{Binding DayNumber}" FontWeight="Bold" Foreground="{StaticResource Brush.TextPrimary}" HorizontalAlignment="Right" Margin="0,0,0,4"/>
+                                    
+                                    <!-- Muestra hasta 2 citas con Nombre y Tratamiento -->
+                                    <ItemsControl ItemsSource="{Binding DayAppointments}">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <Border Background="{StaticResource Brush.Primary}" CornerRadius="4" Padding="4,2" Margin="0,0,0,2">
+                                                    <StackPanel>
+                                                        <TextBlock Text="{Binding Patient.FirstName}" FontSize="9" FontWeight="Bold" Foreground="White" TextTrimming="CharacterEllipsis"/>
+                                                        <TextBlock Text="{Binding Treatment.Name}" FontSize="8" Foreground="#E0F2FE" TextTrimming="CharacterEllipsis"/>
+                                                    </StackPanel>
+                                                </Border>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                    
+                                    <!-- Texto de "más citas" -->
+                                    <TextBlock Text="{Binding AppointmentCount, StringFormat='+{0} más'}" FontSize="9" Foreground="{StaticResource Brush.TextMuted}" HorizontalAlignment="Center" Margin="0,2,0,0">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding AppointmentCount}" Value="3">
+                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+        </Border>
+
+        <!-- TABLA DE CITAS -->
+        <Border Grid.Row="3" Background="{StaticResource Brush.Surface}" CornerRadius="12" Padding="0" Margin="0,0,0,16">
             <Grid>
-                <DataGrid ItemsSource="{Binding Appointments}" AutoGenerateColumns="False"
-                          SelectedItem="{Binding SelectedAppointment, Mode=TwoWay}"
-                          IsReadOnly="True" SelectionMode="Single" BorderThickness="0"
-                          Background="Transparent" RowBackground="Transparent"
-                          AlternatingRowBackground="#F8FAFC" HeadersVisibility="Column"
-                          GridLinesVisibility="Horizontal"
-                          HorizontalGridLinesBrush="{StaticResource Brush.Border}"
-                          RowHeight="44" Margin="8">
+                <DataGrid ItemsSource="{Binding Appointments}" AutoGenerateColumns="False" SelectedItem="{Binding SelectedAppointment, Mode=TwoWay}" IsReadOnly="True" SelectionMode="Single" BorderThickness="0" Background="Transparent" RowBackground="Transparent" AlternatingRowBackground="#F8FAFC" HeadersVisibility="Column" GridLinesVisibility="Horizontal" HorizontalGridLinesBrush="{StaticResource Brush.Border}" RowHeight="44" Margin="8">
                     <DataGrid.ColumnHeaderStyle>
                         <Style TargetType="DataGridColumnHeader">
                             <Setter Property="Background" Value="Transparent"/>
@@ -251,14 +320,8 @@
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <StackPanel VerticalAlignment="Center">
-                                        <TextBlock Text="{Binding Patient.FullName}"
-                                                   FontSize="13" FontWeight="SemiBold"
-                                                   Foreground="{StaticResource Brush.TextPrimary}"
-                                                   TextTrimming="CharacterEllipsis"/>
-                                        <TextBlock Text="{Binding Patient.PhoneNumber}"
-                                                   FontSize="11"
-                                                   Foreground="{StaticResource Brush.TextMuted}"
-                                                   TextTrimming="CharacterEllipsis"/>
+                                        <TextBlock Text="{Binding Patient.FullName}" FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource Brush.TextPrimary}" TextTrimming="CharacterEllipsis"/>
+                                        <TextBlock Text="{Binding Patient.PhoneNumber}" FontSize="11" Foreground="{StaticResource Brush.TextMuted}" TextTrimming="CharacterEllipsis"/>
                                     </StackPanel>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
@@ -267,14 +330,8 @@
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <StackPanel VerticalAlignment="Center">
-                                        <TextBlock Text="{Binding Dentist.FullName}"
-                                                   FontSize="13"
-                                                   Foreground="{StaticResource Brush.TextPrimary}"
-                                                   TextTrimming="CharacterEllipsis"/>
-                                        <TextBlock Text="{Binding Dentist.Specialization}"
-                                                   FontSize="11"
-                                                   Foreground="{StaticResource Brush.TextMuted}"
-                                                   TextTrimming="CharacterEllipsis"/>
+                                        <TextBlock Text="{Binding Dentist.FullName}" FontSize="13" Foreground="{StaticResource Brush.TextPrimary}" TextTrimming="CharacterEllipsis"/>
+                                        <TextBlock Text="{Binding Dentist.Specialization}" FontSize="11" Foreground="{StaticResource Brush.TextMuted}" TextTrimming="CharacterEllipsis"/>
                                     </StackPanel>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
@@ -284,12 +341,8 @@
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <StackPanel VerticalAlignment="Center">
-                                        <TextBlock Text="{Binding AppointmentDate, StringFormat=dd/MM/yyyy}"
-                                                   FontSize="13"
-                                                   Foreground="{StaticResource Brush.TextPrimary}"/>
-                                        <TextBlock Text="{Binding AppointmentDate, StringFormat=dddd}"
-                                                   FontSize="11"
-                                                   Foreground="{StaticResource Brush.TextMuted}"/>
+                                        <TextBlock Text="{Binding AppointmentDate, StringFormat=dd/MM/yyyy}" FontSize="13" Foreground="{StaticResource Brush.TextPrimary}"/>
+                                        <TextBlock Text="{Binding AppointmentDate, StringFormat=dddd}" FontSize="11" Foreground="{StaticResource Brush.TextMuted}"/>
                                     </StackPanel>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
@@ -297,12 +350,8 @@
                         <DataGridTemplateColumn Header="Horario" Width="140">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <Border Background="{StaticResource Brush.PrimarySoft}"
-                                            CornerRadius="6" Padding="10,6"
-                                            HorizontalAlignment="Left"
-                                            VerticalAlignment="Center">
-                                        <TextBlock FontSize="12" FontWeight="SemiBold"
-                                                   Foreground="{StaticResource Brush.PrimaryPressed}">
+                                    <Border Background="{StaticResource Brush.PrimarySoft}" CornerRadius="6" Padding="10,6" HorizontalAlignment="Left" VerticalAlignment="Center">
+                                        <TextBlock FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource Brush.PrimaryPressed}">
                                             <Run Text="{Binding StartTime, StringFormat={}{0:hh\\:mm}}"/>
                                             <Run Text=" - "/>
                                             <Run Text="{Binding EndTime, StringFormat={}{0:hh\\:mm}}"/>
@@ -311,48 +360,44 @@
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
-                        <DataGridTextColumn Header="Notas" Binding="{Binding Notes}" Width="*"/>
-                    <DataGridTemplateColumn Header="Acciones" Width="130">
-    <DataGridTemplateColumn.CellTemplate>
-        <DataTemplate>
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                <!-- Botón Editar -->
-                <Button Command="{Binding DataContext.EditAppointmentCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" Background="Transparent" BorderThickness="0" Cursor="Hand" ToolTip="Editar Cita" Margin="5,0">
-                    <TextBlock Text="✏️" FontSize="14" Foreground="#64748B"/>
-                </Button>
-                <!-- Botón WhatsApp -->
-                <Button Command="{Binding DataContext.SendWhatsAppCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" Background="Transparent" BorderThickness="0" Cursor="Hand" ToolTip="Enviar recordatorio por WhatsApp" Margin="5,0">
-                    <TextBlock Text="📱" FontSize="14" Foreground="#10B981"/>
-                </Button>
-                <!-- Botón Eliminar -->
-                <Button Command="{Binding DataContext.DeleteAppointmentCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" Background="Transparent" BorderThickness="0" Cursor="Hand" ToolTip="Eliminar Cita" Margin="5,0">
-                    <TextBlock Text="🗑️" FontSize="14" Foreground="#EF4444"/>
-                </Button>
-            </StackPanel>
-        </DataTemplate>
-    </DataGridTemplateColumn.CellTemplate>
-</DataGridTemplateColumn>
-        </DataGrid.Columns>
+                        <DataGridTemplateColumn Header="Acciones" Width="130">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                        <Button Command="{Binding DataContext.EditAppointmentCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" Background="Transparent" BorderThickness="0" Cursor="Hand" ToolTip="Editar Cita" Margin="5,0">
+                                            <TextBlock Text="✏️" FontSize="14" Foreground="#3B82F6"/>
+                                        </Button>
+                                        <Button Command="{Binding DataContext.SendWhatsAppCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" Background="Transparent" BorderThickness="0" Cursor="Hand" ToolTip="Enviar recordatorio" Margin="5,0">
+                                            <TextBlock Text="📱" FontSize="14" Foreground="#10B981"/>
+                                        </Button>
+                                        <Button Command="{Binding DataContext.DeleteAppointmentCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" Background="Transparent" BorderThickness="0" Cursor="Hand" ToolTip="Eliminar Cita" Margin="5,0">
+                                            <TextBlock Text="🗑️" FontSize="14" Foreground="#EF4444"/>
+                                        </Button>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
                 </DataGrid>
 
-                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center"
-                            Visibility="{Binding Appointments.Count, Converter={StaticResource ZeroToVisibleConverter}}">
-                    <TextBlock Text="&#xE787;" FontFamily="Segoe MDL2 Assets" FontSize="48"
-                               Foreground="{StaticResource Brush.TextMuted}" HorizontalAlignment="Center"/>
-                    <TextBlock Text="Sin citas registradas" FontSize="16" FontWeight="SemiBold"
-                               Foreground="{StaticResource Brush.TextSecondary}"
-                               HorizontalAlignment="Center" Margin="0,12,0,4"/>
-                    <TextBlock Text="Haz clic en Agregar Cita para empezar" FontSize="12"
-                               Foreground="{StaticResource Brush.TextMuted}" HorizontalAlignment="Center"/>
+                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="{Binding Appointments.Count, Converter={StaticResource ZeroToVisibleConverter}}">
+                    <TextBlock Text="&#xE787;" FontFamily="Segoe MDL2 Assets" FontSize="48" Foreground="{StaticResource Brush.TextMuted}" HorizontalAlignment="Center"/>
+                    <TextBlock Text="Sin citas registradas para este día" FontSize="16" FontWeight="SemiBold" Foreground="{StaticResource Brush.TextSecondary}" HorizontalAlignment="Center" Margin="0,12,0,4"/>
+                    <TextBlock Text="Selecciona otro día o haz clic en Agregar Cita" FontSize="12" Foreground="{StaticResource Brush.TextMuted}" HorizontalAlignment="Center"/>
                 </StackPanel>
             </Grid>
         </Border>
+
+        <!-- PAGINACIÓN -->
+        <Border Grid.Row="4" Background="{StaticResource Brush.Surface}" CornerRadius="12" Padding="12,8">
+            <Grid>
+                <TextBlock Text="{Binding PageInfo}" VerticalAlignment="Center" Foreground="{StaticResource Brush.TextSecondary}" FontSize="13"/>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button Command="{Binding PrevPageCommand}" Content="Anterior" Style="{StaticResource Modern.Button.Secondary}" Margin="0,0,10,0" Padding="15,5"/>
+                    <Button Command="{Binding NextPageCommand}" Content="Siguiente" Style="{StaticResource Modern.Button.Secondary}" Padding="15,5"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
     </Grid>
 </UserControl>
-
-
-
-
-
-
-

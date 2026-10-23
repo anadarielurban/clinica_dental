@@ -1,0 +1,3050 @@
+﻿=== MODELOS ===
+
+
+########## Appointment.cs ##########
+using System;
+using System.ComponentModel.DataAnnotations;
+
+namespace DentalClinicWPF.Models
+{
+    public class Appointment
+    {
+        [Key]
+        public int AppointmentID { get; set; }
+
+        [Required]
+        public int PatientID { get; set; }
+        public virtual Patient Patient { get; set; }
+
+        [Required]
+        public int DentistID { get; set; }
+        public virtual Dentist Dentist { get; set; }
+
+        [Required]
+        public DateTime AppointmentDate { get; set; }
+
+        [Required]
+        public TimeSpan StartTime { get; set; }
+
+        [Required]
+        public TimeSpan EndTime { get; set; }
+
+        [Required]
+        public int TreatmentID { get; set; }
+        public virtual Treatment Treatment { get; set; }
+
+        public string Notes { get; set; }
+
+        public virtual Invoice? Invoice { get; set; }
+
+        public string DisplayInfo =>
+            $"{AppointmentDate:yyyy-MM-dd} {StartTime:hh\\:mm} - {Patient?.FirstName} {Patient?.LastName}, " +
+            $"Treatment: {Treatment?.Name}, Cost: {Treatment?.Price:C}, Dentist: {Dentist?.LastName}";
+    }
+}
+
+
+########## Dentist.cs ##########
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+
+namespace DentalClinicWPF.Models
+{
+    public class Dentist
+    {
+        [Key]
+        public int DentistID { get; set; }
+
+        [Required, MaxLength(50)]
+        public string FirstName { get; set; }
+
+        [Required, MaxLength(50)]
+        public string LastName { get; set; }
+
+        [MaxLength(100)]
+        public string Specialization { get; set; }
+
+        [Required, MaxLength(15)]
+        [RegularExpression(@"^[\d\s\+\-\(\)]{7,}$", ErrorMessage = "Phone Number must contain at least 7 digits.")]
+        public string PhoneNumber { get; set; } = "+52";
+
+        [MaxLength(100)]
+        [EmailAddress]
+        public string Email { get; set; }
+
+        [Required]
+        public int RoomID { get; set; }
+        public virtual Room Room { get; set; }
+
+        public virtual ICollection<Employee> DentalAssistants { get; set; } = new List<Employee>();
+        public virtual ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();
+        public virtual ICollection<TreatmentPlan> TreatmentPlans { get; set; } = new List<TreatmentPlan>();
+        public virtual ICollection<Prescription> Prescriptions { get; set; } = new List<Prescription>();
+        public virtual ICollection<Schedule> Schedules { get; set; } = new List<Schedule>();
+
+        public string FullName => $"{FirstName} {LastName}";
+        public string DisplayInfo => $"{LastName}, {Specialization}";
+    }
+}
+
+
+########## Employee.cs ##########
+using System.ComponentModel.DataAnnotations;
+
+namespace DentalClinicWPF.Models
+{
+    public class Employee
+    {
+        [Key]
+        public int EmployeeID { get; set; }
+
+        [Required, MaxLength(50)]
+        public string FirstName { get; set; }
+
+        [Required, MaxLength(50)]
+        public string LastName { get; set; }
+
+        [Required, MaxLength(100)]
+        public string Position { get; set; } // Example: "Dental Assistant", "Receptionist"
+
+        [MaxLength(15)]
+        public string PhoneNumber { get; set; }
+
+        [MaxLength(100)]
+        public string Email { get; set; }
+
+        public int? DentistID { get; set; }
+        public virtual Dentist Dentist { get; set; }
+
+        public string DisplayInfo => $"{FirstName} {LastName} - {Position}";
+    }
+}
+
+
+########## Equipment.cs ##########
+using System;
+using System.ComponentModel.DataAnnotations;
+
+namespace DentalClinicWPF.Models
+{
+    public class Equipment
+    {
+        [Key]
+        public int EquipmentID { get; set; }
+
+        [Required, MaxLength(100)]
+        public string Name { get; set; }
+
+        [MaxLength(50)]
+        public string Model { get; set; }
+
+        [MaxLength(50)]
+        public string SerialNumber { get; set; }
+
+        public DateTime? PurchaseDate { get; set; }
+
+        public DateTime? LastServiceDate { get; set; }
+        
+        public int? RoomID { get; set; }
+        public virtual Room Room { get; set; }
+    }
+}
+
+
+########## Inventory.cs ##########
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace DentalClinicWPF.Models
+{
+    public class Inventory
+    {
+        [Key]
+        public int InventoryID { get; set; }
+
+        [Required]
+        public string ProductName { get; set; }
+
+        public int Quantity { get; set; }
+
+        [Column(TypeName = "decimal(10, 2)")]
+        public decimal? Price { get; set; }
+
+        public int ReorderLevel { get; set; }
+
+        public int? SupplierID { get; set; }
+        [ForeignKey(nameof(SupplierID))]
+        public virtual Supplier? Supplier { get; set; }
+
+        public int? RoomID { get; set; }
+        [ForeignKey(nameof(RoomID))]
+        public virtual Room? Room { get; set; }
+    }
+}
+
+
+########## Invoice.cs ##########
+using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace DentalClinicWPF.Models
+{
+    public class Invoice
+    {
+        [Key]
+        public int InvoiceID { get; set; }
+
+        [Required]
+        public int PatientID { get; set; }
+        [ForeignKey(nameof(PatientID))]
+        public virtual Patient Patient { get; set; }
+
+        // Puede venir de una Cita o de un Presupuesto (Opcionales)
+        public int? AppointmentID { get; set; }
+        public virtual Appointment Appointment { get; set; }
+
+        public int? TreatmentPlanID { get; set; }
+        public virtual TreatmentPlan TreatmentPlan { get; set; }
+
+        public DateTime InvoiceDate { get; set; } = DateTime.Now;
+
+        [Column(TypeName = "decimal(10, 2)")]
+        public decimal TotalAmount { get; set; }
+
+        [Column(TypeName = "decimal(10, 2)")]
+        public decimal AmountPaid { get; set; }
+        public decimal AmountReceived { get; set; }
+        public decimal Change { get; set; }
+
+        public string PaymentMethod { get; set; } = "Efectivo"; // Efectivo, Tarjeta, Transferencia
+
+        [NotMapped]
+        public bool IsPaid => AmountPaid >= TotalAmount;
+
+        [NotMapped]
+        public decimal BalanceDue => TotalAmount - AmountPaid;
+    }
+}
+
+
+
+########## LabOrder.cs ##########
+using System;
+using System.ComponentModel.DataAnnotations;
+
+namespace DentalClinicWPF.Models
+{
+    public class LabOrder
+    {
+        [Key]
+        public int LabOrderID { get; set; }
+
+        [Required]
+        public int PatientID { get; set; }
+        public virtual Patient Patient { get; set; }
+
+        [Required]
+        public int DentistID { get; set; }
+        public virtual Dentist Dentist { get; set; }
+
+        [Required]
+        public DateTime OrderDate { get; set; }
+
+        public string Description { get; set; }
+
+        [MaxLength(50)]
+        public string Status { get; set; }
+    }
+}
+
+
+########## MedicalRecord.cs ##########
+using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace DentalClinicWPF.Models
+{
+    public class MedicalRecord
+    {
+        [Key]
+        public int RecordID { get; set; }
+
+        [Required]
+        public int PatientID { get; set; }
+        [ForeignKey(nameof(PatientID))]
+        public virtual Patient Patient { get; set; }
+
+        [Required]
+        public int DentistID { get; set; }
+        [ForeignKey(nameof(DentistID))]
+        public virtual Dentist Dentist { get; set; }
+
+        [Required]
+        public DateTime Date { get; set; }
+
+        [MaxLength(500)]
+        public string Notes { get; set; } = string.Empty;
+
+        public byte[] Attachments { get; set; } = Array.Empty<byte>();
+    }
+
+}
+
+
+########## Patient.cs ##########
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+
+namespace DentalClinicWPF.Models
+{
+    public class Patient
+    {
+        [Key]
+        public int PatientID { get; set; }
+
+        [Required(ErrorMessage = "First Name is required.")]
+        [MaxLength(50, ErrorMessage = "First Name cannot exceed 50 characters.")]
+        public string FirstName { get; set; } = "N/A";
+
+        [Required(ErrorMessage = "Last Name is required.")]
+        [MaxLength(50, ErrorMessage = "Last Name cannot exceed 50 characters.")]
+        public string LastName { get; set; } = "N/A";
+
+        [Required(ErrorMessage = "Date of Birth is required.")]
+        public DateTime DateOfBirth { get; set; } = DateTime.Today;
+
+        [Required(ErrorMessage = "Gender is required.")]
+        [RegularExpression("^(Male|Female)$", ErrorMessage = "Gender must be either 'Male' or 'Female'.")]
+        public string Gender { get; set; } = "Male"; 
+
+
+        [Required(ErrorMessage = "Phone Number is required.")]
+        [MaxLength(15, ErrorMessage = "Phone Number cannot exceed 15 characters.")]
+        [RegularExpression(@"^[\d\s\+\-\(\)]{7,}$", ErrorMessage = "Phone Number must contain at least 7 digits.")]
+        public string PhoneNumber { get; set; } = "+52";
+
+        [MaxLength(100, ErrorMessage = "Email cannot exceed 100 characters.")]
+        [EmailAddress(ErrorMessage = "Invalid Email Address.")]
+        public string Email { get; set; }
+
+        [MaxLength(200, ErrorMessage = "Address cannot exceed 200 characters.")]
+        public string Address { get; set; }
+        // ═══ HISTORIA CLÍNICA ═══
+        public string? BloodType { get; set; }
+        public bool HasDiabetes { get; set; }
+        public bool HasHypertension { get; set; }
+        public bool HasAllergies { get; set; }
+        public string? AllergiesDetails { get; set; }
+        public bool IsPregnant { get; set; }
+        public bool HasHeartConditions { get; set; }
+        public bool HasCoagulationIssues { get; set; }
+        public bool TakesAnticoagulants { get; set; }
+        public bool IsSmoker { get; set; }
+        public string? MedicalNotes { get; set; }
+        public string? EmergencyContactName { get; set; }
+        public string? EmergencyContactPhone { get; set; }
+
+        [MaxLength(1000, ErrorMessage = "Medical History cannot exceed 1000 characters.")]
+        public string MedicalHistory { get; set; } = "No history available";
+
+        // Navigation Properties
+        public virtual ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();
+        public virtual ICollection<TreatmentPlan> TreatmentPlans { get; set; } = new List<TreatmentPlan>();
+        public virtual ICollection<MedicalRecord> MedicalRecords { get; set; } = new List<MedicalRecord>();
+        public virtual ICollection<Prescription> Prescriptions { get; set; } = new List<Prescription>();
+        public virtual ICollection<LabOrder> LabOrders { get; set; } = new List<LabOrder>();
+        
+        public string FullName => $"{FirstName} {LastName}";
+        public string DisplayInfo => $"{FirstName} {LastName} (DOB: {DateOfBirth:yyyy-MM-dd})";
+    }
+}
+
+
+
+########## PeriodontalRecord.cs ##########
+using System.ComponentModel.DataAnnotations;
+namespace DentalClinicWPF.Models {
+    public class PeriodontalRecord {
+        [Key] public int Id { get; set; }
+        public int PatientID { get; set; }
+        public int ToothNumber { get; set; }
+        public string? ProbingDepths { get; set; }
+        public bool Bleeding { get; set; }
+        public int Mobility { get; set; }
+        public string? Notes { get; set; }
+    }
+}
+
+
+########## Prescription.cs ##########
+using System;
+using System.ComponentModel.DataAnnotations;
+
+namespace DentalClinicWPF.Models
+{
+    public class Prescription
+    {
+        [Key]
+        public int PrescriptionID { get; set; }
+
+        [Required]
+        public int PatientID { get; set; }
+        public virtual Patient Patient { get; set; }
+
+        [Required]
+        public int DentistID { get; set; }
+        public virtual Dentist Dentist { get; set; }
+
+        [Required]
+        public DateTime DateIssued { get; set; }
+
+        [MaxLength(200)]
+        public string Medication { get; set; }
+
+        [MaxLength(100)]
+        public string Dosage { get; set; }
+
+        public string Instructions { get; set; }
+    }
+}
+
+
+########## Radiography.cs ##########
+using System;
+using System.ComponentModel.DataAnnotations;
+namespace DentalClinicWPF.Models {
+    public class Radiography {
+        [Key] public int Id { get; set; }
+        public int PatientID { get; set; }
+        public string? Description { get; set; }
+        public string? FilePath { get; set; }
+        public DateTime Date { get; set; } = DateTime.Now;
+    }
+}
+
+
+########## Room.cs ##########
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+
+namespace DentalClinicWPF.Models
+{
+    public class Room
+    {
+        [Key]
+        public int RoomID { get; set; }
+
+        public string RoomNumber { get; set; } = string.Empty;
+
+        public string? Address { get; set; }
+        public string? Phone { get; set; }
+
+        public bool IsAvailable { get; set; } = true;
+
+        // Propiedades de navegaciÃ³n
+        public virtual ICollection<Dentist> Dentists { get; set; } = new List<Dentist>();
+        public virtual ICollection<Equipment> Equipments { get; set; } = new List<Equipment>();
+    }
+}
+
+
+########## Schedule.cs ##########
+using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace DentalClinicWPF.Models
+{
+    public class Schedule
+    {
+        [Key]
+        public int ScheduleID { get; set; }
+
+        [Required]
+        public int DentistID { get; set; }
+
+        [ForeignKey("DentistID")]
+        public virtual Dentist Dentist { get; set; }
+
+        [Required]
+        public DateTime StartDate { get; set; }
+
+        [Required]
+        public DateTime EndDate { get; set; }
+
+        // Fixed working hours
+        public TimeSpan StartTime { get; set; } = new TimeSpan(8, 0, 0); // 8:00 AM
+        public TimeSpan EndTime { get; set; } = new TimeSpan(17, 0, 0);  // 5:00 PM
+
+        public bool IsDayOff { get; set; }
+    }
+}
+
+
+########## Supplier.cs ##########
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+
+namespace DentalClinicWPF.Models
+{
+    public class Supplier
+    {
+        [Key]
+        public int SupplierID { get; set; }
+
+        [Required, MaxLength(100)]
+        public string CompanyName { get; set; }
+
+        [MaxLength(100)]
+        public string ContactName { get; set; }
+
+        [MaxLength(30)]
+        public string PhoneNumber { get; set; }
+
+        [MaxLength(100)]
+        public string Email { get; set; }
+
+        [MaxLength(250)]
+        public string Address { get; set; }
+
+        public virtual ICollection<Inventory> Inventories { get; set; }
+    }
+}
+
+
+########## ToothRecord.cs ##########
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace DentalClinicWPF.Models
+{
+    public class ToothRecord
+    {
+        [Key]
+        public int ToothRecordID { get; set; }
+
+        [Required]
+        public int PatientID { get; set; }
+
+        [Required]
+        public int ToothNumber { get; set; }
+
+        [MaxLength(50)]
+        public string Condition { get; set; } = "Sano";
+
+        [MaxLength(200)]
+        public string? Notes { get; set; } = string.Empty;
+
+        // Volvemos a agregar esta propiedad para que la BD no marque error
+        public bool IsPrimaryTooth { get; set; } = false;
+    }
+}
+
+
+########## Treatment.cs ##########
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace DentalClinicWPF.Models
+{
+    public class Treatment
+    {
+        [Key]
+        public int TreatmentID { get; set; }
+
+        [Required, MaxLength(100)]
+        public string Name { get; set; }
+
+        public string Description { get; set; }
+
+        [Required]
+        [Column(TypeName = "decimal(10, 2)")] 
+        public decimal Price { get; set; }
+
+        [NotMapped] 
+        public string PriceFormatted => $"{Price} MXN";
+
+        [Required]
+        public TimeSpan Duration { get; set; }
+        
+        public virtual ICollection<Appointment> Appointments { get; set; }
+        
+        public string DisplayInfo => $"{Name} - {Price:C} - {Duration.TotalMinutes} min";
+    }
+}
+
+
+########## TreatmentPlan.cs ##########
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace DentalClinicWPF.Models
+{
+    public class TreatmentPlan
+    {
+        [Key]
+        public int TreatmentPlanID { get; set; }
+
+        [Required]
+        public int PatientID { get; set; }
+        [ForeignKey(nameof(PatientID))]
+        public virtual Patient Patient { get; set; }
+
+        [Required]
+        public int DentistID { get; set; }
+        [ForeignKey(nameof(DentistID))]
+        public virtual Dentist Dentist { get; set; }
+
+        public DateTime CreationDate { get; set; } = DateTime.Now;
+        
+        public string Status { get; set; } = "Borrador";
+
+        // Propiedad mantenida por compatibilidad con la base de datos SQLite antigua
+        public string? Details { get; set; } // Borrador, Enviado, Aprobado, Rechazado
+        
+        [Column(TypeName = "decimal(10, 2)")]
+        public decimal TotalAmount { get; set; }
+        
+        public string? Observations { get; set; }
+
+        public virtual ICollection<TreatmentPlanItem> Items { get; set; } = new List<TreatmentPlanItem>();
+    }
+}
+
+
+
+########## TreatmentPlanItem.cs ##########
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace DentalClinicWPF.Models
+{
+    public class TreatmentPlanItem
+    {
+        [Key]
+        public int TreatmentPlanItemID { get; set; }
+
+        public int TreatmentPlanID { get; set; }
+        [ForeignKey(nameof(TreatmentPlanID))]
+        public virtual TreatmentPlan TreatmentPlan { get; set; }
+
+        public int TreatmentID { get; set; }
+        [ForeignKey(nameof(TreatmentID))]
+        public virtual Treatment Treatment { get; set; }
+
+        public int Quantity { get; set; } = 1;
+        
+        [Column(TypeName = "decimal(10, 2)")]
+        public decimal UnitPrice { get; set; }
+
+        [NotMapped]
+        public decimal Subtotal => Quantity * UnitPrice;
+    }
+}
+
+
+=== VIEWMODELS ADD/EDIT ===
+
+
+########## C:\Users\Ana\DentalClinic\src\ViewModels\Appointment\AddAppointmentViewModel.cs ##########
+using System;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Windows;
+using System.Windows.Input;
+using CommunityToolkit.Mvvm.Input;
+using DentalClinicWPF.Data;
+using DentalClinicWPF.Models;
+using DentalClinicWPF.ViewModels.Base;
+
+namespace DentalClinicWPF.ViewModels.Appointment
+{
+    public class AddAppointmentViewModel : BaseViewModel
+    {
+        private readonly DentalClinicContext _context;
+
+        private int _patientID;
+        public int PatientID
+        {
+            get => _patientID;
+            set
+            {
+                if (SetProperty(ref _patientID, value))
+                {
+                    ValidateProperty(nameof(PatientID));
+                    NotifySaveCommand();
+                }
+            }
+        }
+
+        private int _dentistID;
+        public int DentistID
+        {
+            get => _dentistID;
+            set
+            {
+                if (SetProperty(ref _dentistID, value))
+                {
+                    ValidateProperty(nameof(DentistID));
+                    NotifySaveCommand();
+                }
+            }
+        }
+
+        private int _treatmentID;
+        public int TreatmentID
+        {
+            get => _treatmentID;
+            set
+            {
+                if (SetProperty(ref _treatmentID, value))
+                {
+                    ValidateProperty(nameof(TreatmentID));
+                    NotifySaveCommand();
+                }
+            }
+        }
+
+        private DateTime _appointmentDate = DateTime.Today;
+        public DateTime AppointmentDate
+        {
+            get => _appointmentDate;
+            set
+            {
+                if (SetProperty(ref _appointmentDate, value))
+                {
+                    ValidateProperty(nameof(AppointmentDate));
+                    NotifySaveCommand();
+                }
+            }
+        }
+
+        private string _startTime = "09:00";
+        public string StartTime
+        {
+            get => _startTime;
+            set
+            {
+                if (SetProperty(ref _startTime, value))
+                {
+                    ValidateProperty(nameof(StartTime));
+                    NotifySaveCommand();
+                }
+            }
+        }
+
+        private string _endTime = "10:00";
+        public string EndTime
+        {
+            get => _endTime;
+            set
+            {
+                if (SetProperty(ref _endTime, value))
+                {
+                    ValidateProperty(nameof(EndTime));
+                    NotifySaveCommand();
+                }
+            }
+        }
+
+        private string _notes = string.Empty;
+        public string Notes
+        {
+            get => _notes;
+            set
+            {
+                if (SetProperty(ref _notes, value))
+                {
+                    ValidateProperty(nameof(Notes));
+                    NotifySaveCommand();
+                }
+            }
+        }
+
+        public ObservableCollection<Models.Patient> Patients { get; }
+        public ObservableCollection<Models.Dentist> Dentists { get; }
+        public ObservableCollection<Models.Treatment> Treatments { get; }
+
+        public ICommand SaveCommand { get; }
+        public ICommand CancelCommand { get; }
+
+        public AddAppointmentViewModel(DentalClinicContext context)
+        {
+            _context = context ?? throw new ArgumentNullException(nameof(context));
+
+            Patients = new ObservableCollection<Models.Patient>(_context.Patient.ToList());
+            Dentists = new ObservableCollection<Models.Dentist>(_context.Dentist.ToList());
+            Treatments = new ObservableCollection<Models.Treatment>(_context.Treatment.ToList());
+
+            SaveCommand = new RelayCommand(Save, CanSave);
+            CancelCommand = new RelayCommand(Cancel);
+
+            PropertyChanged += (s, e) => ValidateProperty(e.PropertyName);
+        }
+
+        protected override void ValidateProperty(string propertyName)
+        {
+            base.ValidateProperty(propertyName);
+
+            switch (propertyName)
+            {
+                case nameof(PatientID):
+                    if (PatientID == 0)
+                        AddError(propertyName, "El paciente es obligatorio.");
+                    break;
+
+                case nameof(DentistID):
+                    if (DentistID == 0)
+                        AddError(propertyName, "El dentista es obligatorio.");
+                    break;
+
+                case nameof(TreatmentID):
+                    if (TreatmentID == 0)
+                        AddError(propertyName, "El tratamiento es obligatorio.");
+                    break;
+
+                case nameof(AppointmentDate):
+                    if (AppointmentDate.Date < DateTime.Today)
+                        AddError(propertyName, "La fecha de la cita no puede ser en el pasado.");
+                    break;
+
+                case nameof(StartTime):
+                case nameof(EndTime):
+                    ValidateTimeFormat(propertyName);
+                    break;
+
+                case nameof(Notes):
+                    if (string.IsNullOrWhiteSpace(Notes))
+                        AddError(propertyName, "Las notas son obligatorias.");
+                    break;
+            }
+        }
+
+        private void ValidateTimeFormat(string propertyName)
+        {
+            var time = propertyName == nameof(StartTime) ? StartTime : EndTime;
+
+            if (!TimeSpan.TryParse(time, out var parsedTime))
+                AddError(propertyName, "Formato de hora inválido. Use HH:mm.");
+            else if (parsedTime < TimeSpan.FromHours(9) || parsedTime > TimeSpan.FromHours(18))
+                AddError(propertyName, "La hora debe estar entre 09:00 y 18:00.");
+
+            if (TimeSpan.TryParse(StartTime, out var start) && TimeSpan.TryParse(EndTime, out var end) && start >= end)
+                AddError(nameof(StartTime), "La hora de inicio debe ser anterior a la hora de fin.");
+        }
+
+        private bool HasTimeConflict()
+        {
+            if (DentistID == 0) return false;
+            if (!TimeSpan.TryParse(StartTime, out var start)) return false;
+            if (!TimeSpan.TryParse(EndTime, out var end)) return false;
+
+            var date = AppointmentDate.Date;
+
+            return _context.Appointment
+                .Where(a => a.DentistID == DentistID && a.AppointmentDate.Date == date)
+                .AsEnumerable()
+                .Any(a => a.StartTime < end && a.EndTime > start);
+        }
+
+        private bool CanSave()
+        {
+            return !HasErrors &&
+                   PatientID > 0 &&
+                   DentistID > 0 &&
+                   TreatmentID > 0 &&
+                   AppointmentDate >= DateTime.Today &&
+                   TimeSpan.TryParse(StartTime, out var start) &&
+                   TimeSpan.TryParse(EndTime, out var end) && start < end &&
+                   !string.IsNullOrWhiteSpace(Notes);
+        }
+
+        private void Save()
+        {
+            // Check for time conflict first
+            if (HasTimeConflict())
+            {
+                MessageBox.Show(
+                    "El dentista ya tiene una cita en ese horario.\n\n" +
+                    "Por favor elige otra hora o fecha.",
+                    "Horario ocupado",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+                return;
+            }
+
+            if (!CanSave())
+            {
+                MessageBox.Show("Corrige los errores de validación antes de guardar.", "Error de Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            try
+            {
+                var appointment = new Models.Appointment
+                {
+                    PatientID = PatientID,
+                    DentistID = DentistID,
+                    TreatmentID = TreatmentID,
+                    AppointmentDate = AppointmentDate,
+                    StartTime = TimeSpan.Parse(StartTime),
+                    EndTime = TimeSpan.Parse(EndTime),
+                    Notes = Notes
+                };
+
+                _context.Appointment.Add(appointment);
+                _context.SaveChanges();
+
+                MessageBox.Show("¡Cita agregada correctamente!", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
+                CloseWindow(true);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al guardar la cita: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void Cancel() => CloseWindow(false);
+
+        private void NotifySaveCommand() => ((RelayCommand)SaveCommand).NotifyCanExecuteChanged();
+
+        private void CloseWindow(bool dialogResult)
+        {
+            foreach (Window window in Application.Current.Windows)
+            {
+                if (window.DataContext == this)
+                {
+                    window.DialogResult = dialogResult;
+                    window.Close();
+                    break;
+                }
+            }
+        }
+    }
+}
+
+
+########## C:\Users\Ana\DentalClinic\src\ViewModels\Dentist\AddDentistViewModel.cs ##########
+using System;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Text.RegularExpressions;
+using System.Windows;
+using System.Windows.Input;
+using CommunityToolkit.Mvvm.Input;
+using DentalClinicWPF.Data;
+using DentalClinicWPF.Models;
+using DentalClinicWPF.ViewModels.Base;
+
+namespace DentalClinicWPF.ViewModels.Dentist
+{
+    public class AddDentistViewModel : BaseViewModel
+    {
+        private readonly DentalClinicContext _context;
+
+        private string _firstName = string.Empty;
+        public string FirstName
+        {
+            get => _firstName;
+            set
+            {
+                if (SetProperty(ref _firstName, value))
+                {
+                    ValidateProperty(nameof(FirstName));
+                    NotifySaveCommand();
+                }
+            }
+        }
+
+        private string _lastName = string.Empty;
+        public string LastName
+        {
+            get => _lastName;
+            set
+            {
+                if (SetProperty(ref _lastName, value))
+                {
+                    ValidateProperty(nameof(LastName));
+                    NotifySaveCommand();
+                }
+            }
+        }
+
+        private string _specialization = string.Empty;
+        public string Specialization
+        {
+            get => _specialization;
+            set
+            {
+                if (SetProperty(ref _specialization, value))
+                {
+                    ValidateProperty(nameof(Specialization));
+                    NotifySaveCommand();
+                }
+            }
+        }
+
+        private string _phoneNumber = "+52";
+        public string PhoneNumber
+        {
+            get => _phoneNumber;
+            set
+            {
+                if (SetProperty(ref _phoneNumber, value))
+                {
+                    ValidateProperty(nameof(PhoneNumber));
+                    NotifySaveCommand();
+                }
+            }
+        }
+
+        private string _email = string.Empty;
+        public string Email
+        {
+            get => _email;
+            set
+            {
+                if (SetProperty(ref _email, value))
+                {
+                    ValidateProperty(nameof(Email));
+                    NotifySaveCommand();
+                }
+            }
+        }
+
+        private int _roomID;
+        public int RoomID
+        {
+            get => _roomID;
+            set
+            {
+                if (SetProperty(ref _roomID, value))
+                {
+                    ValidateProperty(nameof(RoomID));
+                    NotifySaveCommand();
+                }
+            }
+        }
+
+        public ObservableCollection<Models.Room> Rooms { get; }
+
+        public ICommand SaveCommand { get; }
+        public ICommand CancelCommand { get; }
+
+        public AddDentistViewModel(DentalClinicContext context)
+        {
+            _context = context ?? throw new ArgumentNullException(nameof(context));
+            Rooms = new ObservableCollection<Models.Room>(_context.Room.ToList());
+
+            SaveCommand = new RelayCommand(Save, CanSave);
+            CancelCommand = new RelayCommand(Cancel);
+        }
+
+        private bool CanSave()
+        {
+            return !HasErrors &&
+                   !string.IsNullOrWhiteSpace(FirstName) &&
+                   !string.IsNullOrWhiteSpace(LastName) &&
+                   !string.IsNullOrWhiteSpace(Specialization) &&
+                   Regex.IsMatch(PhoneNumber, @"^[\d\s\+\-\(\)]{7,}$") &&
+                   (!string.IsNullOrWhiteSpace(Email) && Regex.IsMatch(Email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$")) &&
+                   RoomID != 0;
+        }
+
+        private void Save()
+        {
+            if (!CanSave())
+            {
+                MessageBox.Show("Corrige los errores de validación antes de guardar.", "Error de Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            try
+            {
+                var dentist = new Models.Dentist
+                {
+                    FirstName = FirstName,
+                    LastName = LastName,
+                    Specialization = Specialization,
+                    PhoneNumber = PhoneNumber,
+                    Email = Email,
+                    RoomID = RoomID
+                };
+
+                _context.Dentist.Add(dentist);
+                _context.SaveChanges();
+
+                MessageBox.Show("¡Dentista agregado correctamente!", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
+                CloseWindow(true);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al guardar el dentista: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void Cancel() => CloseWindow(false);
+
+        protected override void ValidateProperty(string propertyName)
+        {
+            base.ValidateProperty(propertyName);
+
+            switch (propertyName)
+            {
+                case nameof(FirstName):
+                    if (string.IsNullOrWhiteSpace(FirstName))
+                        AddError(propertyName, "El nombre es obligatorio.");
+                    else if (FirstName.Length > 50)
+                        AddError(propertyName, "El nombre no puede superar 50 caracteres.");
+                    break;
+
+                case nameof(LastName):
+                    if (string.IsNullOrWhiteSpace(LastName))
+                        AddError(propertyName, "El apellido es obligatorio.");
+                    else if (LastName.Length > 50)
+                        AddError(propertyName, "El apellido no puede superar 50 caracteres.");
+                    break;
+
+                case nameof(Specialization):
+                    if (string.IsNullOrWhiteSpace(Specialization))
+                        AddError(propertyName, "La especialización es obligatoria.");
+                    break;
+
+                case nameof(PhoneNumber):
+                    if (!Regex.IsMatch(PhoneNumber, @"^[\d\s\+\-\(\)]{7,}$"))
+                        AddError(propertyName, "El teléfono debe contener al menos 7 dígitos. Se permiten espacios, +, -, (, ).");
+                    break;
+
+                case nameof(Email):
+                    if (!string.IsNullOrWhiteSpace(Email) && !Regex.IsMatch(Email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
+                        AddError(propertyName, "Formato de correo inválido.");
+                    break;
+
+                case nameof(RoomID):
+                    if (RoomID == 0)
+                        AddError(propertyName, "Selecciona un consultorio.");
+                    break;
+            }
+        }
+
+        private void NotifySaveCommand()
+        {
+            ((RelayCommand)SaveCommand).NotifyCanExecuteChanged();
+        }
+
+        private void CloseWindow(bool dialogResult)
+        {
+            foreach (Window window in Application.Current.Windows)
+            {
+                if (window.DataContext == this)
+                {
+                    window.DialogResult = dialogResult;
+                    window.Close();
+                    break;
+                }
+            }
+        }
+    }
+}
+
+
+########## C:\Users\Ana\DentalClinic\src\ViewModels\Employee\AddEmployeeViewModel.cs ##########
+using System;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Text.RegularExpressions;
+using System.Windows;
+using System.Windows.Input;
+using CommunityToolkit.Mvvm.Input;
+using DentalClinicWPF.Data;
+using DentalClinicWPF.Models;
+using DentalClinicWPF.ViewModels.Base;
+
+namespace DentalClinicWPF.ViewModels.Employee
+{
+    public class AddEmployeeViewModel : BaseViewModel
+    {
+        private readonly DentalClinicContext _context;
+
+        #region Właściwości Pracownika
+
+        private string _firstName = string.Empty;
+        public string FirstName
+        {
+            get => _firstName;
+            set 
+            { 
+                if (SetProperty(ref _firstName, value))
+                {
+                    ValidateProperty(nameof(FirstName));
+                    NotifySaveCommand();
+                }
+            }
+        }
+
+        private string _lastName = string.Empty;
+        public string LastName
+        {
+            get => _lastName;
+            set 
+            { 
+                if (SetProperty(ref _lastName, value))
+                {
+                    ValidateProperty(nameof(LastName));
+                    NotifySaveCommand();
+                }
+            }
+        }
+        
+        private string _position = string.Empty;
+        public string Position
+        {
+            get => _position;
+            set 
+            { 
+                if (SetProperty(ref _position, value))
+                {
+                    ValidateProperty(nameof(Position));
+                    // Przy zmianie pozycji walidujemy również wybór dentysty.
+                    ValidateProperty(nameof(DentistID));
+                    NotifySaveCommand();
+                }
+            }
+        }
+
+        private string _phoneNumber = "+52";
+        public string PhoneNumber
+        {
+            get => _phoneNumber;
+            set 
+            { 
+                if (SetProperty(ref _phoneNumber, value))
+                {
+                    ValidateProperty(nameof(PhoneNumber));
+                    NotifySaveCommand();
+                }
+            }
+        }
+
+        private string _email = string.Empty;
+        public string Email
+        {
+            get => _email;
+            set 
+            { 
+                if (SetProperty(ref _email, value))
+                {
+                    ValidateProperty(nameof(Email));
+                    NotifySaveCommand();
+                }
+            }
+        }
+
+        // Jeśli dentysta nie został wybrany, przyjmujemy wartość 0.
+        private int _dentistID;
+        public int DentistID
+        {
+            get => _dentistID;
+            set 
+            {
+                if (SetProperty(ref _dentistID, value))
+                {
+                    ValidateProperty(nameof(DentistID));
+                    NotifySaveCommand();
+                }
+            }
+        }
+
+        #endregion
+
+        // Lista dentystów – wyświetlana w ComboBoxie.
+        public ObservableCollection<Models.Dentist> Dentists { get; }
+
+        public ICommand SaveCommand { get; }
+        public ICommand CancelCommand { get; }
+
+        public AddEmployeeViewModel(DentalClinicContext context)
+        {
+            _context = context ?? throw new ArgumentNullException(nameof(context));
+
+            // Ładujemy listę dentystów z bazy.
+            Dentists = new ObservableCollection<Models.Dentist>(_context.Dentist.ToList());
+
+            SaveCommand = new RelayCommand(Save, CanSave);
+            CancelCommand = new RelayCommand(Cancel);
+
+            // Opcjonalnie – przy każdej zmianie właściwości wywołujemy walidację.
+            PropertyChanged += (s, e) =>
+            {
+                if (e.PropertyName != nameof(HasErrors))
+                    ValidateProperty(e.PropertyName);
+            };
+        }
+
+        /// <summary>
+        /// Walidacja właściwości – jeśli nie spełnia kryteriów, dodajemy komunikat błędu.
+        /// </summary>
+        protected override void ValidateProperty(string propertyName)
+        {
+            base.ValidateProperty(propertyName);
+
+            switch (propertyName)
+            {
+                case nameof(FirstName):
+                    if (string.IsNullOrWhiteSpace(FirstName))
+                        AddError(propertyName, "El nombre es obligatorio.");
+                    break;
+
+                case nameof(LastName):
+                    if (string.IsNullOrWhiteSpace(LastName))
+                        AddError(propertyName, "El apellido es obligatorio.");
+                    break;
+
+                case nameof(Position):
+                    if (string.IsNullOrWhiteSpace(Position))
+                        AddError(propertyName, "El puesto es obligatorio.");
+                    break;
+
+                case nameof(PhoneNumber):
+                    if (string.IsNullOrWhiteSpace(PhoneNumber))
+                        AddError(propertyName, "El teléfono es obligatorio.");
+                    else if (!Regex.IsMatch(PhoneNumber, @"^[\d\s\+\-\(\)]{7,}$"))
+                        AddError(propertyName, "El teléfono debe contener al menos 7 dígitos. Se permiten espacios, +, -, (, ).");
+                    break;
+
+                case nameof(Email):
+                    if (string.IsNullOrWhiteSpace(Email))
+                        AddError(propertyName, "El correo es obligatorio.");
+                    else if (!Regex.IsMatch(Email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
+                        AddError(propertyName, "Correo electrónico inválido.");
+                    break;
+
+                case nameof(DentistID):
+                    // Jeśli pozycja to Dental Assistant, wymagamy wybrania dentysty (wartość > 0)
+                    if (Position.Equals("Asistente Dental", StringComparison.OrdinalIgnoreCase) && DentistID == 0)
+                        AddError(propertyName, "La selección del dentista es obligatoria para Asistente Dental.");
+                    break;
+            }
+        }
+        private bool CanSave()
+        {
+            return !HasErrors &&
+                   !string.IsNullOrWhiteSpace(FirstName) &&
+                   !string.IsNullOrWhiteSpace(LastName) &&
+                   !string.IsNullOrWhiteSpace(Position) &&
+                   !string.IsNullOrWhiteSpace(PhoneNumber) &&
+                   Regex.IsMatch(PhoneNumber, @"^[\d\s\+\-\(\)]{7,}$") &&
+                   !string.IsNullOrWhiteSpace(Email) &&
+                   Regex.IsMatch(Email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$") &&
+                   // Jeśli pozycja to Dental Assistant, wymagamy wyboru dentysty.
+                   (!Position.Equals("Asistente Dental", StringComparison.OrdinalIgnoreCase) || DentistID > 0);
+        }
+
+        private void Save()
+        {
+            if (!CanSave())
+            {
+                MessageBox.Show("Corrige los errores de validación antes de guardar.",
+                                "Error de Validación",
+                                MessageBoxButton.OK,
+                                MessageBoxImage.Warning);
+                return;
+            }
+
+            try
+            {
+                var employee = new Models.Employee
+                {
+                    FirstName = FirstName,
+                    LastName = LastName,
+                    Position = Position,
+                    PhoneNumber = PhoneNumber,
+                    Email = Email,
+                    DentistID = Position.Equals("Asistente Dental", StringComparison.OrdinalIgnoreCase) ? DentistID : (int?)null
+                };
+
+                _context.Employee.Add(employee);
+                _context.SaveChanges();
+
+                MessageBox.Show("¡Empleado agregado correctamente!",
+                                "Éxito",
+                                MessageBoxButton.OK,
+                                MessageBoxImage.Information);
+                CloseWindow(true);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al guardar el empleado: {ex.Message}",
+                                "Error",
+                                MessageBoxButton.OK,
+                                MessageBoxImage.Error);
+            }
+        }
+
+        private void Cancel() => CloseWindow(false);
+        
+        private void NotifySaveCommand() => ((RelayCommand)SaveCommand).NotifyCanExecuteChanged();
+
+        private void CloseWindow(bool dialogResult)
+        {
+            foreach (Window window in Application.Current.Windows)
+            {
+                if (window.DataContext == this)
+                {
+                    window.DialogResult = dialogResult;
+                    window.Close();
+                    break;
+                }
+            }
+        }
+    }
+}
+
+
+########## C:\Users\Ana\DentalClinic\src\ViewModels\Equipment\AddEquipmentViewModel.cs ##########
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Linq;
+using System.Text.RegularExpressions;
+using System.Windows;
+using System.Windows.Input;
+using CommunityToolkit.Mvvm.Input;
+using DentalClinicWPF.Data;
+using DentalClinicWPF.Models;
+using DentalClinicWPF.ViewModels.Base;
+
+namespace DentalClinicWPF.ViewModels.Equipment
+{
+    public class AddEquipmentViewModel : BaseViewModel, INotifyDataErrorInfo
+    {
+        private readonly DentalClinicContext _context;
+        private readonly Dictionary<string, List<string>> _errors = new();
+
+        public Models.Equipment Equipment { get; set; }
+        public ObservableCollection<Models.Room> Rooms { get; set; }
+        public Models.Room SelectedRoom { get; set; }
+
+        public ICommand SaveCommand { get; }
+        public ICommand CancelCommand { get; }
+
+        public event EventHandler<DataErrorsChangedEventArgs>? ErrorsChanged;
+        public bool HasErrors => _errors.Any();
+
+        public AddEquipmentViewModel(DentalClinicContext context)
+        {
+            _context = context ?? throw new ArgumentNullException(nameof(context));
+
+            Equipment = new Models.Equipment
+            {
+                Name = string.Empty,
+                Model = string.Empty,
+                SerialNumber = string.Empty,
+                PurchaseDate = null,
+                LastServiceDate = null
+            };
+
+            Rooms = new ObservableCollection<Models.Room>(_context.Room.ToList());
+            SaveCommand = new RelayCommand(Save, CanSave);
+            CancelCommand = new RelayCommand(Cancel);
+        }
+
+        public IEnumerable GetErrors(string? propertyName)
+        {
+            if (string.IsNullOrEmpty(propertyName))
+                return _errors.SelectMany(err => err.Value);
+            else if (_errors.ContainsKey(propertyName))
+                return _errors[propertyName];
+
+            return Enumerable.Empty<string>();
+        }
+
+        private void ValidateProperty(string propertyName)
+        {
+            if (string.IsNullOrEmpty(propertyName)) return;
+
+            _errors.Remove(propertyName);
+
+            switch (propertyName)
+            {
+                case nameof(Equipment.Name):
+                    if (string.IsNullOrWhiteSpace(Equipment.Name))
+                        AddError(propertyName, "El nombre es obligatorio.");
+                    break;
+                case nameof(Equipment.Model):
+                    if (string.IsNullOrWhiteSpace(Equipment.Model))
+                        AddError(propertyName, "El modelo es obligatorio.");
+                    break;
+                case nameof(Equipment.SerialNumber):
+                    if (!string.IsNullOrWhiteSpace(Equipment.SerialNumber) &&
+                        !Regex.IsMatch(Equipment.SerialNumber, @"^[a-zA-Z0-9-]+$"))
+                        AddError(propertyName, "El número de serie solo puede contener caracteres alfanuméricos o guiones.");
+                    break;
+                case nameof(Equipment.PurchaseDate):
+                    if (Equipment.PurchaseDate > DateTime.Now)
+                        AddError(propertyName, "La fecha de compra no puede ser futura.");
+                    break;
+                case nameof(Equipment.LastServiceDate):
+                    if (Equipment.LastServiceDate > DateTime.Now)
+                        AddError(propertyName, "La fecha del último servicio no puede ser futura.");
+                    break;
+            }
+
+            ErrorsChanged?.Invoke(this, new DataErrorsChangedEventArgs(propertyName));
+            ((RelayCommand)SaveCommand).NotifyCanExecuteChanged();
+        }
+
+        private void AddError(string propertyName, string error)
+        {
+            if (!_errors.ContainsKey(propertyName))
+                _errors[propertyName] = new List<string>();
+
+            _errors[propertyName].Add(error);
+        }
+
+        private bool CanSave() => !HasErrors;
+
+        private void Save()
+        {
+            if (HasErrors)
+            {
+                MessageBox.Show("Corrige los errores de validación antes de guardar.", "Error de Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            try
+            {
+                Equipment.RoomID = SelectedRoom?.RoomID;
+
+                _context.Equipment.Add(Equipment);
+                _context.SaveChanges();
+
+                MessageBox.Show("¡Equipo agregado correctamente!", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
+                CloseWindow();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al guardar el equipo: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void Cancel() => CloseWindow();
+
+        private void CloseWindow()
+        {
+            foreach (Window window in Application.Current.Windows)
+            {
+                if (window.DataContext == this)
+                {
+                    window.DialogResult = true;
+                    window.Close();
+                    break;
+                }
+            }
+        }
+    }
+}
+
+
+########## C:\Users\Ana\DentalClinic\src\ViewModels\Inventory\AddInventoryViewModel.cs ##########
+using System;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Windows;
+using System.Windows.Input;
+using CommunityToolkit.Mvvm.Input;
+using DentalClinicWPF.Data;
+using DentalClinicWPF.Models;
+using DentalClinicWPF.ViewModels.Base;
+
+namespace DentalClinicWPF.ViewModels.Inventory
+{
+    public class AddInventoryViewModel : BaseViewModel
+    {
+        private readonly DentalClinicContext _context;
+
+        public Models.Inventory Inventory { get; set; } = new();
+        public ObservableCollection<Models.Supplier> Suppliers { get; }
+        public ObservableCollection<Models.Room> Rooms { get; }
+
+        public ICommand SaveCommand { get; }
+        public ICommand CancelCommand { get; }
+
+        public AddInventoryViewModel(DentalClinicContext context)
+        {
+            _context = context ?? throw new ArgumentNullException(nameof(context));
+
+            Inventory = new Models.Inventory
+            {
+                ProductName = string.Empty,
+                Quantity = 0,
+                ReorderLevel = 0,
+                SupplierID = 0,
+                RoomID = null
+            };
+
+            Suppliers = new ObservableCollection<Models.Supplier>(_context.Supplier.ToList());
+            Rooms = new ObservableCollection<Models.Room>(_context.Room.ToList());
+
+            SaveCommand = new RelayCommand(Save);
+            CancelCommand = new RelayCommand(Cancel);
+        }
+
+        private void Save()
+        {
+            try
+            {
+                if (!IsInventoryDataValid())
+                {
+                    MessageBox.Show("Completa todos los campos correctamente.", "Error de Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                _context.Inventory.Add(Inventory);
+                _context.SaveChanges();
+                MessageBox.Show("¡Elemento de inventario agregado!", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
+                CloseWindow(true);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ocurrió un error al guardar: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void Cancel()
+        {
+            CloseWindow(false);
+        }
+
+        private void CloseWindow(bool dialogResult)
+        {
+            foreach (Window window in Application.Current.Windows)
+            {
+                if (window.DataContext == this)
+                {
+                    window.DialogResult = dialogResult;
+                    window.Close();
+                    break;
+                }
+            }
+        }
+
+        private bool IsInventoryDataValid()
+        {
+            if (string.IsNullOrWhiteSpace(Inventory.ProductName))
+            {
+                MessageBox.Show("El nombre del producto es obligatorio.", "Error de Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return false;
+            }
+
+            if (Inventory.Quantity < 0)
+            {
+                MessageBox.Show("La cantidad no puede ser negativa.", "Error de Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return false;
+            }
+
+            if (Inventory.ReorderLevel < 0)
+            {
+                MessageBox.Show("El nivel de reorden no puede ser negativo.", "Error de Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return false;
+            }
+
+            if (Inventory.SupplierID == 0)
+            {
+                MessageBox.Show("Selecciona un proveedor.", "Error de Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return false;
+            }
+
+            return true;
+        }
+    }
+}
+
+
+########## C:\Users\Ana\DentalClinic\src\ViewModels\Invoice\AddInvoiceViewModel.cs ##########
+using System;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Windows;
+using CommunityToolkit.Mvvm.Input;
+using DentalClinicWPF.Data;
+using DentalClinicWPF.Models;
+using DentalClinicWPF.ViewModels.Base;
+
+namespace DentalClinicWPF.ViewModels.Invoice
+{
+    public class AddInvoiceViewModel : BaseViewModel
+    {
+        private readonly DentalClinicContext _context;
+
+        public ObservableCollection<Models.Appointment> AvailableAppointments { get; set; }
+
+        private Models.Appointment _selectedAppointment;
+        public Models.Appointment SelectedAppointment
+        {
+            get => _selectedAppointment;
+            set { _selectedAppointment = value; OnPropertyChanged(nameof(SelectedAppointment)); OnPropertyChanged(nameof(TotalAmount)); }
+        }
+
+        private string _paymentMethod = "Efectivo";
+        public string PaymentMethod
+        {
+            get => _paymentMethod;
+            set { _paymentMethod = value; OnPropertyChanged(nameof(PaymentMethod)); }
+        }
+
+        private decimal _amountPaid;
+        public decimal AmountPaid
+        {
+            get => _amountPaid;
+            set { _amountPaid = value; OnPropertyChanged(nameof(AmountPaid)); }
+        }
+
+        public decimal TotalAmount => SelectedAppointment?.Treatment?.Price ?? 0;
+
+        public IRelayCommand SaveCommand { get; }
+
+        public AddInvoiceViewModel(DentalClinicContext context)
+        {
+            _context = context;
+            AvailableAppointments = new ObservableCollection<Models.Appointment>(_context.Appointment.ToList());
+            SaveCommand = new RelayCommand(Save);
+        }
+
+        private void Save()
+        {
+            if (SelectedAppointment == null)
+            {
+                MessageBox.Show("Selecciona una cita primero.", "Aviso", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            try
+            {
+                var invoice = new Models.Invoice
+                {
+                    PatientID = SelectedAppointment.PatientID,
+                    AppointmentID = SelectedAppointment.AppointmentID,
+                    InvoiceDate = DateTime.Now,
+                    TotalAmount = TotalAmount,
+                    AmountPaid = AmountPaid,
+                    PaymentMethod = PaymentMethod
+                };
+
+                _context.Invoice.Add(invoice);
+                _context.SaveChanges();
+
+                MessageBox.Show("Factura guardada correctamente.", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
+                Application.Current.Windows.OfType<Window>().SingleOrDefault(x => x.IsActive)?.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error: {ex.Message}\n{ex.InnerException?.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+    }
+}
+
+
+########## C:\Users\Ana\DentalClinic\src\ViewModels\LabOrder\AddLabOrderViewModel.cs ##########
+using System;
+using System.Collections;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Windows;
+using System.Windows.Input;
+using CommunityToolkit.Mvvm.Input;
+using DentalClinicWPF.Data;
+using DentalClinicWPF.Models;
+using DentalClinicWPF.ViewModels.Base;
+using System.ComponentModel;
+
+namespace DentalClinicWPF.ViewModels.LabOrder
+{
+    public class AddLabOrderViewModel : BaseViewModel, INotifyDataErrorInfo
+    {
+        private readonly DentalClinicContext _context;
+
+        public Models.LabOrder LabOrder { get; set; }
+        public ObservableCollection<Models.Patient> Patients { get; }
+        public ObservableCollection<Models.Dentist> Dentists { get; }
+
+        public ICommand SaveCommand { get; }
+        public ICommand CancelCommand { get; }
+
+        // Validation
+        private readonly Dictionary<string, List<string>> _propertyErrors = new();
+
+        public bool HasErrors => _propertyErrors.Count > 0;
+
+        public event EventHandler<DataErrorsChangedEventArgs>? ErrorsChanged;
+
+        public AddLabOrderViewModel(DentalClinicContext context)
+        {
+            _context = context ?? throw new ArgumentNullException(nameof(context));
+
+            LabOrder = new Models.LabOrder
+            {
+                OrderDate = DateTime.Now,
+                Status = "Pending",
+                Description = string.Empty
+            };
+
+            Patients = new ObservableCollection<Models.Patient>(_context.Patient.ToList());
+            Dentists = new ObservableCollection<Models.Dentist>(_context.Dentist.ToList());
+
+            SaveCommand = new RelayCommand(Save);
+            CancelCommand = new RelayCommand(Cancel);
+        }
+
+        private void Save()
+        {
+            try
+            {
+                if (!IsLabOrderDataValid())
+                {
+                    MessageBox.Show("Completa todos los campos correctamente.", "Error de Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                _context.LabOrder.Add(LabOrder);
+                _context.SaveChanges();
+
+                MessageBox.Show("¡Orden de laboratorio creada correctamente!", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
+                CloseWindow(true);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ocurrió un error al crear la orden: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void Cancel()
+        {
+            CloseWindow(false);
+        }
+
+        private void CloseWindow(bool dialogResult)
+        {
+            foreach (Window window in Application.Current.Windows)
+            {
+                if (window.DataContext == this)
+                {
+                    window.DialogResult = dialogResult;
+                    window.Close();
+                    break;
+                }
+            }
+        }
+
+        private bool IsLabOrderDataValid()
+        {
+            ValidateProperty(nameof(LabOrder.PatientID));
+            ValidateProperty(nameof(LabOrder.DentistID));
+            ValidateProperty(nameof(LabOrder.Description));
+
+            return !HasErrors;
+        }
+
+        private void ValidateProperty(string propertyName)
+        {
+            _propertyErrors.Remove(propertyName);
+
+            switch (propertyName)
+            {
+                case nameof(LabOrder.PatientID):
+                    if (LabOrder.PatientID == 0)
+                        AddError(propertyName, "Debes seleccionar un paciente.");
+                    break;
+                case nameof(LabOrder.DentistID):
+                    if (LabOrder.DentistID == 0)
+                        AddError(propertyName, "Debes seleccionar un dentista.");
+                    break;
+                case nameof(LabOrder.Description):
+                    if (string.IsNullOrWhiteSpace(LabOrder.Description))
+                        AddError(propertyName, "La descripción es obligatoria.");
+                    break;
+                // Add more validations as needed
+            }
+
+            ErrorsChanged?.Invoke(this, new DataErrorsChangedEventArgs(propertyName));
+        }
+
+        private void AddError(string propertyName, string error)
+        {
+            if (!_propertyErrors.ContainsKey(propertyName))
+                _propertyErrors[propertyName] = new List<string>();
+
+            _propertyErrors[propertyName].Add(error);
+        }
+
+        public IEnumerable GetErrors(string? propertyName)
+        {
+            if (string.IsNullOrEmpty(propertyName))
+                return null!;
+
+            return _propertyErrors.ContainsKey(propertyName) ? _propertyErrors[propertyName] : null!;
+        }
+    }
+}
+
+
+########## C:\Users\Ana\DentalClinic\src\ViewModels\MedicalRecord\AddMedicalRecordViewModel.cs ##########
+using System;
+using System.Collections.ObjectModel;
+using System.Windows;
+using System.Windows.Input;
+using CommunityToolkit.Mvvm.Input;
+using DentalClinicWPF.Data;
+using DentalClinicWPF.Models;
+using DentalClinicWPF.ViewModels.Base;
+using Microsoft.Win32;
+
+namespace DentalClinicWPF.ViewModels.MedicalRecord
+{
+    public class AddMedicalRecordViewModel : BaseViewModel
+    {
+        private readonly DentalClinicContext _context;
+
+        public Models.MedicalRecord MedicalRecord { get; set; }
+
+        public ObservableCollection<Models.Patient> Patients { get; }
+        public ObservableCollection<Models.Dentist> Dentists { get; }
+
+        public ICommand SaveCommand { get; }
+        public ICommand CancelCommand { get; }
+        public ICommand UploadAttachmentCommand { get; }
+
+        public AddMedicalRecordViewModel(DentalClinicContext context)
+        {
+            _context = context ?? throw new ArgumentNullException(nameof(context));
+
+            MedicalRecord = new Models.MedicalRecord
+            {
+                Date = DateTime.Now,
+                Notes = string.Empty,
+                Attachments = Array.Empty<byte>()
+            };
+
+            Patients = new ObservableCollection<Models.Patient>(_context.Patient.ToList());
+            Dentists = new ObservableCollection<Models.Dentist>(_context.Dentist.ToList());
+
+            SaveCommand = new RelayCommand(Save);
+            CancelCommand = new RelayCommand(Cancel);
+            UploadAttachmentCommand = new RelayCommand(UploadAttachment);
+        }
+
+        private void Save()
+        {
+            if (MedicalRecord.PatientID == 0 || MedicalRecord.DentistID == 0)
+            {
+                MessageBox.Show("Selecciona un paciente y un dentista.", "Error de Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            try
+            {
+                _context.MedicalRecord.Add(MedicalRecord);
+                _context.SaveChanges();
+
+                MessageBox.Show("Expediente guardado correctamente.", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
+                CloseWindow(true);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al guardar el expediente: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void Cancel() => CloseWindow(false);
+
+        private void CloseWindow(bool dialogResult)
+        {
+            foreach (Window window in Application.Current.Windows)
+            {
+                if (window.DataContext == this)
+                {
+                    window.DialogResult = dialogResult;
+                    window.Close();
+                    break;
+                }
+            }
+        }
+
+        private void UploadAttachment()
+        {
+            var openFileDialog = new OpenFileDialog
+            {
+                Title = "Seleccionar Adjunto",
+                Filter = "Todos los Archivos (*.*)|*.*"
+            };
+
+            if (openFileDialog.ShowDialog() == true)
+            {
+                MedicalRecord.Attachments = System.IO.File.ReadAllBytes(openFileDialog.FileName);
+                MessageBox.Show("Adjunto subido correctamente.", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+        }
+    }
+}
+
+
+########## C:\Users\Ana\DentalClinic\src\ViewModels\Patient\AddPatientViewModel.cs ##########
+using System;
+using System.Text.RegularExpressions;
+using System.Windows;
+using System.Windows.Input;
+using CommunityToolkit.Mvvm.Input;
+using DentalClinicWPF.Data;
+using DentalClinicWPF.Models;
+using DentalClinicWPF.ViewModels.Base;
+
+namespace DentalClinicWPF.ViewModels.Patient
+{
+    public class AddPatientViewModel : BaseViewModel
+    {
+        private readonly DentalClinicContext _context;
+
+        private string _firstName = string.Empty;
+        public string FirstName
+        {
+            get => _firstName;
+            set
+            {
+                if (SetProperty(ref _firstName, value))
+                {
+                    ValidateProperty(nameof(FirstName));
+                    NotifySaveCommand();
+                }
+            }
+        }
+
+        private string _lastName = string.Empty;
+        public string LastName
+        {
+            get => _lastName;
+            set
+            {
+                if (SetProperty(ref _lastName, value))
+                {
+                    ValidateProperty(nameof(LastName));
+                    NotifySaveCommand();
+                }
+            }
+        }
+
+        private DateTime _dateOfBirth = DateTime.Today.AddYears(-18);
+        public DateTime DateOfBirth
+        {
+            get => _dateOfBirth;
+            set
+            {
+                if (SetProperty(ref _dateOfBirth, value))
+                {
+                    ValidateProperty(nameof(DateOfBirth));
+                    NotifySaveCommand();
+                }
+            }
+        }
+
+        private string _gender = "Male";
+        public string Gender
+        {
+            get => _gender;
+            set => SetProperty(ref _gender, value);
+        }
+
+        private string _phoneNumber = "+52";
+        public string PhoneNumber
+        {
+            get => _phoneNumber;
+            set
+            {
+                if (SetProperty(ref _phoneNumber, value))
+                {
+                    ValidateProperty(nameof(PhoneNumber));
+                    NotifySaveCommand();
+                }
+            }
+        }
+
+        private string _email = string.Empty;
+        public string Email
+        {
+            get => _email;
+            set
+            {
+                if (SetProperty(ref _email, value))
+                {
+                    ValidateProperty(nameof(Email));
+                    NotifySaveCommand();
+                }
+            }
+        }
+
+        private string _address = string.Empty;
+        public string Address
+        {
+            get => _address;
+            set
+            {
+                if (SetProperty(ref _address, value))
+                {
+                    ValidateProperty(nameof(Address));
+                    NotifySaveCommand();
+                }
+            }
+        }
+
+        public ICommand SaveCommand { get; }
+        public ICommand CancelCommand { get; }
+
+        public AddPatientViewModel(DentalClinicContext context)
+        {
+            _context = context ?? throw new ArgumentNullException(nameof(context));
+
+            SaveCommand = new RelayCommand(Save, CanSave);
+            CancelCommand = new RelayCommand(Cancel);
+        }
+
+        private bool CanSave()
+        {
+            return !HasErrors &&
+                   !string.IsNullOrWhiteSpace(FirstName) &&
+                   !string.IsNullOrWhiteSpace(LastName) &&
+                   CalculateAge(DateOfBirth) >= 18 &&
+                   Regex.IsMatch(PhoneNumber, @"^[\d\s\+\-\(\)]{7,}$") &&
+                   !string.IsNullOrWhiteSpace(Email) &&
+                   Regex.IsMatch(Email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$") &&
+                   ValidateAddress(Address);
+        }
+
+        private void Save()
+        {
+            if (!CanSave())
+            {
+                MessageBox.Show("Corrige los errores de validación antes de guardar.", "Error de Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            try
+            {
+                var patient = new Models.Patient
+                {
+                    FirstName = FirstName,
+                    LastName = LastName,
+                    DateOfBirth = DateOfBirth,
+                    Gender = Gender,
+                    PhoneNumber = PhoneNumber,
+                    Email = Email,
+                    Address = Address
+                };
+
+                _context.Patient.Add(patient);
+                _context.SaveChanges();
+
+                MessageBox.Show("¡Paciente agregado correctamente!", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
+                CloseWindow(true);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al guardar el paciente: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void Cancel() => CloseWindow(false);
+
+        protected override void ValidateProperty(string propertyName)
+        {
+            base.ValidateProperty(propertyName);
+
+            switch (propertyName)
+            {
+                case nameof(FirstName):
+                    if (string.IsNullOrWhiteSpace(FirstName))
+                        AddError(propertyName, "El nombre es obligatorio.");
+                    else if (!StartsWithUppercase(FirstName))
+                        AddError(propertyName, "El nombre debe comenzar con mayúscula.");
+                    break;
+
+                case nameof(LastName):
+                    if (string.IsNullOrWhiteSpace(LastName))
+                        AddError(propertyName, "El apellido es obligatorio.");
+                    else if (!StartsWithUppercase(LastName))
+                        AddError(propertyName, "El apellido debe comenzar con mayúscula.");
+                    break;
+
+                case nameof(PhoneNumber):
+                    if (string.IsNullOrWhiteSpace(PhoneNumber))
+                        AddError(propertyName, "El teléfono es obligatorio.");
+                    else if (!Regex.IsMatch(PhoneNumber, @"^[\d\s\+\-\(\)]{7,}$"))
+                        AddError(propertyName, "El teléfono debe contener al menos 7 dígitos. Se permiten espacios, +, -, (, ).");
+                    break;
+
+                case nameof(Email):
+                    if (!string.IsNullOrWhiteSpace(Email) && !Regex.IsMatch(Email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
+                        AddError(propertyName, "Correo electrónico inválido.");
+                    break;
+
+                case nameof(DateOfBirth):
+                    if (CalculateAge(DateOfBirth) < 18)
+                        AddError(propertyName, "El paciente debe tener al menos 18 años.");
+                    break;
+
+                case nameof(Address):
+                    if (!ValidateAddress(Address))
+                        AddError(propertyName, "La dirección es obligatoria.");
+                    break;
+            }
+        }
+
+        private bool ValidateAddress(string address)
+        {
+            return !string.IsNullOrWhiteSpace(address);
+        }
+
+        private bool StartsWithUppercase(string value)
+        {
+            return !string.IsNullOrEmpty(value) && char.IsUpper(value[0]);
+        }
+
+        private int CalculateAge(DateTime birthDate)
+        {
+            var today = DateTime.Today;
+            int age = today.Year - birthDate.Year;
+            if (birthDate.Date > today.AddYears(-age)) age--;
+            return age;
+        }
+
+        private void NotifySaveCommand()
+        {
+            ((RelayCommand)SaveCommand).NotifyCanExecuteChanged();
+        }
+
+        private void CloseWindow(bool dialogResult)
+        {
+            foreach (Window window in Application.Current.Windows)
+            {
+                if (window.DataContext == this)
+                {
+                    window.DialogResult = dialogResult;
+                    window.Close();
+                    break;
+                }
+            }
+        }
+    }
+}
+
+
+########## C:\Users\Ana\DentalClinic\src\ViewModels\Prescription\AddPrescriptionViewModel.cs ##########
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Windows;
+using System.Windows.Input;
+using CommunityToolkit.Mvvm.Input;
+using DentalClinicWPF.Data;
+using DentalClinicWPF.Models;
+using DentalClinicWPF.ViewModels.Base;
+
+namespace DentalClinicWPF.ViewModels.Prescription
+{
+    public class AddPrescriptionViewModel : BaseViewModel
+    {
+        private readonly DentalClinicContext _context;
+
+        public Models.Prescription Prescription { get; set; }
+        public List<Models.Patient> Patients { get; }
+        public List<Models.Dentist> Dentists { get; }
+
+        public ICommand SaveCommand { get; }
+        public ICommand CancelCommand { get; }
+
+        public AddPrescriptionViewModel(DentalClinicContext context)
+        {
+            _context = context ?? throw new ArgumentNullException(nameof(context));
+            Prescription = new Models.Prescription { DateIssued = DateTime.Now };
+
+            Patients = _context.Patient
+                .OrderBy(p => p.FirstName)
+                .ThenBy(p => p.LastName)
+                .ToList();
+
+            Dentists = _context.Dentist
+                .OrderBy(d => d.FirstName)
+                .ThenBy(d => d.LastName)
+                .ToList();
+
+            SaveCommand = new RelayCommand(Save);
+            CancelCommand = new RelayCommand(Cancel);
+        }
+
+
+        private void Save()
+        {
+            try
+            {
+                if (!IsPrescriptionDataValid())
+                {
+                    return;
+                }
+
+                _context.Prescription.Add(Prescription);
+                _context.SaveChanges();
+
+                MessageBox.Show("Receta agregada correctamente.", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
+                CloseWindow(true);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al guardar la receta: {ex.InnerException?.Message ?? ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void Cancel()
+        {
+            CloseWindow(false);
+        }
+
+        private void CloseWindow(bool dialogResult)
+        {
+            foreach (Window window in Application.Current.Windows)
+            {
+                if (window.DataContext == this)
+                {
+                    window.DialogResult = dialogResult;
+                    window.Close();
+                    break;
+                }
+            }
+        }
+
+        private bool IsPrescriptionDataValid()
+        {
+            if (Prescription.PatientID == 0)
+            {
+                MessageBox.Show("Selecciona un paciente.", "Error de Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return false;
+            }
+
+            if (Prescription.DentistID == 0)
+            {
+                MessageBox.Show("Selecciona un dentista.", "Error de Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return false;
+            }
+
+            if (Prescription.DateIssued == default)
+            {
+                MessageBox.Show("Selecciona una fecha válida.", "Error de Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(Prescription.Medication))
+            {
+                MessageBox.Show("El medicamento es obligatorio.", "Error de Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(Prescription.Dosage))
+            {
+                MessageBox.Show("La dosis es obligatoria.", "Error de Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return false;
+            }
+            
+            if (Prescription.Medication.Length > 200)
+            {
+                MessageBox.Show("El medicamento no puede superar 200 caracteres.", "Error de Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return false;
+            }
+
+            if (Prescription.Dosage.Length > 100)
+            {
+                MessageBox.Show("La dosis no puede superar 100 caracteres.", "Error de Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return false;
+            }
+
+            return true;
+        }
+    }
+}
+
+
+########## C:\Users\Ana\DentalClinic\src\ViewModels\Room\AddRoomViewModel.cs ##########
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using DentalClinicWPF.Data;
+using System;
+using System.Windows;
+
+namespace DentalClinicWPF.ViewModels.Room
+{
+    public partial class AddRoomViewModel : ObservableObject
+    {
+        private readonly DentalClinicContext _context;
+
+        [ObservableProperty]
+        private string? roomNumber;
+
+        [ObservableProperty]
+        private string? address;
+
+        [ObservableProperty]
+        private string? phone;
+
+        [ObservableProperty]
+        private bool isAvailable = true;
+
+        public AddRoomViewModel(DentalClinicContext context)
+        {
+            _context = context;
+        }
+
+        [RelayCommand]
+        private void Save(Window window)
+        {
+            if (string.IsNullOrWhiteSpace(RoomNumber))
+            {
+                MessageBox.Show("El nombre/nÃºmero de consultorio es obligatorio.", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            try
+            {
+                var newRoom = new Models.Room
+                {
+                    RoomNumber = RoomNumber,
+                    Address = Address,
+                    Phone = Phone,
+                    IsAvailable = IsAvailable
+                };
+
+                _context.Set<Models.Room>().Add(newRoom);
+                _context.SaveChanges();
+                
+                window.DialogResult = true;
+                window.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al guardar: {ex.Message}", "Error");
+            }
+        }
+
+        [RelayCommand]
+        private void Cancel(Window window)
+        {
+            window.DialogResult = false;
+            window.Close();
+        }
+    }
+}
+
+
+########## C:\Users\Ana\DentalClinic\src\ViewModels\Schedule\AddScheduleViewModel.cs ##########
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Windows;
+using System.Windows.Input;
+using CommunityToolkit.Mvvm.Input;
+using DentalClinicWPF.Data;
+using DentalClinicWPF.Models;
+using DentalClinicWPF.ViewModels.Base;
+
+namespace DentalClinicWPF.ViewModels.Schedule
+{
+    public class AddScheduleViewModel : BaseViewModel
+    {
+        private readonly DentalClinicContext _context;
+
+        private Models.Schedule _schedule;
+        public Models.Schedule Schedule
+        {
+            get => _schedule;
+            set
+            {
+                _schedule = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public List<Models.Dentist> Dentists { get; }
+
+        public ICommand SaveCommand { get; }
+        public ICommand CancelCommand { get; }
+
+        public AddScheduleViewModel(DentalClinicContext context)
+        {
+            _context = context ?? throw new ArgumentNullException(nameof(context));
+
+            Schedule = new Models.Schedule
+            {
+                StartDate = DateTime.Today,
+                EndDate = DateTime.Today.AddDays(4), // Default to a 5-day week
+                IsDayOff = false
+                // StartTime and EndTime are set to default values in the model
+            };
+
+            // Retrieve the list of dentists
+            Dentists = _context.Dentist.ToList();
+
+            SaveCommand = new RelayCommand(Save);
+            CancelCommand = new RelayCommand(Cancel);
+        }
+
+        private void Save()
+        {
+            // Validate that work dates are Monday to Friday
+            if (Schedule.StartDate.DayOfWeek == DayOfWeek.Saturday || Schedule.StartDate.DayOfWeek == DayOfWeek.Sunday ||
+                Schedule.EndDate.DayOfWeek == DayOfWeek.Saturday || Schedule.EndDate.DayOfWeek == DayOfWeek.Sunday)
+            {
+                MessageBox.Show("Los empleados no trabajan los fines de semana.", "Error de Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            // Ensure the date range is logical
+            if (Schedule.StartDate > Schedule.EndDate)
+            {
+                MessageBox.Show("La fecha de inicio debe ser anterior a la fecha de fin.", "Error de Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            // Check if a schedule for this dentist and date range already exists
+            var overlappingSchedule = _context.Schedule
+                .Where(s => s.DentistID == Schedule.DentistID)
+                .Any(s => s.StartDate <= Schedule.EndDate && s.EndDate >= Schedule.StartDate);
+
+            if (overlappingSchedule)
+            {
+                MessageBox.Show("Ya existe un horario para este dentista en ese rango de fechas.", "Error de Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            // Validate the selected dentist
+            var dentist = Dentists.FirstOrDefault(d => d.DentistID == Schedule.DentistID);
+            if (dentist == null)
+            {
+                MessageBox.Show("El dentista seleccionado no existe.", "Error de Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            _context.Schedule.Add(Schedule);
+            _context.SaveChanges();
+
+            // Set DialogResult to true to indicate success
+            SetDialogResult(true);
+        }
+
+        private void Cancel()
+        {
+            // Set DialogResult to false to indicate cancellation
+            SetDialogResult(false);
+        }
+
+        private void SetDialogResult(bool result)
+        {
+            foreach (Window window in Application.Current.Windows)
+            {
+                if (window.DataContext == this)
+                {
+                    window.DialogResult = result;
+                    window.Close();
+                    break;
+                }
+            }
+        }
+    }
+}
+
+
+########## C:\Users\Ana\DentalClinic\src\ViewModels\Supplier\AddSupplierViewModel.cs ##########
+using System;
+using System.Windows;
+using System.Windows.Input;
+using CommunityToolkit.Mvvm.Input;
+using DentalClinicWPF.Data;
+using DentalClinicWPF.Models;
+using DentalClinicWPF.ViewModels.Base;
+
+namespace DentalClinicWPF.ViewModels.Supplier
+{
+    public class AddSupplierViewModel : BaseViewModel
+    {
+        private readonly DentalClinicContext _context;
+
+        public Models.Supplier Supplier { get; set; }
+
+        public ICommand SaveCommand { get; }
+        public ICommand CancelCommand { get; }
+
+        public AddSupplierViewModel(DentalClinicContext context)
+        {
+            _context = context ?? throw new ArgumentNullException(nameof(context));
+            Supplier = new Models.Supplier();
+            SaveCommand = new RelayCommand(Save);
+            CancelCommand = new RelayCommand(Cancel);
+        }
+
+        private void Save()
+        {
+            if (string.IsNullOrWhiteSpace(Supplier.CompanyName))
+            {
+                MessageBox.Show("El nombre de la empresa es obligatorio.", "Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            try
+            {
+                _context.Supplier.Add(Supplier);
+                _context.SaveChanges();
+                CloseWindow(true);
+            }
+            catch (Exception ex)
+            {
+                // Muestra el error real de la base de datos
+                var msg = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                MessageBox.Show($"Error al guardar el proveedor:\n{msg}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void Cancel() => CloseWindow(false);
+
+        private void CloseWindow(bool dialogResult)
+        {
+            foreach (Window window in Application.Current.Windows)
+            {
+                if (window.DataContext == this)
+                {
+                    window.DialogResult = dialogResult;
+                    window.Close();
+                    break;
+                }
+            }
+        }
+    }
+}
+
+
+########## C:\Users\Ana\DentalClinic\src\ViewModels\Treatment\AddTreatmentViewModel.cs ##########
+using System;
+using System.Collections.ObjectModel;
+using System.Windows;
+using System.Windows.Input;
+using CommunityToolkit.Mvvm.Input;
+using DentalClinicWPF.Data;
+using DentalClinicWPF.Models;
+using DentalClinicWPF.ViewModels.Base;
+
+namespace DentalClinicWPF.ViewModels.Treatment
+{
+    public class AddEditTreatmentViewModel : BaseViewModel
+    {
+        private readonly DentalClinicContext _context;
+
+        // Properties for Binding
+        private string _name = string.Empty;
+        public string Name
+        {
+            get => _name;
+            set
+            {
+                if (SetProperty(ref _name, value))
+                {
+                    Treatment.Name = value;
+                    ValidateProperty(nameof(Name));
+                    NotifySaveCommand();
+                }
+            }
+        }
+
+        private string _description = string.Empty;
+        public string Description
+        {
+            get => _description;
+            set
+            {
+                if (SetProperty(ref _description, value))
+                {
+                    Treatment.Description = value;
+                    ValidateProperty(nameof(Description));
+                    NotifySaveCommand();
+                }
+            }
+        }
+
+        private decimal _price;
+        public decimal Price
+        {
+            get => _price;
+            set
+            {
+                if (SetProperty(ref _price, value))
+                {
+                    Treatment.Price = value;
+                    ValidateProperty(nameof(Price));
+                    NotifySaveCommand();
+                }
+            }
+        }
+
+        private int _durationMinutes;
+        public int DurationMinutes
+        {
+            get => _durationMinutes;
+            set
+            {
+                if (SetProperty(ref _durationMinutes, value))
+                {
+                    Treatment.Duration = TimeSpan.FromMinutes(value);
+                    ValidateProperty(nameof(DurationMinutes));
+                    NotifySaveCommand();
+                }
+            }
+        }
+
+        public Models.Treatment Treatment { get; }
+
+        public ICommand SaveCommand { get; }
+        public ICommand CancelCommand { get; }
+
+        public AddEditTreatmentViewModel(DentalClinicContext context, Models.Treatment? treatment = null)
+        {
+            _context = context ?? throw new ArgumentNullException(nameof(context));
+
+            Treatment = treatment ?? new Models.Treatment
+            {
+                Name = string.Empty,
+                Description = string.Empty,
+                Price = 1,
+                Duration = TimeSpan.FromMinutes(1)
+            };
+
+            Name = Treatment.Name;
+            Description = Treatment.Description;
+            Price = Treatment.Price;
+            DurationMinutes = (int)Treatment.Duration.TotalMinutes;
+
+            SaveCommand = new RelayCommand(Save, CanSave);
+            CancelCommand = new RelayCommand(Cancel);
+
+            PropertyChanged += (s, e) => ValidateProperty(e.PropertyName);
+        }
+
+        protected override void ValidateProperty(string propertyName)
+        {
+            base.ValidateProperty(propertyName);
+
+            switch (propertyName)
+            {
+                case nameof(Name):
+                    if (string.IsNullOrWhiteSpace(Name))
+                        AddError(propertyName, "El nombre es obligatorio.");
+                    else if (Name.Length > 100)
+                        AddError(propertyName, "El nombre no puede superar 100 caracteres.");
+                    break;
+
+                case nameof(Description):
+                    if (string.IsNullOrWhiteSpace(Description))
+                        AddError(propertyName, "La descripción es obligatoria.");
+                    else if (Description.Length > 500)
+                        AddError(propertyName, "La descripción no puede superar 500 caracteres.");
+                    break;
+
+                case nameof(Price):
+                    if (Price <= 0)
+                        AddError(propertyName, "El precio debe ser mayor a 0.");
+                    break;
+
+                case nameof(DurationMinutes):
+                    if (DurationMinutes < 1)
+                        AddError(propertyName, "La duración debe ser al menos 1 minuto.");
+                    break;
+            }
+        }
+
+        private bool CanSave()
+        {
+            return !HasErrors &&
+                   !string.IsNullOrWhiteSpace(Name) &&
+                   !string.IsNullOrWhiteSpace(Description) &&
+                   Price > 0 &&
+                   DurationMinutes > 0;
+        }
+
+        private void Save()
+        {
+            if (!CanSave())
+            {
+                MessageBox.Show("Corrige los errores de validación antes de guardar.", "Error de Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            try
+            {
+                if (Treatment.TreatmentID == 0)
+                    _context.Treatment.Add(Treatment);
+                else
+                    _context.Treatment.Update(Treatment);
+
+                _context.SaveChanges();
+                MessageBox.Show("¡Tratamiento guardado correctamente!", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
+                CloseWindow(true);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al guardar el tratamiento: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void Cancel() => CloseWindow(false);
+
+        private void NotifySaveCommand()
+        {
+            if (SaveCommand is RelayCommand relayCommand)
+                relayCommand.NotifyCanExecuteChanged();
+        }
+
+        private void CloseWindow(bool dialogResult)
+        {
+            foreach (Window window in Application.Current.Windows)
+            {
+                if (window.DataContext == this)
+                {
+                    window.DialogResult = dialogResult;
+                    window.Close();
+                    break;
+                }
+            }
+        }
+    }
+}
+
+
+########## C:\Users\Ana\DentalClinic\src\ViewModels\TreatmentPlan\AddTreatmentPlanViewModel.cs ##########
+using System;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Windows;
+using CommunityToolkit.Mvvm.Input;
+using DentalClinicWPF.Data;
+using DentalClinicWPF.ViewModels.Base;
+
+namespace DentalClinicWPF.ViewModels.TreatmentPlan
+{
+    public class AddTreatmentPlanViewModel : BaseViewModel
+    {
+        private readonly DentalClinicContext _context;
+        private readonly Models.Patient _patient;
+
+        public ObservableCollection<Models.Treatment> AvailableTreatments { get; set; }
+        public ObservableCollection<Models.Dentist> AvailableDentists { get; set; }
+        public ObservableCollection<TreatmentPlanItemViewModel> Items { get; set; }
+
+        private Models.Treatment _selectedTreatment;
+        public Models.Treatment SelectedTreatment
+        {
+            get => _selectedTreatment;
+            set { _selectedTreatment = value; OnPropertyChanged(nameof(SelectedTreatment)); }
+        }
+
+        private Models.Dentist _selectedDentist;
+        public Models.Dentist SelectedDentist
+        {
+            get => _selectedDentist;
+            set { _selectedDentist = value; OnPropertyChanged(nameof(SelectedDentist)); }
+        }
+
+        private int _quantity = 1;
+        public int Quantity
+        {
+            get => _quantity;
+            set { _quantity = value; OnPropertyChanged(nameof(Quantity)); }
+        }
+
+        private string _observations;
+        public string Observations
+        {
+            get => _observations;
+            set { _observations = value; OnPropertyChanged(nameof(Observations)); }
+        }
+
+        public decimal TotalAmount => Items.Sum(x => x.Subtotal);
+
+        public IRelayCommand AddItemCommand { get; }
+        public IRelayCommand<TreatmentPlanItemViewModel> RemoveItemCommand { get; }
+        public IRelayCommand SaveCommand { get; }
+
+        public AddTreatmentPlanViewModel(DentalClinicContext context, Models.Patient patient)
+        {
+            _context = context ?? throw new ArgumentNullException(nameof(context));
+            _patient = patient ?? throw new ArgumentNullException(nameof(patient));
+
+            Items = new ObservableCollection<TreatmentPlanItemViewModel>();
+            AvailableTreatments = new ObservableCollection<Models.Treatment>(_context.Treatment.ToList());
+            AvailableDentists = new ObservableCollection<Models.Dentist>(_context.Dentist.ToList());
+            SelectedDentist = AvailableDentists.FirstOrDefault();
+
+            AddItemCommand = new RelayCommand(AddItem);
+            RemoveItemCommand = new RelayCommand<TreatmentPlanItemViewModel>(RemoveItem);
+            SaveCommand = new RelayCommand(Save);
+        }
+
+        private void AddItem()
+        {
+            if (SelectedTreatment == null || Quantity <= 0)
+            {
+                MessageBox.Show("Seleccione un tratamiento y una cantidad válida.", "Aviso", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            var existing = Items.FirstOrDefault(x => x.Treatment.TreatmentID == SelectedTreatment.TreatmentID);
+            if (existing != null)
+            {
+                existing.Quantity += Quantity;
+                // Forzar actualización en UI
+                var index = Items.IndexOf(existing);
+                Items[index] = existing;
+            }
+            else
+            {
+                Items.Add(new TreatmentPlanItemViewModel(SelectedTreatment, Quantity));
+            }
+
+            Quantity = 1;
+            OnPropertyChanged(nameof(TotalAmount));
+        }
+
+        private void RemoveItem(TreatmentPlanItemViewModel item)
+        {
+            if (item != null && Items.Contains(item))
+            {
+                Items.Remove(item);
+                OnPropertyChanged(nameof(TotalAmount));
+            }
+        }
+
+        private void Save()
+        {
+            if (!Items.Any())
+            {
+                MessageBox.Show("Debe agregar al menos un tratamiento al presupuesto.", "Aviso", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+            if (SelectedDentist == null)
+            {
+                MessageBox.Show("Debe seleccionar un odontólogo.", "Aviso", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            try
+            {
+                var plan = new Models.TreatmentPlan
+                {
+                    PatientID = _patient.PatientID,
+                    DentistID = SelectedDentist.DentistID,
+                    CreationDate = DateTime.Now,
+                    Status = "Borrador",
+                    TotalAmount = TotalAmount,
+                    Observations = Observations,
+                    Details = string.Empty // <- Requerido por el esquema antiguo de SQLite
+                };
+
+                // Guardar el plan primero para generar el TreatmentPlanID
+                _context.TreatmentPlan.Add(plan);
+                _context.SaveChanges();
+
+                // Ahora guardar los items con el ID del plan ya generado
+                foreach (var item in Items)
+                {
+                    var entity = item.ToEntity();
+                    entity.TreatmentPlanID = plan.TreatmentPlanID;
+                    _context.TreatmentPlanItem.Add(entity);
+                }
+                _context.SaveChanges();
+                
+                MessageBox.Show("Presupuesto guardado correctamente.", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
+                // Cerrar ventana (requiere que el code-behind escuche este evento o se use un DialogResult)
+                if (Application.Current.Windows.OfType<Window>().SingleOrDefault(x => x.IsActive) is Window w) { w.DialogResult = true; }
+            }
+            catch (Exception ex)
+            {
+                var innerMsg = ex.InnerException != null ? ex.InnerException.Message : "";
+                MessageBox.Show($"Error al guardar:\n{ex.Message}\n\nDetalle:\n{innerMsg}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+    }
+}
+
+
+
+
+
+=== MAINVIEW.XAML ===
+
+
+=== APP.XAML.CS ===
+using System;
+using System.Windows;
+using System.Windows.Threading;
+using DentalClinicWPF.Data;
+
+namespace DentalClinicWPF
+{
+    public partial class App : Application
+    {
+        protected override void OnStartup(StartupEventArgs e)
+        {
+            base.OnStartup(e);
+
+            // Captura cualquier excepciÃ³n no controlada y la muestra
+            this.DispatcherUnhandledException += (s, args) =>
+            {
+                MessageBox.Show(
+                    "EXCEPCIÃ“N NO CONTROLADA:\n\n" +
+                    args.Exception.GetType().FullName + "\n\n" +
+                    args.Exception.Message + "\n\n" +
+                    "STACK TRACE:\n" +
+                    args.Exception.StackTrace,
+                    "Error en la aplicaciÃ³n",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+                args.Handled = true;
+            };
+
+            try
+            {
+                using var context = new DentalClinicContext();
+                context.Database.EnsureCreated();
+        context.EnsureMedicalHistorySchema();
+            context.EnsureTreatmentPlanSchema();
+            context.EnsureInvoicePosSchema();
+            context.EnsureInvoiceCashSchema();
+                context.EnsureRoomPhoneSchema();
+                context.EnsureClinicalSchema();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    "Error al inicializar la base de datos:\n\n" + ex.Message,
+                    "Error",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
+        }
+    }
+}
+
+
+
+
+

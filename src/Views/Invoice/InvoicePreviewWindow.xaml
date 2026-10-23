@@ -1,9 +1,9 @@
-﻿<Window x:Class="DentalClinicWPF.Views.Invoice.InvoicePreviewWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Vista Previa de Factura" Height="600" Width="800" Background="{StaticResource Brush.Background}" FontFamily="{StaticResource Font.Primary}">
-    <Grid>
-        <!-- We use FlowDocumentReader instead of DocumentViewer -->
-        <FlowDocumentReader Name="DocViewer" />
-    </Grid>
+﻿<Window Width="900" Height="700" x:Class="DentalClinicWPF.Views.Invoice.InvoicePreviewWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="Vista Previa de Factura" Background="{StaticResource Brush.Background}" FontFamily="{StaticResource Font.Primary}"    >
+    
+  <Grid>
+    <!-- We use FlowDocumentReader instead of DocumentViewer -->
+    <FlowDocumentReader Name="DocViewer" />
+  </Grid>
+    
 </Window>
+

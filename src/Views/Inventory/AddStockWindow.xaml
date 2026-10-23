@@ -1,0 +1,58 @@
+﻿<Window x:Class="DentalClinicWPF.Views.Inventory.AddStockWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Llegó mercancía" Height="480" Width="520"
+        WindowStartupLocation="CenterOwner" 
+        Background="{StaticResource Brush.Background}"
+        FontFamily="{StaticResource Font.Primary}"
+        ResizeMode="NoResize">
+    <Grid Margin="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Text="Llegó mercancía" FontSize="22" FontWeight="Bold"
+                   Foreground="{StaticResource Brush.TextPrimary}" Margin="0,0,0,8"/>
+        <TextBlock Grid.Row="1" Text="Registra el stock que acaba de entrar"
+                   FontSize="12" Foreground="{StaticResource Brush.TextSecondary}" Margin="0,0,0,20"/>
+
+        <StackPanel Grid.Row="2">
+            <Label Content="Producto" FontWeight="SemiBold" Margin="0,0,0,4"/>
+            <ComboBox Name="ProductCombo"
+                      DisplayMemberPath="ProductName"
+                      Style="{StaticResource FormComboBoxStyle}"
+                      Margin="0,0,0,16"
+                      SelectionChanged="ProductCombo_SelectionChanged"/>
+        </StackPanel>
+
+        <StackPanel Grid.Row="3">
+            <Label Content="Cantidad que llegó" FontWeight="SemiBold" Margin="0,0,0,4"/>
+            <TextBox Name="QuantityBox" Text="1"
+                     Style="{StaticResource FormTextBoxStyle}" Margin="0,0,0,16"/>
+        </StackPanel>
+
+        <Border Grid.Row="4" Background="{StaticResource Brush.Surface}" CornerRadius="8" 
+                Padding="12" Margin="0,0,0,10">
+            <TextBlock Name="CurrentQtyText" FontSize="13"
+                       Foreground="{StaticResource Brush.TextSecondary}"/>
+        </Border>
+
+        <!-- Espaciador para empujar los botones hacia abajo -->
+        <Grid Grid.Row="5" />
+
+        <!-- Botones de acción -->
+        <StackPanel Grid.Row="6" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
+            <Button Style="{StaticResource Modern.Button.Secondary}" Content="Cancelar"
+                    Width="100" Margin="0,0,10,0" Click="Cancel_Click"/>
+            <Button Style="{StaticResource Modern.Button.Primary}" Content="Agregar"
+                    Width="120" Click="Add_Click"/>
+        </StackPanel>
+    </Grid>
+</Window>
+

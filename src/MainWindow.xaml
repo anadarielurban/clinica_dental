@@ -121,13 +121,13 @@
                                 <TextBlock Text="Recetas" Margin="8,0,0,0"/>
                             </StackPanel>
                         </Button>
-                        <Button Tag="Planes de Tratamiento" Command="{Binding ShowTreatmentPlansCommand}"
+                        <!-- <Button Tag="Planes de Tratamiento" Command="{Binding ShowTreatmentPlansCommand}"
                                 Style="{StaticResource Modern.SidebarItem}">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="&#xE8FD;" FontFamily="Segoe MDL2 Assets" Width="20" VerticalAlignment="Center"/>
                                 <TextBlock Text="Planes de Tratamiento" Margin="8,0,0,0"/>
                             </StackPanel>
-                        </Button>
+                        </Button> -->
                         <Button Tag="Órdenes de Laboratorio" Command="{Binding ShowLabOrdersCommand}"
                                 Style="{StaticResource Modern.SidebarItem}">
                             <StackPanel Orientation="Horizontal">
@@ -171,13 +171,6 @@
                                 <TextBlock Text="Proveedores" Margin="8,0,0,0"/>
                             </StackPanel>
                         </Button>
-                        <Button Tag="Equipos" Command="{Binding ShowEquipmentCommand}"
-                                Style="{StaticResource Modern.SidebarItem}">
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="&#xE713;" FontFamily="Segoe MDL2 Assets" Width="20" VerticalAlignment="Center"/>
-                                <TextBlock Text="Equipos" Margin="8,0,0,0"/>
-                            </StackPanel>
-                        </Button>
                         <Button Tag="Empleados" Command="{Binding ShowEmployeesCommand}"
                                 Style="{StaticResource Modern.SidebarItem}">
                             <StackPanel Orientation="Horizontal">
@@ -208,7 +201,6 @@
         </Border>
 
         <!-- ===================== AREA PRINCIPAL ===================== -->
-        <!-- TabControl directamente como último hijo del DockPanel => ocupa todo el espacio restante -->
         <TabControl ItemsSource="{Binding OpenTabs}"
                     SelectedItem="{Binding SelectedTab}"
                     Background="{StaticResource Brush.Background}"
@@ -284,4 +276,3 @@
 
     </DockPanel>
 </Window>
-

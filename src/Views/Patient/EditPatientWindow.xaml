@@ -1,82 +1,51 @@
-﻿<Window x:Class="DentalClinicWPF.Views.Patient.EditPatientWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:sys="clr-namespace:System;assembly=mscorlib"
-        Title="Editar Paciente" Height="700" Width="500" WindowStartupLocation="CenterOwner" Background="{StaticResource Brush.Background}" FontFamily="{StaticResource Font.Primary}">
-
-    <Grid Margin="20">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
-
-        <!-- ScrollViewer, aby można było przewijać, jeśli treść jest zbyt długa -->
-        <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto">
-            <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" VerticalAlignment="Top">
-                
-                <!-- First Name -->
-                <Label Content="Nombre" Style="{StaticResource FormLabelStyle}" />
-                <TextBox Text="{Binding FirstName, 
-                                        UpdateSourceTrigger=PropertyChanged, 
-                                        ValidatesOnNotifyDataErrors=True}" 
-                         Style="{StaticResource FormTextBoxStyle}" />
-
-                <!-- Last Name -->
-                <Label Content="Apellido" Style="{StaticResource FormLabelStyle}" />
-                <TextBox Text="{Binding LastName, 
-                                        UpdateSourceTrigger=PropertyChanged, 
-                                        ValidatesOnNotifyDataErrors=True}" 
-                         Style="{StaticResource FormTextBoxStyle}" />
-
-                <!-- Date of Birth -->
-                <Label Content="Fecha de Nacimiento" Style="{StaticResource FormLabelStyle}" />
-                <DatePicker SelectedDate="{Binding DateOfBirth, 
-                                                   UpdateSourceTrigger=PropertyChanged, 
-                                                   ValidatesOnNotifyDataErrors=True}" 
-                            Style="{StaticResource FormDatePickerStyle}" />
-
-                <!-- Gender -->
-                <Label Content="Género" Style="{StaticResource FormLabelStyle}" />
-                <ComboBox SelectedItem="{Binding Gender, UpdateSourceTrigger=PropertyChanged}" 
-                          Style="{StaticResource FormComboBoxStyle}">
-                    <ComboBox.ItemsSource>
-                        <x:Array Type="{x:Type sys:String}">
-                            <sys:String>Masculino</sys:String>
-                            <sys:String>Femenino</sys:String>
-                            <sys:String>Otro</sys:String>
-                        </x:Array>
-                    </ComboBox.ItemsSource>
-                </ComboBox>
-
-                <!-- Phone Number -->
-                <Label Content="Teléfono" Style="{StaticResource FormLabelStyle}" />
-                <TextBox Text="{Binding PhoneNumber, 
-                                        UpdateSourceTrigger=PropertyChanged, 
-                                        ValidatesOnNotifyDataErrors=True}" 
-                         Style="{StaticResource FormTextBoxStyle}" />
-
-                <!-- Email -->
-                <Label Content="Correo" Style="{StaticResource FormLabelStyle}" />
-                <TextBox Text="{Binding Email, 
-                                        UpdateSourceTrigger=PropertyChanged, 
-                                        ValidatesOnNotifyDataErrors=True}" 
-                         Style="{StaticResource FormTextBoxStyle}" />
-
-                <!-- Address -->
-                <Label Content="Dirección" Style="{StaticResource FormLabelStyle}" />
-                <TextBox Text="{Binding Address, 
-                                        UpdateSourceTrigger=PropertyChanged, 
-                                        ValidatesOnNotifyDataErrors=True}" 
-                         Style="{StaticResource FormTextBoxStyle}" />
-            </StackPanel>
-        </ScrollViewer>
-
-        <!-- Przyciski na dole -->
-        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10">
-            <Button Style="{StaticResource Modern.Button.Secondary}" Content="Cancelar" Command="{Binding CancelCommand}" Width="100" Margin="5" />
-            <Button Style="{StaticResource Modern.Button.Danger}" Content="Eliminar" Command="{Binding DeleteCommand}" Width="100" Margin="5" />
-            <Button Style="{StaticResource Modern.Button.Primary}" Content="Guardar" Command="{Binding SaveCommand}" Width="100" Margin="5" />
-        </StackPanel>
-    </Grid>
+﻿<Window Width="900" Height="700" x:Class="DentalClinicWPF.Views.Patient.EditPatientWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:sys="clr-namespace:System;assembly=mscorlib" Title="Editar Paciente" Background="{StaticResource Brush.Background}" FontFamily="{StaticResource Font.Primary}"    >
+    
+  <Grid Margin="20">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="*" />
+      <RowDefinition Height="Auto" />
+    </Grid.RowDefinitions>
+    <!-- ScrollViewer, aby moÅ¼na byÅ‚o przewijaÄ‡, jeÅ›li treÅ›Ä‡ jest zbyt dÅ‚uga -->
+    
+      <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" VerticalAlignment="Top">
+        <!-- First Name -->
+        <Label Content="Nombre" Style="{StaticResource FormLabelStyle}" />
+        <TextBox Text="{Binding FirstName,                                          UpdateSourceTrigger=PropertyChanged,                                          ValidatesOnNotifyDataErrors=True}" Style="{StaticResource FormTextBoxStyle}" />
+        <!-- Last Name -->
+        <Label Content="Apellido" Style="{StaticResource FormLabelStyle}" />
+        <TextBox Text="{Binding LastName,                                          UpdateSourceTrigger=PropertyChanged,                                          ValidatesOnNotifyDataErrors=True}" Style="{StaticResource FormTextBoxStyle}" />
+        <!-- Date of Birth -->
+        <Label Content="Fecha de Nacimiento" Style="{StaticResource FormLabelStyle}" />
+        <DatePicker SelectedDate="{Binding DateOfBirth,                                                     UpdateSourceTrigger=PropertyChanged,                                                     ValidatesOnNotifyDataErrors=True}" Style="{StaticResource FormDatePickerStyle}" />
+        <!-- Gender -->
+        <Label Content="Género" Style="{StaticResource FormLabelStyle}" />
+        <ComboBox SelectedItem="{Binding Gender, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource FormComboBoxStyle}">
+          <ComboBox.ItemsSource>
+            <x:Array Type="{x:Type sys:String}">
+              <sys:String>Masculino</sys:String>
+              <sys:String>Femenino</sys:String>
+              <sys:String>Otro</sys:String>
+            </x:Array>
+          </ComboBox.ItemsSource>
+        </ComboBox>
+        <!-- Phone Number -->
+        <Label Content="Teléfono" Style="{StaticResource FormLabelStyle}" />
+        <TextBox Text="{Binding PhoneNumber,                                          UpdateSourceTrigger=PropertyChanged,                                          ValidatesOnNotifyDataErrors=True}" Style="{StaticResource FormTextBoxStyle}" />
+        <!-- Email -->
+        <Label Content="Correo" Style="{StaticResource FormLabelStyle}" />
+        <TextBox Text="{Binding Email,                                          UpdateSourceTrigger=PropertyChanged,                                          ValidatesOnNotifyDataErrors=True}" Style="{StaticResource FormTextBoxStyle}" />
+        <!-- Address -->
+        <Label Content="Dirección" Style="{StaticResource FormLabelStyle}" />
+        <TextBox Text="{Binding Address,                                          UpdateSourceTrigger=PropertyChanged,                                          ValidatesOnNotifyDataErrors=True}" Style="{StaticResource FormTextBoxStyle}" />
+      </StackPanel>
+    
+    <!-- Przyciski na dole -->
+    <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10">
+      <Button Style="{StaticResource Modern.Button.Secondary}" Content="Cancelar" Command="{Binding CancelCommand}"  Margin="5" />
+      <Button Style="{StaticResource Modern.Button.Danger}" Content="Eliminar" Command="{Binding DeleteCommand}"  Margin="5" />
+      <Button Style="{StaticResource Modern.Button.Primary}" Content="Guardar" Command="{Binding SaveCommand}"  Margin="5" />
+    </StackPanel>
+  </Grid>
+    
 </Window>
 

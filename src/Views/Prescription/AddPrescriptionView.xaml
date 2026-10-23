@@ -1,47 +1,33 @@
-﻿<Window x:Class="DentalClinicWPF.Views.Prescription.AddPrescriptionView"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Agregar Receta" Height="550" Width="600" Background="{StaticResource Brush.Background}" FontFamily="{StaticResource Font.Primary}">
-    <Grid Margin="10">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
-
-        <!-- Form Inputs -->
-        <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto">
-            <StackPanel Margin="0,0,0,10">
-                <Label Content="Paciente" />
-                <ComboBox Style="{StaticResource FormComboBoxStyle}" ItemsSource="{Binding Patients}" 
-                          DisplayMemberPath="DisplayInfo" 
-                          SelectedValuePath="PatientID" 
-                          SelectedValue="{Binding Prescription.PatientID, Mode=TwoWay}" />
-
-                <Label Content="Dentista" Margin="0,10,0,0" />
-                <ComboBox Style="{StaticResource FormComboBoxStyle}" ItemsSource="{Binding Dentists}" 
-                          DisplayMemberPath="DisplayInfo" 
-                          SelectedValuePath="DentistID" 
-                          SelectedValue="{Binding Prescription.DentistID, Mode=TwoWay}" />
-                
-                <Label Content="Fecha de Emisión" Margin="0,10,0,0" />
-                <DatePicker Style="{StaticResource FormDatePickerStyle}" SelectedDate="{Binding Prescription.DateIssued, Mode=TwoWay}" />
-
-                <Label Content="Medicamento" Margin="0,10,0,0" />
-                <TextBox Style="{StaticResource FormTextBoxStyle}" Text="{Binding Prescription.Medication, Mode=TwoWay}" />
-
-                <Label Content="Dosis" Margin="0,10,0,0" />
-                <TextBox Style="{StaticResource FormTextBoxStyle}" Text="{Binding Prescription.Dosage, Mode=TwoWay}" />
-
-                <Label Content="Instrucciones" Margin="0,10,0,0" />
-                <TextBox Style="{StaticResource FormTextBoxStyle}" Text="{Binding Prescription.Instructions, Mode=TwoWay}" AcceptsReturn="True" Height="100" />
-            </StackPanel>
-        </ScrollViewer>
-
-        <!-- Buttons -->
-        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
-            <Button Style="{StaticResource Modern.Button.Secondary}" Content="Cancelar" Command="{Binding CancelCommand}" Width="100" Margin="5" />
-            <Button Style="{StaticResource Modern.Button.Primary}" Content="Guardar" Command="{Binding SaveCommand}" Width="100" Margin="5" />
-        </StackPanel>
-    </Grid>
+﻿<Window Width="900" Height="700" x:Class="DentalClinicWPF.Views.Prescription.AddPrescriptionView" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="Agregar Receta" Background="{StaticResource Brush.Background}" FontFamily="{StaticResource Font.Primary}"    >
+    
+  <Grid Margin="10">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="*" />
+      <RowDefinition Height="Auto" />
+    </Grid.RowDefinitions>
+    <!-- Form Inputs -->
+    
+      <StackPanel Margin="0,0,0,10">
+        <Label Content="Paciente" />
+        <ComboBox Style="{StaticResource FormComboBoxStyle}" ItemsSource="{Binding Patients}" DisplayMemberPath="DisplayInfo" SelectedValuePath="PatientID" SelectedValue="{Binding Prescription.PatientID, Mode=TwoWay}" />
+        <Label Content="Dentista" Margin="0,10,0,0" />
+        <ComboBox Style="{StaticResource FormComboBoxStyle}" ItemsSource="{Binding Dentists}" DisplayMemberPath="DisplayInfo" SelectedValuePath="DentistID" SelectedValue="{Binding Prescription.DentistID, Mode=TwoWay}" />
+        <Label Content="Fecha de Emisión" Margin="0,10,0,0" />
+        <DatePicker Style="{StaticResource FormDatePickerStyle}" SelectedDate="{Binding Prescription.DateIssued, Mode=TwoWay}" />
+        <Label Content="Medicamento" Margin="0,10,0,0" />
+        <TextBox Style="{StaticResource FormTextBoxStyle}" Text="{Binding Prescription.Medication, Mode=TwoWay}" />
+        <Label Content="Dosis" Margin="0,10,0,0" />
+        <TextBox Style="{StaticResource FormTextBoxStyle}" Text="{Binding Prescription.Dosage, Mode=TwoWay}" />
+        <Label Content="Instrucciones" Margin="0,10,0,0" />
+        <TextBox Style="{StaticResource FormTextBoxStyle}" Text="{Binding Prescription.Instructions, Mode=TwoWay}" AcceptsReturn="True"  />
+      </StackPanel>
+    
+    <!-- Buttons -->
+    <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
+      <Button Style="{StaticResource Modern.Button.Secondary}" Content="Cancelar" Command="{Binding CancelCommand}"  Margin="5" />
+      <Button Style="{StaticResource Modern.Button.Primary}" Content="Guardar" Command="{Binding SaveCommand}"  Margin="5" />
+    </StackPanel>
+  </Grid>
+    
 </Window>
 
