@@ -1,144 +1,53 @@
 ﻿<Window x:Class="DentalClinicWPF.Views.Patient.AddPatientWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:vm="clr-namespace:DentalClinicWPF.ViewModels.Patient"
-        xmlns:system="clr-namespace:System;assembly=System.Runtime"
-        Title="Agregar Nuevo Paciente"
-        Height="700" Width="520"
+        Title="Agregar Nuevo Paciente" Height="700" Width="600"
         WindowStartupLocation="CenterOwner"
         Background="{StaticResource Brush.Background}"
         FontFamily="{StaticResource Font.Primary}">
-
-    <Grid>
+    
+    <Grid Margin="20">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <!-- Encabezado -->
-        <Border Grid.Row="0" Background="{StaticResource Brush.Surface}"
-                BorderBrush="{StaticResource Brush.Border}"
-                BorderThickness="0,0,0,1"
-                Padding="24,20">
-            <StackPanel>
-                <TextBlock Text="Agregar Nuevo Paciente"
-                           FontSize="20" FontWeight="Bold"
-                           Foreground="{StaticResource Brush.TextPrimary}"/>
-                <TextBlock Text="Ingresa los datos del nuevo paciente"
-                           FontSize="12"
-                           Foreground="{StaticResource Brush.TextMuted}"
-                           Margin="0,4,0,0"/>
-            </StackPanel>
-        </Border>
+        <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="0,0,10,0">
+                
+                <Label Content="Nombre" Foreground="{StaticResource Brush.TextPrimary}"/>
+                <TextBox Text="{Binding FirstName, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource FormTextBoxStyle}" Margin="0,0,0,10"/>
 
-        <!-- Campos -->
-        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Padding="24,16">
-            <StackPanel>
+                <Label Content="Apellido" Foreground="{StaticResource Brush.TextPrimary}"/>
+                <TextBox Text="{Binding LastName, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource FormTextBoxStyle}" Margin="0,0,0,10"/>
 
-                <TextBlock Text="Nombre" FontSize="12" FontWeight="SemiBold"
-                           Foreground="{StaticResource Brush.TextSecondary}"
-                           Margin="0,8,0,6"/>
-                <TextBox Style="{StaticResource FormTextBoxStyle}" Text="{Binding FirstName, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=True}"
-                         Height="38" Padding="10,0" FontSize="14"
-                         Background="{StaticResource Brush.Surface}"
-                         Foreground="{StaticResource Brush.TextPrimary}"
-                         BorderBrush="{StaticResource Brush.Border}"
-                         BorderThickness="1"
-                         VerticalContentAlignment="Center"/>
+                <Label Content="Fecha de Nacimiento" Foreground="{StaticResource Brush.TextPrimary}"/>
+                <DatePicker SelectedDate="{Binding DateOfBirth}" Margin="0,0,0,10" Height="30" VerticalContentAlignment="Center"/>
 
-                <TextBlock Text="Apellido" FontSize="12" FontWeight="SemiBold"
-                           Foreground="{StaticResource Brush.TextSecondary}"
-                           Margin="0,16,0,6"/>
-                <TextBox Style="{StaticResource FormTextBoxStyle}" Text="{Binding LastName, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=True}"
-                         Height="38" Padding="10,0" FontSize="14"
-                         Background="{StaticResource Brush.Surface}"
-                         Foreground="{StaticResource Brush.TextPrimary}"
-                         BorderBrush="{StaticResource Brush.Border}"
-                         BorderThickness="1"
-                         VerticalContentAlignment="Center"/>
-
-                <TextBlock Text="Fecha de Nacimiento" FontSize="12" FontWeight="SemiBold"
-                           Foreground="{StaticResource Brush.TextSecondary}"
-                           Margin="0,16,0,6"/>
-                <DatePicker Style="{StaticResource FormDatePickerStyle}" SelectedDate="{Binding DateOfBirth, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=True}"
-                            Height="38" Padding="8,0" FontSize="14"
-                            Background="{StaticResource Brush.Surface}"
-                            Foreground="{StaticResource Brush.TextPrimary}"
-                            BorderBrush="{StaticResource Brush.Border}"
-                            BorderThickness="1"/>
-
-                <TextBlock Text="Género" FontSize="12" FontWeight="SemiBold"
-                           Foreground="{StaticResource Brush.TextSecondary}"
-                           Margin="0,16,0,6"/>
-                <ComboBox Style="{StaticResource FormComboBoxStyle}" SelectedItem="{Binding Gender, UpdateSourceTrigger=PropertyChanged}"
-                          Height="38" Padding="10,0" FontSize="14"
-                          Background="{StaticResource Brush.Surface}"
-                          Foreground="{StaticResource Brush.TextPrimary}"
-                          BorderBrush="{StaticResource Brush.Border}"
-                          BorderThickness="1"
-                          VerticalContentAlignment="Center">
-                    <ComboBox.ItemsSource>
-                        <x:Array Type="system:String">
-                            <system:String>Masculino</system:String>
-                            <system:String>Femenino</system:String>
-                            <system:String>Otro</system:String>
-                        </x:Array>
-                    </ComboBox.ItemsSource>
+                <Label Content="Género" Foreground="{StaticResource Brush.TextPrimary}"/>
+                <ComboBox SelectedValue="{Binding Gender, UpdateSourceTrigger=PropertyChanged}" SelectedValuePath="Tag" Style="{StaticResource FormComboBoxStyle}" Margin="0,0,0,10">
+                    <ComboBoxItem Content="Masculino" Tag="Male"/>
+                    <ComboBoxItem Content="Femenino" Tag="Female"/>
                 </ComboBox>
 
-                <TextBlock Text="Teléfono" FontSize="12" FontWeight="SemiBold"
-                           Foreground="{StaticResource Brush.TextSecondary}"
-                           Margin="0,16,0,6"/>
-                <TextBox Style="{StaticResource FormTextBoxStyle}" Text="{Binding PhoneNumber, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=True}"
-                         Height="38" Padding="10,0" FontSize="14"
-                         Background="{StaticResource Brush.Surface}"
-                         Foreground="{StaticResource Brush.TextPrimary}"
-                         BorderBrush="{StaticResource Brush.Border}"
-                         BorderThickness="1"
-                         VerticalContentAlignment="Center"/>
+                <Label Content="Teléfono" Foreground="{StaticResource Brush.TextPrimary}"/>
+                <TextBox Text="{Binding PhoneNumber, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource FormTextBoxStyle}" Margin="0,0,0,10"/>
 
-                <TextBlock Text="Correo" FontSize="12" FontWeight="SemiBold"
-                           Foreground="{StaticResource Brush.TextSecondary}"
-                           Margin="0,16,0,6"/>
-                <TextBox Style="{StaticResource FormTextBoxStyle}" Text="{Binding Email, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=True}"
-                         Height="38" Padding="10,0" FontSize="14"
-                         Background="{StaticResource Brush.Surface}"
-                         Foreground="{StaticResource Brush.TextPrimary}"
-                         BorderBrush="{StaticResource Brush.Border}"
-                         BorderThickness="1"
-                         VerticalContentAlignment="Center"/>
+                <Label Content="Correo" Foreground="{StaticResource Brush.TextPrimary}"/>
+                <TextBox Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource FormTextBoxStyle}" Margin="0,0,0,10"/>
 
-                <TextBlock Text="Dirección" FontSize="12" FontWeight="SemiBold"
-                           Foreground="{StaticResource Brush.TextSecondary}"
-                           Margin="0,16,0,6"/>
-                <TextBox Style="{StaticResource FormTextBoxStyle}" Text="{Binding Address, UpdateSourceTrigger=PropertyChanged}"
-                         Height="38" Padding="10,0" FontSize="14"
-                         Background="{StaticResource Brush.Surface}"
-                         Foreground="{StaticResource Brush.TextPrimary}"
-                         BorderBrush="{StaticResource Brush.Border}"
-                         BorderThickness="1"
-                         VerticalContentAlignment="Center"
-                         Margin="0,0,0,16"/>
+                <Label Content="Dirección" Foreground="{StaticResource Brush.TextPrimary}"/>
+                <TextBox Text="{Binding Address, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource FormTextBoxStyle}" Margin="0,0,0,10"/>
 
             </StackPanel>
         </ScrollViewer>
 
         <!-- Botones -->
-        <Border Grid.Row="2" Background="{StaticResource Brush.Surface}"
-                BorderBrush="{StaticResource Brush.Border}"
-                BorderThickness="0,1,0,0"
-                Padding="24,16">
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                <Button Content="Cancelar"
-                        Command="{Binding CancelCommand}"
-                        Style="{StaticResource Modern.Button.Secondary}"
-                        Margin="0,0,10,0"/>
-                <Button Content="Guardar"
-                        Command="{Binding SaveCommand}"
-                        Style="{StaticResource Modern.Button.Primary}"/>
-            </StackPanel>
-        </Border>
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
+            <Button Content="Cancelar" Command="{Binding CancelCommand}" 
+                    Style="{StaticResource Modern.Button.Secondary}" Width="100" Margin="0,0,10,0"/>
+            <Button Content="Guardar" Command="{Binding SaveCommand}" 
+                    Style="{StaticResource Modern.Button.Primary}" Width="100"/>
+        </StackPanel>
     </Grid>
 </Window>
-

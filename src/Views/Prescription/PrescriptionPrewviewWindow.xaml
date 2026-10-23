@@ -1,14 +1,9 @@
-﻿<Window x:Class="DentalClinicWPF.Views.Prescription.PrescriptionPreviewWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Vista Previa de Receta"
-        WindowStartupLocation="CenterOwner"
-        Height="600" Width="500"
-        Background="#FFFFFF" FontFamily="{StaticResource Font.Primary}">
+﻿<Window Width="900" Height="700" x:Class="DentalClinicWPF.Views.Prescription.PrescriptionPreviewWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="Vista Previa de Receta" Background="#FFFFFF" FontFamily="{StaticResource Font.Primary}"    >
     
-    <Grid>
-        <!-- A scroll viewer for the FlowDocument -->
-        <FlowDocumentScrollViewer x:Name="DocViewer"
-                                  VerticalScrollBarVisibility="Auto"/>
-    </Grid>
+  <Grid>
+    <!-- A scroll viewer for the FlowDocument -->
+    <FlowDocumentScrollViewer x:Name="DocViewer" VerticalScrollBarVisibility="Auto" />
+  </Grid>
+    
 </Window>
+

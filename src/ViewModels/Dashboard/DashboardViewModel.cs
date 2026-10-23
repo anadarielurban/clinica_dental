@@ -1,11 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using DentalClinicWPF.Models;
 using Microsoft.Win32;
-using PdfSharpCore.Drawing;
-using PdfSharpCore.Pdf;
-using ClosedXML.Excel; 
+using ClosedXML.Excel;
 using LiveCharts;
-using LiveCharts.Wpf; 
+using LiveCharts.Wpf;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -15,6 +13,10 @@ using System.Windows.Input;
 using DentalClinicWPF.Data;
 using DentalClinicWPF.ViewModels.Base;
 using Microsoft.EntityFrameworkCore;
+using QuestPDF.Fluent;
+using QuestPDF.Helpers;
+using QuestPDF.Infrastructure;
+using QColors = QuestPDF.Helpers.Colors;
 
 namespace DentalClinicWPF.ViewModels.Dashboard
 {
@@ -84,7 +86,7 @@ namespace DentalClinicWPF.ViewModels.Dashboard
         public ICommand AddAppointmentCommand { get; }
         public ICommand RegisterPatientCommand { get; }
         public ICommand ExportReportCommand { get; }
-        public ICommand ExportToExcelCommand { get; } // Added Excel export command
+        public ICommand ExportToExcelCommand { get; }
 
         public DashboardViewModel(DentalClinicContext context, Action<string, BaseViewModel> openTabAction)
         {
@@ -94,9 +96,11 @@ namespace DentalClinicWPF.ViewModels.Dashboard
             AddAppointmentCommand = new RelayCommand(OpenAddAppointment);
             RegisterPatientCommand = new RelayCommand(OpenRegisterPatient);
             ExportReportCommand = new RelayCommand(ExportReportAsPdf);
-            ExportToExcelCommand = new RelayCommand(ExportReportToExcel); // Initialize command
+            ExportToExcelCommand = new RelayCommand(ExportReportToExcel);
 
-            // Load Dashboard data
+            // Inicializar licencia de QuestPDF
+            QuestPDF.Settings.License = LicenseType.Community;
+
             LoadDashboardData();
         }
 
@@ -104,7 +108,6 @@ namespace DentalClinicWPF.ViewModels.Dashboard
         {
             try
             {
-                // Upcoming Appointments (max 10)
                 var now = DateTime.Now;
                 var today = now.Date;
                 var currentTime = now.TimeOfDay;
@@ -121,8 +124,6 @@ namespace DentalClinicWPF.ViewModels.Dashboard
                     {
                         AppointmentDate = a.AppointmentDate.ToString("d"),
                         AppointmentTime = a.StartTime.ToString(@"hh\:mm"),
-                        // Alternatively, for 12-hour format with AM/PM:
-                        // AppointmentTime = DateTime.Today.Add(a.StartTime).ToString("hh:mm tt"),
                         PatientName = a.Patient.FirstName + " " + a.Patient.LastName,
                         DentistName = a.Dentist.FirstName + " " + a.Dentist.LastName
                     })
@@ -130,11 +131,9 @@ namespace DentalClinicWPF.ViewModels.Dashboard
 
                 UpcomingAppointments = new ObservableCollection<object>(appointments);
 
-                // Financial Statistics
                 TotalRevenue = _context.Invoice.Sum(i => i.TotalAmount);
                 UnpaidInvoices = _context.Invoice.Count(i => i.AmountPaid < i.TotalAmount);
 
-                // Revenue per Dentist
                 var allDentists = _context.Dentist
                     .Include(d => d.Appointments)
                         .ThenInclude(a => a.Treatment)
@@ -154,7 +153,6 @@ namespace DentalClinicWPF.ViewModels.Dashboard
 
                 DentistRevenue = new ObservableCollection<DentistRevenue>(revenuePerDentist);
 
-                // Load Revenue Chart
                 LoadRevenueData();
             }
             catch (Exception ex)
@@ -168,7 +166,6 @@ namespace DentalClinicWPF.ViewModels.Dashboard
         {
             try
             {
-                // Show revenue for the last 6 months
                 var sixMonthsAgo = DateTime.Now.AddMonths(-5);
                 var revenueData = _context.Invoice
                     .AsEnumerable()
@@ -184,11 +181,9 @@ namespace DentalClinicWPF.ViewModels.Dashboard
                     })
                     .ToList();
 
-                // Prepare labels and data
                 RevenueLabels = new List<string>();
                 var values = new ChartValues<double>();
 
-                // Fill missing months with zero revenue
                 var current = new DateTime(sixMonthsAgo.Year, sixMonthsAgo.Month, 1);
                 var end = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
 
@@ -211,7 +206,6 @@ namespace DentalClinicWPF.ViewModels.Dashboard
                     current = current.AddMonths(1);
                 }
 
-                // Initialize chart series
                 RevenueSeries = new SeriesCollection
                 {
                     new ColumnSeries
@@ -222,7 +216,6 @@ namespace DentalClinicWPF.ViewModels.Dashboard
                     }
                 };
 
-                // Initialize Y-axis formatter
                 YFormatter = value => value.ToString("C");
             }
             catch (Exception ex)
@@ -242,7 +235,6 @@ namespace DentalClinicWPF.ViewModels.Dashboard
                 };
                 if (addAppointmentView.ShowDialog() == true)
                 {
-                    // Refresh dashboard data after adding a new appointment
                     LoadDashboardData();
                 }
             }
@@ -263,7 +255,6 @@ namespace DentalClinicWPF.ViewModels.Dashboard
                 };
                 if (addPatientWindow.ShowDialog() == true)
                 {
-                    // Refresh dashboard data after registering a new patient
                     LoadDashboardData();
                 }
             }
@@ -274,193 +265,264 @@ namespace DentalClinicWPF.ViewModels.Dashboard
             }
         }
 
+        // ═══════════════════════════════════════════════════════════════
+        // EXPORTACIÓN A PDF (QuestPDF - Profesional)
+        // ═══════════════════════════════════════════════════════════════
         private void ExportReportAsPdf()
         {
             try
             {
                 var saveFileDialog = new SaveFileDialog
                 {
-                    FileName = "DashboardReport",
+                    FileName = $"Reporte_Dashboard_{DateTime.Now:yyyyMMdd_HHmm}",
                     DefaultExt = ".pdf",
                     Filter = "PDF Documents (.pdf)|*.pdf"
                 };
 
-                bool? result = saveFileDialog.ShowDialog();
-                if (result != true) return;
-
+                if (saveFileDialog.ShowDialog() != true) return;
                 string fileName = saveFileDialog.FileName;
 
-                using (var pdfDocument = new PdfDocument())
+                QuestPDF.Fluent.Document.Create(container =>
                 {
-                    pdfDocument.Info.Title = "Dashboard Report";
-                    var page = pdfDocument.AddPage();
-                    var gfx = XGraphics.FromPdfPage(page);
-
-                    // Fonts
-                    var fontTitle = new XFont("Segoe UI", 20, XFontStyle.Bold);
-                    var fontHeader = new XFont("Segoe UI", 14, XFontStyle.Bold);
-                    var fontRegular = new XFont("Segoe UI", 12, XFontStyle.Regular);
-
-                    double yPoint = 40;
-
-                    // Title
-                    gfx.DrawString("Dashboard Report", fontTitle, XBrushes.Black,
-                        new XRect(0, yPoint, page.Width, page.Height),
-                        XStringFormats.TopCenter);
-                    yPoint += 40;
-
-                    // Financial Statistics
-                    gfx.DrawString($"Total Revenue: {TotalRevenue:C}", fontHeader, XBrushes.Black, 40, yPoint);
-                    yPoint += 30;
-                    gfx.DrawString($"Unpaid Invoices: {UnpaidInvoices}", fontHeader, XBrushes.Black, 40, yPoint);
-                    yPoint += 40;
-
-                    // Add Upcoming Appointments Table
-                    gfx.DrawString("Upcoming Appointments:", fontHeader, XBrushes.Black, 40, yPoint);
-                    yPoint += 20;
-
-                    // Table Headers
-                    gfx.DrawString("Fecha", fontRegular, XBrushes.Black, 40, yPoint);
-                    gfx.DrawString("Hora", fontRegular, XBrushes.Black, 140, yPoint);
-                    gfx.DrawString("Paciente", fontRegular, XBrushes.Black, 240, yPoint);
-                    gfx.DrawString("Dentista", fontRegular, XBrushes.Black, 340, yPoint);
-                    yPoint += 20;
-
-                    // Table Data
-                    foreach (var appointment in UpcomingAppointments)
+                    container.Page(page =>
                     {
-                        var date = ((dynamic)appointment).AppointmentDate;
-                        var time = ((dynamic)appointment).AppointmentTime;
-                        var patient = ((dynamic)appointment).PatientName;
-                        var dentist = ((dynamic)appointment).DentistName;
+                        page.Size(PageSizes.A4);
+                        page.Margin(2, Unit.Centimetre);
+                        page.PageColor(QColors.White);
+                        page.DefaultTextStyle(x => x.FontSize(11).FontFamily(QuestPDF.Helpers.Fonts.SegoeUI));
 
-                        gfx.DrawString(date, fontRegular, XBrushes.Black, 40, yPoint);
-                        gfx.DrawString(time, fontRegular, XBrushes.Black, 140, yPoint);
-                        gfx.DrawString(patient, fontRegular, XBrushes.Black, 240, yPoint);
-                        gfx.DrawString(dentist, fontRegular, XBrushes.Black, 340, yPoint);
-                        yPoint += 20;
-                    }
+                        // ENCABEZADO
+                        page.Header().Column(col =>
+                        {
+                            col.Item().Row(row =>
+                            {
+                                row.RelativeItem().Column(c =>
+                                {
+                                    c.Item().Text("Clínica Dental").FontSize(24).SemiBold().FontColor(QColors.Teal.Medium);
+                                    c.Item().Text("Reporte del Dashboard").FontSize(16).FontColor(QColors.Grey.Darken2);
+                                });
+                                row.ConstantItem(150).AlignRight().Column(c =>
+                                {
+                                    c.Item().Text($"Generado: {DateTime.Now:dd/MM/yyyy HH:mm}").FontSize(10).FontColor(QColors.Grey.Medium);
+                                });
+                            });
+                            col.Item().PaddingTop(10).LineHorizontal(2).LineColor(QColors.Teal.Medium);
+                        });
 
-                    // Add Revenue per Dentist Table
-                    yPoint += 20;
-                    gfx.DrawString("Revenue per Dentist:", fontHeader, XBrushes.Black, 40, yPoint);
-                    yPoint += 20;
+                        // CONTENIDO
+                        page.Content().PaddingVertical(20).Column(col =>
+                        {
+                            // KPIs
+                            col.Item().PaddingBottom(20).Row(row =>
+                            {
+                                row.RelativeItem().Background(QColors.Grey.Lighten4).Padding(10).Column(c =>
+                                {
+                                    c.Item().Text("Ingresos Totales").FontSize(10).FontColor(QColors.Grey.Darken1);
+                                    c.Item().Text($"{TotalRevenue:C}").FontSize(18).Bold().FontColor(QColors.Green.Darken2);
+                                });
+                                row.ConstantItem(15);
+                                row.RelativeItem().Background(QColors.Grey.Lighten4).Padding(10).Column(c =>
+                                {
+                                    c.Item().Text("Facturas sin Pagar").FontSize(10).FontColor(QColors.Grey.Darken1);
+                                    c.Item().Text($"{UnpaidInvoices}").FontSize(18).Bold().FontColor(QColors.Orange.Darken2);
+                                });
+                                row.ConstantItem(15);
+                                row.RelativeItem().Background(QColors.Grey.Lighten4).Padding(10).Column(c =>
+                                {
+                                    c.Item().Text("Próximas Citas").FontSize(10).FontColor(QColors.Grey.Darken1);
+                                    c.Item().Text($"{UpcomingAppointments.Count}").FontSize(18).Bold().FontColor(QColors.Blue.Darken2);
+                                });
+                            });
 
-                    // Table Headers
-                    gfx.DrawString("Dentista", fontRegular, XBrushes.Black, 40, yPoint);
-                    gfx.DrawString("Revenue", fontRegular, XBrushes.Black, 240, yPoint);
-                    yPoint += 20;
+                            // TABLA CITAS
+                            col.Item().PaddingBottom(5).Text("Próximas Citas").FontSize(14).SemiBold().FontColor(QColors.Teal.Darken2);
+                            col.Item().Table(table =>
+                            {
+                                table.ColumnsDefinition(columns =>
+                                {
+                                    columns.ConstantColumn(80); // Fecha
+                                    columns.ConstantColumn(60); // Hora
+                                    columns.RelativeColumn();   // Paciente
+                                    columns.RelativeColumn();   // Dentista
+                                });
 
-                    // Table Data
-                    foreach (var dentist in DentistRevenue)
-                    {
-                        gfx.DrawString(dentist.DentistName, fontRegular, XBrushes.Black, 40, yPoint);
-                        gfx.DrawString(dentist.Revenue.ToString("C"), fontRegular, XBrushes.Black, 240, yPoint);
-                        yPoint += 20;
-                    }
+                                table.Header(header =>
+                                {
+                                    header.Cell().Background(QColors.Teal.Lighten4).Padding(5).Text("Fecha").SemiBold();
+                                    header.Cell().Background(QColors.Teal.Lighten4).Padding(5).Text("Hora").SemiBold();
+                                    header.Cell().Background(QColors.Teal.Lighten4).Padding(5).Text("Paciente").SemiBold();
+                                    header.Cell().Background(QColors.Teal.Lighten4).Padding(5).Text("Dentista").SemiBold();
+                                });
 
-                    // Save PDF
-                    pdfDocument.Save(fileName);
-                    MessageBox.Show($"Report exported successfully:\n{fileName}", "Export to PDF", MessageBoxButton.OK, MessageBoxImage.Information);
-                }
+                                foreach (var appt in UpcomingAppointments)
+                                {
+                                    string date = ((dynamic)appt).AppointmentDate?.ToString() ?? "";
+                                    string time = ((dynamic)appt).AppointmentTime?.ToString() ?? "";
+                                    string patient = ((dynamic)appt).PatientName?.ToString() ?? "";
+                                    string dentist = ((dynamic)appt).DentistName?.ToString() ?? "";
+
+                                    table.Cell().BorderBottom(1).BorderColor(QColors.Grey.Lighten2).Padding(5).Text(date);
+                                    table.Cell().BorderBottom(1).BorderColor(QColors.Grey.Lighten2).Padding(5).Text(time);
+                                    table.Cell().BorderBottom(1).BorderColor(QColors.Grey.Lighten2).Padding(5).Text(patient);
+                                    table.Cell().BorderBottom(1).BorderColor(QColors.Grey.Lighten2).Padding(5).Text(dentist);
+                                }
+                            });
+
+                            // TABLA INGRESOS
+                            col.Item().PaddingTop(20).PaddingBottom(5).Text("Ingresos por Dentista").FontSize(14).SemiBold().FontColor(QColors.Teal.Darken2);
+                            col.Item().Table(table =>
+                            {
+                                table.ColumnsDefinition(columns =>
+                                {
+                                    columns.RelativeColumn();
+                                    columns.ConstantColumn(100);
+                                });
+
+                                table.Header(header =>
+                                {
+                                    header.Cell().Background(QColors.Teal.Lighten4).Padding(5).Text("Dentista").SemiBold();
+                                    header.Cell().Background(QColors.Teal.Lighten4).Padding(5).Text("Ingresos").SemiBold();
+                                });
+
+                                foreach (var d in DentistRevenue)
+                                {
+                                    table.Cell().BorderBottom(1).BorderColor(QColors.Grey.Lighten2).Padding(5).Text(d.DentistName);
+                                    table.Cell().BorderBottom(1).BorderColor(QColors.Grey.Lighten2).Padding(5).Text($"{d.Revenue:C}");
+                                }
+                            });
+                        });
+
+                        // PIE DE PÁGINA
+                        page.Footer().AlignCenter().Text(x =>
+                        {
+                            x.Span("Página ");
+                            x.CurrentPageNumber();
+                            x.Span(" de ");
+                            x.TotalPages();
+                        });
+                    });
+                }).GeneratePdf(fileName);
+
+                MessageBox.Show($"Reporte PDF generado correctamente:\n{fileName}", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error exporting report to PDF: {ex.Message}", "Export PDF Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error al exportar PDF: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
+        // ═══════════════════════════════════════════════════════════════
+        // EXPORTACIÓN A EXCEL (ClosedXML - Profesional)
+        // ═══════════════════════════════════════════════════════════════
         private void ExportReportToExcel()
         {
             try
             {
                 var saveFileDialog = new SaveFileDialog
                 {
-                    FileName = "DashboardReport",
+                    FileName = $"Reporte_Dashboard_{DateTime.Now:yyyyMMdd_HHmm}",
                     DefaultExt = ".xlsx",
                     Filter = "Excel Workbook (.xlsx)|*.xlsx"
                 };
 
-                bool? result = saveFileDialog.ShowDialog();
-                if (result != true) return;
-
+                if (saveFileDialog.ShowDialog() != true) return;
                 string fileName = saveFileDialog.FileName;
 
                 using (var workbook = new XLWorkbook())
                 {
-                    var worksheet = workbook.Worksheets.Add("Dashboard Report");
+                    var ws = workbook.Worksheets.Add("Dashboard");
 
-                    // Title
-                    worksheet.Cell(1, 1).Value = "Dashboard Report";
-                    worksheet.Range(1, 1, 1, 4).Merge().AddToNamed("Titles");
-                    worksheet.Row(1).Height = 20;
-                    worksheet.Cell(1, 1).Style.Font.Bold = true;
-                    worksheet.Cell(1, 1).Style.Font.FontSize = 16;
-                    worksheet.Cell(1, 1).Style.Alignment.Horizontal = ClosedXML.Excel.XLAlignmentHorizontalValues.Center;
+                    // TÍTULO PRINCIPAL
+                    ws.Cell(1, 1).Value = "Clínica Dental - Reporte del Dashboard";
+                    ws.Range(1, 1, 1, 6).Merge();
+                    ws.Cell(1, 1).Style.Font.Bold = true;
+                    ws.Cell(1, 1).Style.Font.FontSize = 16;
+                    ws.Cell(1, 1).Style.Font.FontColor = XLColor.White;
+                    ws.Cell(1, 1).Style.Fill.BackgroundColor = XLColor.Teal;
+                    ws.Cell(1, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                    ws.Row(1).Height = 30;
 
-                    // Financial Statistics
-                    worksheet.Cell(3, 1).Value = "Total Revenue";
-                    worksheet.Cell(3, 2).Value = TotalRevenue;
-                    worksheet.Cell(3, 2).Style.NumberFormat.Format = "$#,##0.00";
+                    ws.Cell(2, 1).Value = $"Generado el: {DateTime.Now:dd/MM/yyyy HH:mm}";
+                    ws.Range(2, 1, 2, 6).Merge();
+                    ws.Cell(2, 1).Style.Font.Italic = true;
+                    ws.Cell(2, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Right;
 
-                    worksheet.Cell(4, 1).Value = "Unpaid Invoices";
-                    worksheet.Cell(4, 2).Value = UnpaidInvoices;
+                    // KPIs
+                    ws.Cell(4, 1).Value = "Ingresos Totales";
+                    ws.Cell(4, 2).Value = TotalRevenue;
+                    ws.Cell(4, 2).Style.NumberFormat.Format = "$#,##0.00";
+                    ws.Cell(4, 2).Style.Font.Bold = true;
+                    ws.Cell(4, 2).Style.Font.FontColor = XLColor.Green;
 
-                    // Upcoming Appointments
-                    worksheet.Cell(6, 1).Value = "Upcoming Appointments";
-                    worksheet.Cell(6, 1).Style.Font.Bold = true;
+                    ws.Cell(5, 1).Value = "Facturas sin Pagar";
+                    ws.Cell(5, 2).Value = UnpaidInvoices;
+                    ws.Cell(5, 2).Style.Font.Bold = true;
+                    ws.Cell(5, 2).Style.Font.FontColor = XLColor.Orange;
+
+                    // TABLA CITAS
                     int row = 7;
-
-                    // Table Headers
-                    worksheet.Cell(row, 1).Value = "Fecha";
-                    worksheet.Cell(row, 2).Value = "Hora";
-                    worksheet.Cell(row, 3).Value = "Paciente";
-                    worksheet.Cell(row, 4).Value = "Dentista";
+                    ws.Cell(row, 1).Value = "Próximas Citas";
+                    ws.Range(row, 1, row, 4).Merge();
+                    ws.Cell(row, 1).Style.Font.Bold = true;
+                    ws.Cell(row, 1).Style.Font.FontSize = 12;
+                    ws.Cell(row, 1).Style.Fill.BackgroundColor = XLColor.LightGray;
                     row++;
 
-                    // Table Data
-                    foreach (var appointment in UpcomingAppointments)
-                    {
-                        var date = ((dynamic)appointment).AppointmentDate;
-                        var time = ((dynamic)appointment).AppointmentTime;
-                        var patient = ((dynamic)appointment).PatientName;
-                        var dentist = ((dynamic)appointment).DentistName;
+                    ws.Cell(row, 1).Value = "Fecha";
+                    ws.Cell(row, 2).Value = "Hora";
+                    ws.Cell(row, 3).Value = "Paciente";
+                    ws.Cell(row, 4).Value = "Dentista";
+                    ws.Range(row, 1, row, 4).Style.Font.Bold = true;
+                    ws.Range(row, 1, row, 4).Style.Fill.BackgroundColor = XLColor.Teal;
+                    ws.Range(row, 1, row, 4).Style.Font.FontColor = XLColor.White;
+                    ws.Range(row, 1, row, 4).Style.Border.BottomBorder = XLBorderStyleValues.Thin;
+                    row++;
 
-                        worksheet.Cell(row, 1).Value = date;
-                        worksheet.Cell(row, 2).Value = time;
-                        worksheet.Cell(row, 3).Value = patient;
-                        worksheet.Cell(row, 4).Value = dentist;
+                    foreach (var appt in UpcomingAppointments)
+                    {
+                        ws.Cell(row, 1).Value = ((dynamic)appt).AppointmentDate.ToString();
+                        ws.Cell(row, 2).Value = ((dynamic)appt).AppointmentTime.ToString();
+                        ws.Cell(row, 3).Value = ((dynamic)appt).PatientName.ToString();
+                        ws.Cell(row, 4).Value = ((dynamic)appt).DentistName.ToString();
                         row++;
                     }
 
-                    // Revenue per Dentist
+                    // TABLA INGRESOS
                     row += 2;
-                    worksheet.Cell(row, 1).Value = "Revenue per Dentist";
-                    worksheet.Cell(row, 1).Style.Font.Bold = true;
+                    ws.Cell(row, 1).Value = "Ingresos por Dentista";
+                    ws.Range(row, 1, row, 2).Merge();
+                    ws.Cell(row, 1).Style.Font.Bold = true;
+                    ws.Cell(row, 1).Style.Font.FontSize = 12;
+                    ws.Cell(row, 1).Style.Fill.BackgroundColor = XLColor.LightGray;
                     row++;
 
-                    // Table Headers
-                    worksheet.Cell(row, 1).Value = "Dentista";
-                    worksheet.Cell(row, 2).Value = "Revenue";
+                    ws.Cell(row, 1).Value = "Dentista";
+                    ws.Cell(row, 2).Value = "Ingresos";
+                    ws.Range(row, 1, row, 2).Style.Font.Bold = true;
+                    ws.Range(row, 1, row, 2).Style.Fill.BackgroundColor = XLColor.Teal;
+                    ws.Range(row, 1, row, 2).Style.Font.FontColor = XLColor.White;
+                    ws.Range(row, 1, row, 2).Style.Border.BottomBorder = XLBorderStyleValues.Thin;
                     row++;
 
-                    // Table Data
-                    foreach (var dentist in DentistRevenue)
+                    foreach (var d in DentistRevenue)
                     {
-                        worksheet.Cell(row, 1).Value = dentist.DentistName;
-                        worksheet.Cell(row, 2).Value = dentist.Revenue;
-                        worksheet.Cell(row, 2).Style.NumberFormat.Format = "$#,##0.00";
+                        ws.Cell(row, 1).Value = d.DentistName;
+                        ws.Cell(row, 2).Value = d.Revenue;
+                        ws.Cell(row, 2).Style.NumberFormat.Format = "$#,##0.00";
                         row++;
                     }
 
-                    // Save Excel
+                    // Ajustes finales
+                    ws.Columns().AdjustToContents();
+                    ws.SheetView.FreezeRows(7);
+
                     workbook.SaveAs(fileName);
-                    MessageBox.Show($"Report exported successfully:\n{fileName}", "Export to Excel", MessageBoxButton.OK, MessageBoxImage.Information);
+                    MessageBox.Show($"Reporte Excel generado correctamente:\n{fileName}", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error exporting report to Excel: {ex.Message}", "Export Excel Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error al exportar Excel: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }

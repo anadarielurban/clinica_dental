@@ -15,15 +15,49 @@ using DentalClinicWPF.ViewModels.Base;
 
 namespace DentalClinicWPF.ViewModels.Appointment
 {
+    public class MonthDayCard
+    {
+        public DateTime Date { get; set; }
+        public string DayNumber => Date.Day.ToString();
+        public bool IsCurrentMonth { get; set; }
+        public bool IsToday => Date.Date == DateTime.Today;
+        public int AppointmentCount { get; set; }
+        public List<Models.Appointment> DayAppointments { get; set; } = new();
+    }
+
     public class AppointmentViewModel : BaseViewModel
     {
         private readonly DentalClinicContext _context;
         private readonly DispatcherTimer _searchTimer;
 
+        private List<Models.Appointment> _allFilteredAppointments = new();
+        private int _currentPage = 1;
+        private int _pageSize = 15;
         public ObservableCollection<Models.Appointment> Appointments { get; private set; }
-        public ObservableCollection<WeekDayCard> WeekDays { get; } = new ObservableCollection<WeekDayCard>();
 
-        // ----- Week navigation -----
+        public ObservableCollection<WeekDayCard> WeekDays { get; } = new ObservableCollection<WeekDayCard>();
+        public ObservableCollection<MonthDayCard> MonthDays { get; } = new ObservableCollection<MonthDayCard>();
+
+        public string PageInfo => $"Página {_currentPage} de {Math.Max(1, (int)Math.Ceiling((double)_allFilteredAppointments.Count / _pageSize))}";
+        public bool CanGoNextPage => _currentPage < (int)Math.Ceiling((double)_allFilteredAppointments.Count / _pageSize);
+        public bool CanGoPrevPage => _currentPage > 1;
+
+        private bool _isMonthlyView;
+        public bool IsMonthlyView
+        {
+            get => _isMonthlyView;
+            set
+            {
+                if (SetProperty(ref _isMonthlyView, value))
+                {
+                    OnPropertyChanged(nameof(IsWeeklyView));
+                    if (value) BuildMonthDays();
+                    else BuildWeekDays();
+                }
+            }
+        }
+        public bool IsWeeklyView => !IsMonthlyView;
+
         private DateTime _weekStart = StartOfWeek(DateTime.Today);
         public DateTime WeekStart
         {
@@ -37,7 +71,6 @@ namespace DentalClinicWPF.ViewModels.Appointment
                 }
             }
         }
-
         public string WeekRangeLabel
         {
             get
@@ -47,7 +80,21 @@ namespace DentalClinicWPF.ViewModels.Appointment
             }
         }
 
-        // ----- Day filter -----
+        private DateTime _currentMonth = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
+        public DateTime CurrentMonth
+        {
+            get => _currentMonth;
+            set
+            {
+                if (SetProperty(ref _currentMonth, value))
+                {
+                    OnPropertyChanged(nameof(MonthYearLabel));
+                    BuildMonthDays();
+                }
+            }
+        }
+        public string MonthYearLabel => CurrentMonth.ToString("MMMM yyyy").ToUpper();
+
         private DateTime? _selectedDayFilter;
         public DateTime? SelectedDayFilter
         {
@@ -63,9 +110,7 @@ namespace DentalClinicWPF.ViewModels.Appointment
                 }
             }
         }
-
         public bool HasDayFilter => _selectedDayFilter.HasValue;
-
         public string DayFilterLabel
         {
             get
@@ -76,7 +121,6 @@ namespace DentalClinicWPF.ViewModels.Appointment
             }
         }
 
-        // ----- Search -----
         private string _searchText;
         public string SearchText
         {
@@ -109,37 +153,19 @@ namespace DentalClinicWPF.ViewModels.Appointment
             }
         }
 
-        public ObservableCollection<string> SortOptions { get; } = new ObservableCollection<string>
-        {
-            "Nombre del Paciente", "Nombre del Dentista", "Nombre del Tratamiento", "Fecha de Cita"
-        };
-
-        private string _selectedSortOption;
-        public string SelectedSortOption
-        {
-            get => _selectedSortOption;
-            set
-            {
-                if (_selectedSortOption != value)
-                {
-                    _selectedSortOption = value;
-                    OnPropertyChanged();
-                    SortAppointments();
-                }
-            }
-        }
-
-        public ICommand SortCommand { get; }
         public ICommand AddAppointmentCommand { get; }
-        
         public ICommand ReloadCommand { get; }
-        public ICommand SearchCommand { get; }
         public ICommand PreviousWeekCommand { get; }
         public ICommand NextWeekCommand { get; }
+        public ICommand PreviousMonthCommand { get; }
+        public ICommand NextMonthCommand { get; }
         public ICommand FilterByDayCommand { get; }
         public ICommand ClearDayFilterCommand { get; }
+        public ICommand SwitchViewCommand { get; }
+        public ICommand NextPageCommand { get; }
+        public ICommand PrevPageCommand { get; }
 
-                public IRelayCommand<Models.Appointment> EditAppointmentCommand { get; }
+        public IRelayCommand<Models.Appointment> EditAppointmentCommand { get; }
         public IRelayCommand<Models.Appointment> DeleteAppointmentCommand { get; }
         public IRelayCommand<Models.Appointment> SendWhatsAppCommand { get; }
 
@@ -147,54 +173,74 @@ namespace DentalClinicWPF.ViewModels.Appointment
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
 
-            // Inicializar colecciones
             Appointments = new ObservableCollection<Models.Appointment>();
-            WeekDays = new ObservableCollection<WeekDayCard>();
+            
+            _searchTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(300) };
+            _searchTimer.Tick += (s, e) => { _searchTimer.Stop(); ApplyFilters(); };
 
-            // Cargar citas con Paciente, Dentista y Tratamiento incluidos
-            var list = _context.Appointment
-                .Include(a => a.Patient)
-                .Include(a => a.Dentist)
-                .Include(a => a.Treatment)
-                .ToList();
-
-            foreach (var appt in list)
-            {
-                Appointments.Add(appt);
-            }
-
-            // Inicializar comandos
             AddAppointmentCommand = new RelayCommand(AddAppointment);
             EditAppointmentCommand = new RelayCommand<Models.Appointment>(OpenEditAppointmentWithParam);
-            DeleteAppointmentCommand = new RelayCommand<Models.Appointment>(DeleteAppointmentWithParam);
+            DeleteAppointmentCommand = new RelayCommand<Models.Appointment>(DeleteWithParam);
             SendWhatsAppCommand = new RelayCommand<Models.Appointment>(SendWhatsApp);
+            
             FilterByDayCommand = new RelayCommand<WeekDayCard>(FilterByDay);
+            ClearDayFilterCommand = new RelayCommand(() => SelectedDayFilter = null);
+            
+            PreviousWeekCommand = new RelayCommand(() => WeekStart = WeekStart.AddDays(-7));
+            NextWeekCommand = new RelayCommand(() => WeekStart = WeekStart.AddDays(7));
+            
+            PreviousMonthCommand = new RelayCommand(() => CurrentMonth = CurrentMonth.AddMonths(-1));
+            NextMonthCommand = new RelayCommand(() => CurrentMonth = CurrentMonth.AddMonths(1));
+            
+            SwitchViewCommand = new RelayCommand(() => IsMonthlyView = !IsMonthlyView);
 
-            // Generar la tira semanal
-            GenerateWeekStrip();
+            NextPageCommand = new RelayCommand(() => ChangePage(1), () => CanGoNextPage);
+            PrevPageCommand = new RelayCommand(() => ChangePage(-1), () => CanGoPrevPage);
+
+            ReloadCommand = new RelayCommand(ReloadAll);
+
+            BuildWeekDays();
+            BuildMonthDays();
+            SelectedDayFilter = DateTime.Today.AddDays(1); // Filtro por defecto: mañana
         }
 
-        // ---------- week helpers ----------
+        private void ChangePage(int direction)
+        {
+            _currentPage += direction;
+            UpdatePagedAppointments();
+            OnPropertyChanged(nameof(PageInfo));
+            OnPropertyChanged(nameof(CanGoNextPage));
+            OnPropertyChanged(nameof(CanGoPrevPage));
+            (NextPageCommand as RelayCommand)?.NotifyCanExecuteChanged();
+            (PrevPageCommand as RelayCommand)?.NotifyCanExecuteChanged();
+        }
+
+        private void UpdatePagedAppointments()
+        {
+            Appointments.Clear();
+            var paged = _allFilteredAppointments.Skip((_currentPage - 1) * _pageSize).Take(_pageSize).ToList();
+            foreach (var a in paged) Appointments.Add(a);
+        }
 
         private static DateTime StartOfWeek(DateTime d)
         {
-            int diff = ((int)d.DayOfWeek + 6) % 7; // Monday = 0
+            int diff = ((int)d.DayOfWeek + 6) % 7;
             return d.Date.AddDays(-diff);
         }
 
         private static string GetSpanishDayName(DayOfWeek dow)
         {
-            switch (dow)
+            return dow switch
             {
-                case DayOfWeek.Monday: return "Lun";
-                case DayOfWeek.Tuesday: return "Mar";
-                case DayOfWeek.Wednesday: return "Mié";
-                case DayOfWeek.Thursday: return "Jue";
-                case DayOfWeek.Friday: return "Vie";
-                case DayOfWeek.Saturday: return "Sáb";
-                case DayOfWeek.Sunday: return "Dom";
-                default: return "";
-            }
+                DayOfWeek.Monday => "Lun",
+                DayOfWeek.Tuesday => "Mar",
+                DayOfWeek.Wednesday => "Mié",
+                DayOfWeek.Thursday => "Jue",
+                DayOfWeek.Friday => "Vie",
+                DayOfWeek.Saturday => "Sáb",
+                DayOfWeek.Sunday => "Dom",
+                _ => ""
+            };
         }
 
         private void BuildWeekDays()
@@ -204,6 +250,8 @@ namespace DentalClinicWPF.ViewModels.Appointment
             var today = DateTime.Today;
 
             var weekAppts = _context.Appointment
+                .Include(a => a.Patient)
+                .Include(a => a.Treatment)
                 .Where(a => a.AppointmentDate >= start && a.AppointmentDate < end)
                 .ToList();
 
@@ -226,6 +274,36 @@ namespace DentalClinicWPF.ViewModels.Appointment
             foreach (var c in cards) WeekDays.Add(c);
         }
 
+        private void BuildMonthDays()
+        {
+            MonthDays.Clear();
+            var firstOfMonth = new DateTime(CurrentMonth.Year, CurrentMonth.Month, 1);
+            
+            int diff = ((int)firstOfMonth.DayOfWeek + 6) % 7;
+            var startDate = firstOfMonth.AddDays(-diff);
+
+            var endDate = startDate.AddDays(42);
+            var monthAppts = _context.Appointment
+                .Include(a => a.Patient)
+                .Include(a => a.Treatment)
+                .Where(a => a.AppointmentDate >= startDate && a.AppointmentDate < endDate)
+                .ToList();
+
+            for (int i = 0; i < 42; i++)
+            {
+                var date = startDate.AddDays(i);
+                var dayAppts = monthAppts.Where(a => a.AppointmentDate.Date == date.Date).ToList();
+
+                MonthDays.Add(new MonthDayCard
+                {
+                    Date = date,
+                    IsCurrentMonth = date.Month == CurrentMonth.Month,
+                    AppointmentCount = dayAppts.Count,
+                    DayAppointments = dayAppts
+                });
+            }
+        }
+
         private void UpdateWeekDaySelection()
         {
             foreach (var d in WeekDays)
@@ -235,14 +313,11 @@ namespace DentalClinicWPF.ViewModels.Appointment
         private void FilterByDay(WeekDayCard card)
         {
             if (card == null) return;
-            // Toggle: si ya estaba seleccionado, quitar filtro
             if (_selectedDayFilter.HasValue && _selectedDayFilter.Value.Date == card.Date.Date)
                 SelectedDayFilter = null;
             else
                 SelectedDayFilter = card.Date;
         }
-
-        // ---------- data ----------
 
         private void ApplyFilters()
         {
@@ -261,7 +336,8 @@ namespace DentalClinicWPF.ViewModels.Appointment
                     query = query.Where(a => a.AppointmentDate >= d && a.AppointmentDate < next);
                 }
 
-                var list = query.ToList();
+                // FIX: Ordenar en memoria para evitar el error de TimeSpan en SQLite
+                var list = query.ToList().OrderBy(a => a.StartTime).ToList();
 
                 if (!string.IsNullOrWhiteSpace(_searchText))
                 {
@@ -275,11 +351,18 @@ namespace DentalClinicWPF.ViewModels.Appointment
                         .ToList();
                 }
 
-                Appointments.Clear();
-                foreach (var a in list) Appointments.Add(a);
+                _allFilteredAppointments = list;
+                _currentPage = 1;
+                UpdatePagedAppointments();
 
                 bool filtered = _selectedDayFilter.HasValue || !string.IsNullOrWhiteSpace(_searchText);
                 UpdateResultsLabel(list.Count, filtered);
+                
+                OnPropertyChanged(nameof(PageInfo));
+                OnPropertyChanged(nameof(CanGoNextPage));
+                OnPropertyChanged(nameof(CanGoPrevPage));
+                (NextPageCommand as RelayCommand)?.NotifyCanExecuteChanged();
+                (PrevPageCommand as RelayCommand)?.NotifyCanExecuteChanged();
             }
             catch (Exception ex)
             {
@@ -291,13 +374,10 @@ namespace DentalClinicWPF.ViewModels.Appointment
         {
             _searchTimer.Stop();
             _searchText = string.Empty;
-            _selectedDayFilter = null;
+            SelectedDayFilter = DateTime.Today.AddDays(1);
             OnPropertyChanged(nameof(SearchText));
-            OnPropertyChanged(nameof(SelectedDayFilter));
-            OnPropertyChanged(nameof(HasDayFilter));
-            OnPropertyChanged(nameof(DayFilterLabel));
             BuildWeekDays();
-            ApplyFilters();
+            BuildMonthDays();
         }
 
         private void UpdateResultsLabel(int count, bool filtered)
@@ -307,106 +387,52 @@ namespace DentalClinicWPF.ViewModels.Appointment
             else ResultsLabel = filtered ? $"{count} resultados" : $"{count} citas";
         }
 
-        private void SortAppointments()
+        private void AddAppointment()
         {
-            if (string.IsNullOrEmpty(SelectedSortOption)) return;
-            var sorted = SelectedSortOption switch
+            try
             {
-                "Nombre del Paciente" => Appointments.OrderBy(a => a.Patient?.LastName).ThenBy(a => a.Patient?.FirstName).ToList(),
-                "Nombre del Dentista" => Appointments.OrderBy(a => a.Dentist?.LastName).ThenBy(a => a.Dentist?.FirstName).ToList(),
-                "Nombre del Tratamiento" => Appointments.OrderBy(a => a.Treatment?.Name).ToList(),
-                "Fecha de Cita" => Appointments.OrderBy(a => a.AppointmentDate).ToList(),
-                _ => Appointments.ToList()
-            };
-            Appointments.Clear();
-            foreach (var a in sorted) Appointments.Add(a);
-        }
-
-        private void OpenAddAppointmentView()
-        {
-            var w = new AddAppointmentView { DataContext = new AddAppointmentViewModel(_context) };
-            if (w.ShowDialog() == true) { BuildWeekDays(); ApplyFilters(); }
+                var w = new AddAppointmentView { DataContext = new AddAppointmentViewModel(_context) };
+                if (w.ShowDialog() == true) { ReloadAll(); }
+            }
+            catch (Exception ex) { MessageBox.Show(ex.Message, "Error al abrir ventana"); }
         }
 
         private void OpenEditAppointmentWithParam(Models.Appointment appt)
         {
             if (appt == null) return;
             SelectedAppointment = appt;
-            OpenEditAppointmentView();
-        }
-
-        private void OpenEditAppointmentView()
-        {
-            if (SelectedAppointment == null) return;
             var w = new EditAppointmentView { DataContext = new EditAppointmentViewModel(_context, SelectedAppointment) };
-            if (w.ShowDialog() == true) { BuildWeekDays(); ApplyFilters(); }
+            if (w.ShowDialog() == true) { ReloadAll(); }
         }
 
-        private void DeleteAppointmentWithParam(Models.Appointment appt)
+        private void DeleteWithParam(Models.Appointment appt)
         {
             if (appt == null) return;
-            if (System.Windows.MessageBox.Show($"¿Estás seguro de eliminar la cita de {appt.Patient?.FirstName}?", "Confirmar", System.Windows.MessageBoxButton.YesNo, System.Windows.MessageBoxImage.Question) == System.Windows.MessageBoxResult.Yes)
+            if (MessageBox.Show($"¿Estás seguro de eliminar la cita de {appt.Patient?.FirstName}?", "Confirmar", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
             {
                 try
                 {
                     _context.Appointment.Remove(appt);
                     _context.SaveChanges();
-                    Appointments.Remove(appt);
+                    ReloadAll();
                 }
-                catch (Exception ex)
-                {
-                    System.Windows.MessageBox.Show($"Error al eliminar: {ex.Message}", "Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
-                }
+                catch (Exception ex) { MessageBox.Show($"Error al eliminar: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error); }
             }
         }
 
         private void SendWhatsApp(Models.Appointment appt)
         {
-            if (appt == null || appt.Patient == null) { System.Windows.MessageBox.Show("No se encontró la información del paciente.", "Aviso"); return; }
-            
-            string phone = appt.Patient.PhoneNumber ?? "";
-            phone = System.Text.RegularExpressions.Regex.Replace(phone, @"[^\d]", "");
-            
-            if (string.IsNullOrEmpty(phone))
-            {
-                System.Windows.MessageBox.Show("El paciente no tiene teléfono registrado.", "Aviso", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Warning);
-                return;
-            }
-
-            if (phone.Length == 10) phone = "52" + phone; 
+            if (appt == null || appt.Patient == null) return;
+            string phone = System.Text.RegularExpressions.Regex.Replace(appt.Patient.PhoneNumber ?? "", @"[^\d]", "");
+            if (string.IsNullOrEmpty(phone)) { MessageBox.Show("El paciente no tiene teléfono registrado.", "Aviso", MessageBoxButton.OK, MessageBoxImage.Warning); return; }
+            if (phone.Length == 10) phone = "52" + phone;
 
             string fecha = appt.AppointmentDate.ToString("dd/MM/yyyy HH:mm");
             string mensaje = $"Hola {appt.Patient.FirstName}, te recordamos tu cita en Clínica Dental el {fecha}. ¡Te esperamos!";
             string url = $"https://wa.me/{phone}?text={System.Uri.EscapeDataString(mensaje)}";
-            
-            try
-            {
-                Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
-            }
-            catch (Exception ex)
-            {
-                System.Windows.MessageBox.Show($"Error: {ex.Message}", "Error");
-            }
-        }
-    
-        private void AddAppointment()
-        {
-            try
-            {
-                var w = new Views.Appointment.AddAppointmentView { DataContext = new ViewModels.Appointment.AddAppointmentViewModel(_context) };
-                if (w.ShowDialog() == true) { }
-            }
-            catch (Exception ex)
-            {
-                System.Windows.MessageBox.Show(ex.Message);
-            }
-        }
 
-        private void GenerateWeekStrip()
-        {
-            // La tira semanal ya se inicializa en el constructor o en otra parte,
-            // así que este método se deja vacío o solo se asegura de que no falle.
+            try { Process.Start(new ProcessStartInfo(url) { UseShellExecute = true }); }
+            catch (Exception ex) { MessageBox.Show($"Error: {ex.Message}", "Error"); }
         }
+    }
 }
-}
-

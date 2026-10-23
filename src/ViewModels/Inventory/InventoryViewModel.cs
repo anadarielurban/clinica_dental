@@ -73,6 +73,7 @@ namespace DentalClinicWPF.ViewModels.Inventory
 
         public ICommand SortCommand { get; }
         public ICommand AddInventoryCommand { get; }
+        public ICommand AddStockCommand { get; }
         public ICommand EditInventoryCommand { get; }
         public ICommand ReloadCommand { get; }
         public ICommand SearchCommand { get; }
@@ -86,6 +87,7 @@ namespace DentalClinicWPF.ViewModels.Inventory
             _searchTimer.Tick += (s, e) => { _searchTimer.Stop(); SearchInventory(); };
 
             AddInventoryCommand = new RelayCommand(OpenAddInventory);
+            AddStockCommand = new RelayCommand(OpenAddStock);
             EditInventoryCommand = new RelayCommand(OpenEditInventory, CanEditInventory);
             ReloadCommand = new RelayCommand(ReloadAll);
             SearchCommand = new RelayCommand(SearchInventory);
@@ -161,6 +163,12 @@ namespace DentalClinicWPF.ViewModels.Inventory
             if (v.ShowDialog() == true) LoadInventory();
         }
 
+        private void OpenAddStock()
+        {
+            var v = new AddStockWindow(_context) { Owner = System.Windows.Application.Current.MainWindow };
+            if (v.ShowDialog() == true) LoadInventory();
+        }
+
         private void OpenEditInventory()
         {
             if (SelectedInventory == null) return;
@@ -169,3 +177,4 @@ namespace DentalClinicWPF.ViewModels.Inventory
         }
     }
 }
+

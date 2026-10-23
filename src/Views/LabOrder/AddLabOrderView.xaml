@@ -1,44 +1,31 @@
-﻿<Window x:Class="DentalClinicWPF.Views.LabOrder.AddLabOrderView"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Agregar Orden de Laboratorio" Height="550" Width="600" Background="{StaticResource Brush.Background}" FontFamily="{StaticResource Font.Primary}">
-    <Grid Margin="10">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
-
-        <!-- Input Fields -->
-        <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto">
-            <StackPanel Margin="0,0,0,10">
-                <Label Content="Paciente" />
-                <ComboBox Style="{StaticResource FormComboBoxStyle}" ItemsSource="{Binding Patients}" 
-                          DisplayMemberPath="DisplayInfo" 
-                          SelectedValuePath="PatientID" 
-                          SelectedValue="{Binding LabOrder.PatientID, Mode=TwoWay}" />
-
-                <Label Content="Dentista" Margin="0,10,0,0" />
-                <ComboBox Style="{StaticResource FormComboBoxStyle}" ItemsSource="{Binding Dentists}" 
-                          DisplayMemberPath="DisplayInfo" 
-                          SelectedValuePath="DentistID" 
-                          SelectedValue="{Binding LabOrder.DentistID, Mode=TwoWay}" />
-
-                <Label Content="Fecha de Orden" Margin="0,10,0,0" />
-                <DatePicker Style="{StaticResource FormDatePickerStyle}" SelectedDate="{Binding LabOrder.OrderDate, Mode=TwoWay}" />
-
-                <Label Content="Descripción" Margin="0,10,0,0" />
-                <TextBox Style="{StaticResource FormTextBoxStyle}" Text="{Binding LabOrder.Description, Mode=TwoWay}" AcceptsReturn="True" Height="100" />
-
-                <Label Content="Estado" Margin="0,10,0,0" />
-                <TextBox Style="{StaticResource FormTextBoxStyle}" Text="{Binding LabOrder.Status, Mode=TwoWay}" />
-            </StackPanel>
-        </ScrollViewer>
-
-        <!-- Buttons -->
-        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
-            <Button Style="{StaticResource Modern.Button.Secondary}" Content="Cancelar" Command="{Binding CancelCommand}" Width="100" Margin="5" />
-            <Button Style="{StaticResource Modern.Button.Primary}" Content="Guardar" Command="{Binding SaveCommand}" Width="100" Margin="5" />
-        </StackPanel>
-    </Grid>
+﻿<Window Width="900" Height="700" x:Class="DentalClinicWPF.Views.LabOrder.AddLabOrderView" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="Agregar Orden de Laboratorio" Background="{StaticResource Brush.Background}" FontFamily="{StaticResource Font.Primary}"    >
+    
+  <Grid Margin="10">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="*" />
+      <RowDefinition Height="Auto" />
+    </Grid.RowDefinitions>
+    <!-- Input Fields -->
+    
+      <StackPanel Margin="0,0,0,10">
+        <Label Content="Paciente" />
+        <ComboBox Style="{StaticResource FormComboBoxStyle}" ItemsSource="{Binding Patients}" DisplayMemberPath="DisplayInfo" SelectedValuePath="PatientID" SelectedValue="{Binding LabOrder.PatientID, Mode=TwoWay}" />
+        <Label Content="Dentista" Margin="0,10,0,0" />
+        <ComboBox Style="{StaticResource FormComboBoxStyle}" ItemsSource="{Binding Dentists}" DisplayMemberPath="DisplayInfo" SelectedValuePath="DentistID" SelectedValue="{Binding LabOrder.DentistID, Mode=TwoWay}" />
+        <Label Content="Fecha de Orden" Margin="0,10,0,0" />
+        <DatePicker Style="{StaticResource FormDatePickerStyle}" SelectedDate="{Binding LabOrder.OrderDate, Mode=TwoWay}" />
+        <Label Content="Descripción" Margin="0,10,0,0" />
+        <TextBox Style="{StaticResource FormTextBoxStyle}" Text="{Binding LabOrder.Description, Mode=TwoWay}" AcceptsReturn="True"  />
+        <Label Content="Estado" Margin="0,10,0,0" />
+        <TextBox Style="{StaticResource FormTextBoxStyle}" Text="{Binding LabOrder.Status, Mode=TwoWay}" />
+      </StackPanel>
+    
+    <!-- Buttons -->
+    <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
+      <Button Style="{StaticResource Modern.Button.Secondary}" Content="Cancelar" Command="{Binding CancelCommand}"  Margin="5" />
+      <Button Style="{StaticResource Modern.Button.Primary}" Content="Guardar" Command="{Binding SaveCommand}"  Margin="5" />
+    </StackPanel>
+  </Grid>
+    
 </Window>
 

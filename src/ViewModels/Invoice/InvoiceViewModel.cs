@@ -1,7 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
+using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
 using DentalClinicWPF.Data;
 using DentalClinicWPF.Models;
@@ -13,135 +15,119 @@ namespace DentalClinicWPF.ViewModels.Invoice
     public class InvoiceViewModel : BaseViewModel
     {
         private readonly DentalClinicContext _context;
-        private List<Models.Invoice> _allInvoices;
 
-        public ObservableCollection<Models.Invoice> Invoices { get; set; }
+        public ObservableCollection<Models.Invoice> Invoices { get; private set; }
 
+        private Models.Invoice _selectedInvoice;
+        public Models.Invoice SelectedInvoice
+        {
+            get => _selectedInvoice;
+            set { _selectedInvoice = value; OnPropertyChanged(); }
+        }
+
+        // Filtros por fecha
+        private DateTime _startDate = DateTime.Today.AddDays(-30);
+        public DateTime StartDate
+        {
+            get => _startDate;
+            set { if (SetProperty(ref _startDate, value)) LoadInvoices(); }
+        }
+
+        private DateTime _endDate = DateTime.Today;
+        public DateTime EndDate
+        {
+            get => _endDate;
+            set { if (SetProperty(ref _endDate, value)) LoadInvoices(); }
+        }
+
+        // Búsqueda de texto
         private string _searchText;
         public string SearchText
         {
             get => _searchText;
             set
             {
-                if (_searchText == value) return;
-                _searchText = value;
-                OnPropertyChanged(nameof(SearchText));
-                FilterInvoices();
+                if (SetProperty(ref _searchText, value))
+                {
+                    LoadInvoices(); // Filtra al escribir
+                }
             }
         }
 
-        private Models.Invoice _selectedInvoice;
-        public Models.Invoice SelectedInvoice
-        {
-            get => _selectedInvoice;
-            set { _selectedInvoice = value; OnPropertyChanged(nameof(SelectedInvoice)); }
-        }
+        // Paginación
+        private List<Models.Invoice> _allFilteredInvoices = new();
+        private int _currentPage = 1;
+        private int _pageSize = 15;
+        public string PageInfo => $"Página {_currentPage} de {Math.Max(1, (int)Math.Ceiling((double)_allFilteredInvoices.Count / _pageSize))}";
+        public bool CanGoNextPage => _currentPage < (int)Math.Ceiling((double)_allFilteredInvoices.Count / _pageSize);
+        public bool CanGoPrevPage => _currentPage > 1;
 
-        public IRelayCommand<Models.Invoice> PrintTicketCommand { get; }
-        public IRelayCommand ReloadCommand { get; }
+        // Comandos
+        public ICommand ReloadCommand { get; }
+        public ICommand NextPageCommand { get; }
+        public ICommand PrevPageCommand { get; }
 
         public InvoiceViewModel(DentalClinicContext context)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             Invoices = new ObservableCollection<Models.Invoice>();
 
-            LoadInvoices();
-
-            PrintTicketCommand = new RelayCommand<Models.Invoice>(PrintTicket);
             ReloadCommand = new RelayCommand(LoadInvoices);
+            NextPageCommand = new RelayCommand(() => ChangePage(1), () => CanGoNextPage);
+            PrevPageCommand = new RelayCommand(() => ChangePage(-1), () => CanGoPrevPage);
+
+            LoadInvoices();
+        }
+
+        private void ChangePage(int direction)
+        {
+            _currentPage += direction;
+            UpdatePagedInvoices();
+            OnPropertyChanged(nameof(PageInfo));
+            OnPropertyChanged(nameof(CanGoNextPage));
+            OnPropertyChanged(nameof(CanGoPrevPage));
+            (NextPageCommand as RelayCommand)?.NotifyCanExecuteChanged();
+            (PrevPageCommand as RelayCommand)?.NotifyCanExecuteChanged();
+        }
+
+        private void UpdatePagedInvoices()
+        {
+            Invoices.Clear();
+            var paged = _allFilteredInvoices.Skip((_currentPage - 1) * _pageSize).Take(_pageSize).ToList();
+            foreach (var inv in paged) Invoices.Add(inv);
         }
 
         private void LoadInvoices()
         {
-            _allInvoices = _context.Invoice
-                .Include(i => i.Patient)
-                .Include(i => i.Appointment).ThenInclude(a => a.Dentist)
-                .Include(i => i.Appointment).ThenInclude(a => a.Treatment)
-                .ToList();
-
-            FilterInvoices();
-        }
-
-        private void FilterInvoices()
-        {
-            Invoices.Clear();
-            var filtered = _allInvoices;
-
-            if (!string.IsNullOrWhiteSpace(SearchText))
-            {
-                var search = SearchText.ToLower();
-                filtered = filtered.Where(i => 
-                    (i.Patient?.FullName?.ToLower().Contains(search) ?? false) ||
-                    (i.Appointment?.Dentist?.FullName?.ToLower().Contains(search) ?? false) ||
-                    (i.Appointment?.Treatment?.Name?.ToLower().Contains(search) ?? false)
-                ).ToList();
-            }
-
-            foreach (var inv in filtered)
-            {
-                Invoices.Add(inv);
-            }
-        }
-
-        private void PrintTicket(Models.Invoice? invoice)
-        {
-            if (invoice == null) return;
-
-            var items = new List<ViewModels.Pos.PosItemViewModel>();
-
-            if (invoice.Appointment?.Treatment != null)
-            {
-                items.Add(new ViewModels.Pos.PosItemViewModel
-                {
-                    Description = invoice.Appointment.Treatment.Name,
-                    Quantity    = 1,
-                    UnitPrice   = invoice.TotalAmount
-                });
-            }
-            else if (invoice.TreatmentPlanID != null)
-            {
-                items.Add(new ViewModels.Pos.PosItemViewModel
-                {
-                    Description = $"Plan de Tratamiento #{invoice.TreatmentPlanID}",
-                    Quantity    = 1,
-                    UnitPrice   = invoice.TotalAmount
-                });
-            }
-            else
-            {
-                items.Add(new ViewModels.Pos.PosItemViewModel
-                {
-                    Description = "Servicio odontológico",
-                    Quantity    = 1,
-                    UnitPrice   = invoice.TotalAmount
-                });
-            }
-
-            var sfd = new Microsoft.Win32.SaveFileDialog
-            {
-                Filter = "Documento PDF (*.pdf)|*.pdf",
-                FileName = $"Ticket_{invoice.InvoiceID}_{(invoice.Patient?.FullName ?? "Cliente").Replace(" ", "_")}.pdf",
-                Title = "Guardar Ticket"
-            };
-
-            if (sfd.ShowDialog() != true) return;
-
             try
             {
-                Services.TicketPdfService.Generate(invoice, items, sfd.FileName);
-                MessageBox.Show("Ticket guardado correctamente.", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
+                var query = _context.Invoice
+                    .Include(i => i.Patient)
+                    .Where(i => i.InvoiceDate >= StartDate.Date && i.InvoiceDate <= EndDate.Date.AddDays(1).AddSeconds(-1))
+                    .ToList();
 
-                if (System.IO.File.Exists(sfd.FileName))
+                // Filtro de búsqueda de texto
+                if (!string.IsNullOrWhiteSpace(SearchText))
                 {
-                    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(sfd.FileName)
-                    {
-                        UseShellExecute = true
-                    });
+                    var term = SearchText.Trim().ToLower();
+                    query = query.Where(i => 
+                        (i.Patient?.FirstName?.ToLower().Contains(term) ?? false) ||
+                        (i.Patient?.LastName?.ToLower().Contains(term) ?? false)).ToList();
                 }
+
+                _allFilteredInvoices = query.OrderByDescending(i => i.InvoiceDate).ToList();
+                _currentPage = 1;
+                UpdatePagedInvoices();
+
+                OnPropertyChanged(nameof(PageInfo));
+                OnPropertyChanged(nameof(CanGoNextPage));
+                OnPropertyChanged(nameof(CanGoPrevPage));
+                (NextPageCommand as RelayCommand)?.NotifyCanExecuteChanged();
+                (PrevPageCommand as RelayCommand)?.NotifyCanExecuteChanged();
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error al generar ticket: {ex.Message}", "Error");
+                MessageBox.Show($"Error al cargar facturas: {ex.Message}");
             }
         }
     }
