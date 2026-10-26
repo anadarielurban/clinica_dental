@@ -34,7 +34,7 @@ namespace DentalClinicWPF.Data
         {
             if (!optionsBuilder.IsConfigured)
             {
-                var dbPath = System.IO.Path.Combine(AppContext.BaseDirectory, "DentalClinic.db");
+                var dbPath = @"C:\Users\Ana\DentalClinic\src\DentalClinic.db";
                 optionsBuilder.UseSqlite($"Data Source={dbPath}");
             }
         }
@@ -250,3 +250,4 @@ namespace DentalClinicWPF.Data
         }}
 
         }
+
