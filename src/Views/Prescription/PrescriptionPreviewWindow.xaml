@@ -1,0 +1,25 @@
+<Window x:Class="DentalClinicWPF.Views.Prescription.PrescriptionPreviewWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:DentalClinicWPF.Views.Prescription"
+        Title="Vista Previa de Receta" Height="850" Width="750" WindowStartupLocation="CenterScreen">
+    <Grid Background="#F3F4F6">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        
+        <ScrollViewer Grid.Row="0" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+            <Border Background="White" Margin="20" HorizontalAlignment="Center" VerticalAlignment="Top">
+                <local:PrescriptionPrintView x:Name="PrintView" Margin="20"/>
+            </Border>
+        </ScrollViewer>
+        
+        <Border Grid.Row="1" Background="White" Padding="10" BorderBrush="#E0E0E0" BorderThickness="0,1,0,0">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Content="Cerrar" Width="100" Height="35" Margin="0,0,10,0" Click="BtnClose_Click"/>
+                <Button Content="Imprimir" Width="120" Height="35" Background="#F59E0B" Foreground="White" FontWeight="Bold" Click="BtnPrint_Click"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>

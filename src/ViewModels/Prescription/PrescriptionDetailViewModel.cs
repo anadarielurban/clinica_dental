@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -36,120 +36,33 @@ namespace DentalClinicWPF.ViewModels.Prescription
 
         private void PrintPrescription()
         {
-            try
-            {
-                FlowDocument doc = BuildFlowDocument(Prescription);
-                PrintDialog printDialog = new PrintDialog();
-                if (printDialog.ShowDialog() == true)
-                {
-                    IDocumentPaginatorSource idpSource = doc;
-                    printDialog.PrintDocument(idpSource.DocumentPaginator, "Imprimiendo Receta");
-                }
+            var p = this.GetType().GetProperty("Prescription")?.GetValue(this) 
+                 ?? this.GetType().GetProperty("SelectedPrescription")?.GetValue(this)
+                 ?? this.GetType().GetField("_prescription", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)?.GetValue(this);
+
+            if (p is DentalClinicWPF.Models.Prescription receta) 
+            { 
+                DentalClinicWPF.Services.PrescriptionPrintService.Print(receta); 
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Ocurrió un error al imprimir:\n{ex.Message}", "Error de Impresión", MessageBoxButton.OK, MessageBoxImage.Error);
+            else 
+            { 
+                System.Windows.MessageBox.Show("No se encontró la receta en el ViewModel.", "Error"); 
             }
         }
 
         private void ExportPrescriptionAsPdf()
         {
-            try
-            {
-                Microsoft.Win32.SaveFileDialog saveFileDialog = new Microsoft.Win32.SaveFileDialog
-                {
-                    FileName = $"Receta_{Prescription.PrescriptionID}",
-                    DefaultExt = ".pdf",
-                    Filter = "Documentos PDF (.pdf)|*.pdf"
-                };
+            var p = this.GetType().GetProperty("Prescription")?.GetValue(this) 
+                 ?? this.GetType().GetProperty("SelectedPrescription")?.GetValue(this)
+                 ?? this.GetType().GetField("_prescription", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)?.GetValue(this);
 
-                if (saveFileDialog.ShowDialog() != true) return;
-                string fileName = saveFileDialog.FileName;
-
-                using (var document = new PdfDocument())
-                {
-                    document.Info.Title = $"Receta {Prescription.PrescriptionID}";
-                    PdfPage page = document.AddPage();
-                    XGraphics gfx = XGraphics.FromPdfPage(page);
-
-                    // Colors & Fonts
-                    XColor teal = XColor.FromArgb(20, 184, 166);
-                    XColor darkGray = XColor.FromArgb(51, 65, 85);
-                    XColor lightGray = XColor.FromArgb(226, 232, 240);
-                    
-                    XFont fontTitle = new XFont("Arial", 22, XFontStyle.Bold);
-                    XFont fontSubtitle = new XFont("Arial", 14, XFontStyle.Bold);
-                    XFont fontHeader = new XFont("Arial", 12, XFontStyle.Bold);
-                    XFont fontBody = new XFont("Arial", 11, XFontStyle.Regular);
-                    XFont fontSmall = new XFont("Arial", 9, XFontStyle.Regular);
-                    XFont fontRx = new XFont("Times New Roman", 36, XFontStyle.Bold);
-
-                    double margin = 40;
-                    double width = page.Width - (2 * margin);
-                    double y = margin;
-
-                    // 1. Header Banner (Teal)
-                    gfx.DrawRectangle(new XSolidBrush(teal), 0, 0, page.Width, 90);
-                    gfx.DrawString("Clínica Dental", fontTitle, XBrushes.White, new XRect(0, 25, page.Width, 30), XStringFormats.TopCenter);
-                    gfx.DrawString("Receta Médica", fontSubtitle, XBrushes.White, new XRect(0, 55, page.Width, 20), XStringFormats.TopCenter);
-                    
-                    y += 110; // Start below banner
-
-                    // 2. Doctor Info (Top Right)
-                    gfx.DrawString("Dr(a). " + (Prescription.Dentist?.FullName ?? "Médico Tratante"), fontHeader, new XSolidBrush(darkGray), page.Width - margin - 200, y, XStringFormats.TopRight);
-                    gfx.DrawString(Prescription.Dentist?.Specialization ?? "Odontología", fontBody, XBrushes.Gray, page.Width - margin - 200, y + 15, XStringFormats.TopRight);
-                    
-                    y += 50;
-
-                    // 3. Patient Info Box (Light Gray Box with Border)
-                    gfx.DrawRectangle(new XSolidBrush(XColor.FromArgb(248, 250, 252)), margin, y, width, 60);
-                    gfx.DrawRectangle(new XPen(lightGray, 1), margin, y, width, 60);
-                    
-                    gfx.DrawString("PACIENTE", fontSmall, XBrushes.Gray, margin + 10, y + 10);
-                    gfx.DrawString(Prescription.Patient?.FullName ?? "Paciente General", fontHeader, new XSolidBrush(darkGray), margin + 10, y + 25);
-                    
-                    gfx.DrawString("FECHA", fontSmall, XBrushes.Gray, margin + width - 200, y + 10);
-                    gfx.DrawString(Prescription.DateIssued.ToString("dd/MM/yyyy"), fontBody, new XSolidBrush(darkGray), margin + width - 200, y + 25);
-                    
-                    gfx.DrawString("EDAD", fontSmall, XBrushes.Gray, margin + width - 100, y + 10);
-                    gfx.DrawString($"{CalculateAge(Prescription.Patient?.DateOfBirth ?? DateTime.Today)} años", fontBody, new XSolidBrush(darkGray), margin + width - 100, y + 25);
-
-                    y += 90;
-
-                    // 4. Rx Symbol
-                    gfx.DrawString("Rx", fontRx, new XSolidBrush(teal), margin, y);
-                    y += 50;
-
-                    // 5. Prescription Details
-                    gfx.DrawString("MEDICAMENTO", fontSmall, XBrushes.Gray, margin, y);
-                    gfx.DrawString(Prescription.Medication ?? "-", fontSubtitle, new XSolidBrush(darkGray), margin, y + 15);
-                    y += 50;
-
-                    gfx.DrawString("DOSIS", fontSmall, XBrushes.Gray, margin, y);
-                    gfx.DrawString(Prescription.Dosage ?? "-", fontBody, new XSolidBrush(darkGray), margin, y + 15);
-                    y += 50;
-
-                    gfx.DrawString("INSTRUCCIONES", fontSmall, XBrushes.Gray, margin, y);
-                    XRect instRect = new XRect(margin, y + 15, width, 150);
-                    gfx.DrawString(Prescription.Instructions ?? "-", fontBody, new XSolidBrush(darkGray), instRect, XStringFormats.TopLeft);
-
-                    // 6. Footer Signature
-                    double sigY = page.Height - 100;
-                    gfx.DrawLine(new XPen(XBrushes.Gray, 1), margin + (width/2) - 100, sigY, margin + (width/2) + 100, sigY);
-                    gfx.DrawString("Firma y Sello", fontBody, XBrushes.Gray, new XRect(margin + (width/2) - 100, sigY + 10, 200, 20), XStringFormats.TopCenter);
-
-                    // Bottom line
-                    gfx.DrawLine(new XPen(lightGray, 1), margin, page.Height - 40, page.Width - margin, page.Height - 40);
-                    gfx.DrawString("Documento generado por Clínica Dental", fontSmall, XBrushes.LightGray, new XRect(margin, page.Height - 35, width, 20), XStringFormats.TopCenter);
-
-                    document.Save(fileName);
-                }
-
-                MessageBox.Show($"PDF exportado correctamente:\n{fileName}", "Exportar a PDF", MessageBoxButton.OK, MessageBoxImage.Information);
+            if (p is DentalClinicWPF.Models.Prescription receta) 
+            { 
+                DentalClinicWPF.Services.PrescriptionPrintService.Print(receta); 
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Ocurrió un error al exportar a PDF:\n{ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            else 
+            { 
+                System.Windows.MessageBox.Show("No se encontró la receta en el ViewModel.", "Error"); 
             }
         }
 
@@ -163,8 +76,18 @@ namespace DentalClinicWPF.ViewModels.Prescription
 
         private void PreviewPrescription()
         {
-            var previewWindow = new PrescriptionPreviewWindow(Prescription);
-            previewWindow.ShowDialog();
+            var p = this.GetType().GetProperty("Prescription")?.GetValue(this) 
+                 ?? this.GetType().GetProperty("SelectedPrescription")?.GetValue(this)
+                 ?? this.GetType().GetField("_prescription", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)?.GetValue(this);
+
+            if (p is DentalClinicWPF.Models.Prescription receta) 
+            { 
+                DentalClinicWPF.Services.PrescriptionPrintService.ShowPreview(receta); 
+            }
+            else 
+            { 
+                System.Windows.MessageBox.Show("No se encontró la receta en el ViewModel.", "Error"); 
+            }
         }
 
         private FlowDocument BuildFlowDocument(Models.Prescription prescription)

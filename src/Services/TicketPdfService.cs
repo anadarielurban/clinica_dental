@@ -18,20 +18,17 @@ namespace DentalClinicWPF.Services
             {
                 QuestPDF.Settings.License = LicenseType.Community;
 
-                // Aseguramos que el directorio exista
                 var dir = Path.GetDirectoryName(rutaSalida);
                 if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
                     Directory.CreateDirectory(dir);
 
-                // 1. GENERAR EL PDF (Formato Ticket Térmico Corto)
                 Document.Create(container =>
                 {
                     container.Page(page =>
                     {
-                        // Ancho de 80mm (aprox 226 puntos) y alto dinámico
                         page.Size(new PageSize(226, 500)); 
                         page.Margin(10);
-                        page.DefaultTextStyle(x => x.FontSize(9).FontFamily(Fonts.Courier)); // Fuente tipo ticket
+                        page.DefaultTextStyle(x => x.FontSize(9).FontFamily(Fonts.Courier)); 
 
                         page.Header().Column(col =>
                         {

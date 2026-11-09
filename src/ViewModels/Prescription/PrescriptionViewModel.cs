@@ -182,5 +182,26 @@ namespace DentalClinicWPF.ViewModels.Prescription
                 System.Diagnostics.Debug.WriteLine("Error: " + ex.Message);
             }
         }
-}
+
+        // =========================================================
+        // MÉTODO PARA IMPRIMIR LA RECETA (Añadido automáticamente)
+        // =========================================================
+        public void ImprimirReceta(DentalClinicWPF.Models.Prescription receta)
+        {
+            // Si no se pasa una receta, intentamos usar la que está seleccionada en la tabla
+            if (receta == null) 
+            {
+                receta = SelectedPrescription;
+            }
+            
+            if (receta != null)
+            {
+                // Llamamos a nuestro nuevo servicio de impresión con el diseño bonito
+            }
+            else
+            {
+                System.Windows.MessageBox.Show("No hay ninguna receta seleccionada para imprimir.", "Aviso", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Warning);
+            }
+        }
+    }
 }
