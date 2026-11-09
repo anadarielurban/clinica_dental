@@ -9,6 +9,11 @@ using DentalClinicWPF.Data;
 using DentalClinicWPF.Models;
 using DentalClinicWPF.ViewModels.Base;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Win32;
+using QuestPDF.Fluent;
+using QuestPDF.Helpers;
+using QuestPDF.Infrastructure;
+using QColors = QuestPDF.Helpers.Colors;
 
 namespace DentalClinicWPF.ViewModels.Invoice
 {
@@ -66,6 +71,7 @@ namespace DentalClinicWPF.ViewModels.Invoice
         public ICommand ReloadCommand { get; }
         public ICommand NextPageCommand { get; }
         public ICommand PrevPageCommand { get; }
+        public ICommand PrintTicketCommand { get; }
 
         public InvoiceViewModel(DentalClinicContext context)
         {
@@ -75,6 +81,8 @@ namespace DentalClinicWPF.ViewModels.Invoice
             ReloadCommand = new RelayCommand(LoadInvoices);
             NextPageCommand = new RelayCommand(() => ChangePage(1), () => CanGoNextPage);
             PrevPageCommand = new RelayCommand(() => ChangePage(-1), () => CanGoPrevPage);
+            
+            PrintTicketCommand = new RelayCommand<Models.Invoice>(PrintTicket);
 
             LoadInvoices();
         }
@@ -103,6 +111,10 @@ namespace DentalClinicWPF.ViewModels.Invoice
             {
                 var query = _context.Invoice
                     .Include(i => i.Patient)
+                    .Include(i => i.Appointment)
+                        .ThenInclude(a => a.Dentist)
+                    .Include(i => i.Appointment)
+                        .ThenInclude(a => a.Treatment)
                     .Where(i => i.InvoiceDate >= StartDate.Date && i.InvoiceDate <= EndDate.Date.AddDays(1).AddSeconds(-1))
                     .ToList();
 
@@ -110,9 +122,10 @@ namespace DentalClinicWPF.ViewModels.Invoice
                 if (!string.IsNullOrWhiteSpace(SearchText))
                 {
                     var term = SearchText.Trim().ToLower();
-                    query = query.Where(i => 
+                    query = query.Where(i =>
                         (i.Patient?.FirstName?.ToLower().Contains(term) ?? false) ||
-                        (i.Patient?.LastName?.ToLower().Contains(term) ?? false)).ToList();
+                        (i.Patient?.LastName?.ToLower().Contains(term) ?? false) ||
+                        i.InvoiceID.ToString().Contains(term)).ToList();
                 }
 
                 _allFilteredInvoices = query.OrderByDescending(i => i.InvoiceDate).ToList();
@@ -128,6 +141,116 @@ namespace DentalClinicWPF.ViewModels.Invoice
             catch (Exception ex)
             {
                 MessageBox.Show($"Error al cargar facturas: {ex.Message}");
+            }
+        }
+
+        private void PrintTicket(Models.Invoice invoice)
+        {
+            if (invoice == null) return;
+
+            try
+            {
+                QuestPDF.Settings.License = LicenseType.Community;
+
+                var saveFileDialog = new SaveFileDialog
+                {
+                    FileName = $"Factura_{invoice.InvoiceID:D6}",
+                    DefaultExt = ".pdf",
+                    Filter = "PDF Documents (.pdf)|*.pdf"
+                };
+
+                if (saveFileDialog.ShowDialog() != true) return;
+                string fileName = saveFileDialog.FileName;
+
+                QuestPDF.Fluent.Document.Create(container =>
+                {
+                    container.Page(page =>
+                    {
+                        page.Size(PageSizes.A5); // Tamaño media carta (A5) ideal para facturas
+                        page.Margin(1.5f, Unit.Centimetre);
+                        page.PageColor(QColors.White);
+                        page.DefaultTextStyle(x => x.FontSize(10).FontFamily(QuestPDF.Helpers.Fonts.SegoeUI));
+
+                        // ENCABEZADO
+                        page.Header().Column(col =>
+                        {
+                            col.Item().Row(row =>
+                            {
+                                row.RelativeItem().Column(c =>
+                                {
+                                    c.Item().Text("Clínica Dental").FontSize(20).SemiBold().FontColor(QColors.Teal.Medium);
+                                    c.Item().Text("Factura de Venta").FontSize(12).FontColor(QColors.Grey.Darken2);
+                                });
+                                row.ConstantItem(120).AlignRight().Column(c =>
+                                {
+                                    c.Item().Text($"Folio: #{invoice.InvoiceID:D6}").Bold();
+                                    c.Item().Text($"Fecha: {invoice.InvoiceDate:dd/MM/yyyy HH:mm}");
+                                });
+                            });
+                            col.Item().PaddingTop(10).LineHorizontal(1).LineColor(QColors.Grey.Lighten2);
+                        });
+
+                        // CONTENIDO
+                        page.Content().PaddingVertical(15).Column(col =>
+                        {
+                            // Datos del Paciente
+                            col.Item().PaddingBottom(10).Row(row =>
+                            {
+                                row.RelativeItem().Column(c =>
+                                {
+                                    c.Item().Text("DATOS DEL PACIENTE").FontSize(9).FontColor(QColors.Grey.Medium).SemiBold();
+                                    c.Item().Text($"{invoice.Patient?.FirstName} {invoice.Patient?.LastName}").FontSize(11).Bold();
+                                    c.Item().Text($"Tel: {invoice.Patient?.PhoneNumber}");
+                                });
+                                row.RelativeItem().Column(c =>
+                                {
+                                    c.Item().Text("DATOS DE ATENCIÓN").FontSize(9).FontColor(QColors.Grey.Medium).SemiBold();
+                                    c.Item().Text($"Dentista: {invoice.Appointment?.Dentist?.FirstName} {invoice.Appointment?.Dentist?.LastName}");
+                                    c.Item().Text($"Tratamiento: {invoice.Appointment?.Treatment?.Name ?? "N/A"}");
+                                });
+                            });
+
+                            // Tabla
+                            col.Item().Table(table =>
+                            {
+                                table.ColumnsDefinition(columns =>
+                                {
+                                    columns.RelativeColumn(3); // Concepto
+                                    columns.RelativeColumn(1); // Total
+                                });
+
+                                table.Header(header =>
+                                {
+                                    header.Cell().Background(QColors.Teal.Lighten4).Padding(5).Text("CONCEPTO").SemiBold();
+                                    header.Cell().Background(QColors.Teal.Lighten4).Padding(5).AlignRight().Text("TOTAL").SemiBold();
+                                });
+
+                                table.Cell().BorderBottom(1).BorderColor(QColors.Grey.Lighten3).Padding(8).Text(invoice.Appointment?.Treatment?.Name ?? "Servicios Dentales");
+                                table.Cell().BorderBottom(1).BorderColor(QColors.Grey.Lighten3).Padding(8).AlignRight().Text($"{invoice.TotalAmount:C}");
+                            });
+
+                            // Totales
+                            col.Item().PaddingTop(15).AlignRight().Column(c =>
+                            {
+                                c.Item().Text($"Subtotal: {invoice.TotalAmount:C}");
+                                c.Item().Text($"Pagado: {invoice.AmountPaid:C}");
+                                c.Item().PaddingTop(5).Text($"TOTAL: {invoice.TotalAmount:C}").FontSize(14).Bold().FontColor(QColors.Teal.Darken2);
+                            });
+                        });
+
+                        page.Footer().AlignCenter().Text(x =>
+                        {
+                            x.Span("¡Gracias por su preferencia!  |  Página ");
+                            x.CurrentPageNumber();
+                        });
+                    });
+                }).GeneratePdf(fileName);
+
+                MessageBox.Show($"Factura generada correctamente:\n{fileName}", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al generar factura: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }
