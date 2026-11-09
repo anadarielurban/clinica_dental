@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              mc:Ignorable="d"
-             d:DesignHeight="600" d:DesignWidth="1000"
+             d:DesignHeight="700" d:DesignWidth="1100"
              Background="{StaticResource Brush.Background}">
 
     <Grid Margin="28">
@@ -12,70 +12,57 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/> <!-- Paginación -->
         </Grid.RowDefinitions>
 
+        <!-- TÍTULO -->
         <Grid Grid.Row="0" Margin="0,0,0,20">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
-            <StackPanel Grid.Column="0">
-                <TextBlock Text="Facturas" FontSize="24" FontWeight="Bold"
-                           Foreground="{StaticResource Brush.TextPrimary}"/>
-                <TextBlock Text="Gestión de facturación" FontSize="13"
-                           Foreground="{StaticResource Brush.TextSecondary}" Margin="0,4,0,0"/>
+            <StackPanel>
+                <TextBlock Text="Facturas" FontSize="24" FontWeight="Bold" Foreground="{StaticResource Brush.TextPrimary}"/>
+                <TextBlock Text="Historial de facturación y ventas" FontSize="13" Foreground="{StaticResource Brush.TextSecondary}" Margin="0,4,0,0"/>
             </StackPanel>
-            <Button Grid.Column="1" Command="{Binding AddInvoiceCommand}"
-                    Style="{StaticResource Modern.Button.Primary}" VerticalAlignment="Center">
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="&#xE710;" FontFamily="Segoe MDL2 Assets" FontSize="14" VerticalAlignment="Center"/>
-                    <TextBlock Text="Agregar Factura" Margin="8,0,0,0"/>
-                </StackPanel>
-            </Button>
         </Grid>
 
-        <Border Grid.Row="1" Background="{StaticResource Brush.Surface}"
-                CornerRadius="12" Padding="16" Margin="0,0,0,16">
+        <!-- FILTROS Y BÚSQUEDA -->
+        <Border Grid.Row="1" Background="{StaticResource Brush.Surface}" CornerRadius="12" Padding="16" Margin="0,0,0,16">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <Border Grid.Column="0" Background="{StaticResource Brush.Background}"
-                        CornerRadius="8" Height="38"
-                        BorderBrush="{StaticResource Brush.Border}" BorderThickness="1">
+
+                <!-- Buscador -->
+                <Border Grid.Column="0" Background="{StaticResource Brush.Background}" CornerRadius="8" Height="38"
+                        BorderBrush="{StaticResource Brush.Border}" BorderThickness="1" Margin="0,0,15,0">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Column="0" Text="&#xE721;" FontFamily="Segoe MDL2 Assets"
-                                   FontSize="14" Foreground="{StaticResource Brush.TextMuted}"
-                                   VerticalAlignment="Center" Margin="12,0,8,0"/>
+                        <TextBlock Grid.Column="0" Text="&#xE721;" FontFamily="Segoe MDL2 Assets" FontSize="14"
+                                   Foreground="{StaticResource Brush.TextMuted}" VerticalAlignment="Center" Margin="12,0,8,0"/>
                         <TextBox Style="{StaticResource FormTextBoxStyle}" Grid.Column="1"
                                  Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
                                  Background="Transparent" BorderThickness="0" FontSize="13"
                                  Foreground="{StaticResource Brush.TextPrimary}"
                                  VerticalContentAlignment="Center"
-                                 ToolTip="Buscar por paciente, dentista, tratamiento o ID"/>
-                        <Button Grid.Column="2" Content="&#xE711;" FontFamily="Segoe MDL2 Assets"
-                                FontSize="10" Width="28" Height="28" Margin="0,0,6,0" Padding="0"
-                                Background="Transparent" BorderThickness="0"
-                                Foreground="{StaticResource Brush.TextMuted}" Cursor="Hand"
-                                ToolTip="Limpiar" Click="ClearSearch_Click" VerticalAlignment="Center"/>
+                                 ToolTip="Buscar por paciente o ID de factura"/>
                     </Grid>
                 </Border>
-                <Button Grid.Column="1" Command="{Binding EditInvoiceCommand}"
-                        Style="{StaticResource Modern.Button.Secondary}" Margin="8,0,0,0">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="&#xE70F;" FontFamily="Segoe MDL2 Assets" FontSize="13" VerticalAlignment="Center"/>
-                        <TextBlock Text="Editar" Margin="6,0,0,0"/>
-                    </StackPanel>
-                </Button>
-                <Button Grid.Column="2" Command="{Binding ReloadCommand}"
-                        Style="{StaticResource Modern.Button.Secondary}" Margin="8,0,0,0">
+
+                <!-- Filtro Fechas -->
+                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,15,0">
+                    <TextBlock Text="Desde:" VerticalAlignment="Center" Foreground="{StaticResource Brush.TextSecondary}" Margin="0,0,5,0"/>
+                    <DatePicker SelectedDate="{Binding StartDate}" Width="110" Height="30" VerticalContentAlignment="Center"/>
+                    <TextBlock Text="Hasta:" VerticalAlignment="Center" Foreground="{StaticResource Brush.TextSecondary}" Margin="10,0,5,0"/>
+                    <DatePicker SelectedDate="{Binding EndDate}" Width="110" Height="30" VerticalContentAlignment="Center"/>
+                </StackPanel>
+
+                <!-- Botón Recargar -->
+                <Button Grid.Column="4" Command="{Binding ReloadCommand}" Style="{StaticResource Modern.Button.Secondary}">
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="&#xE72C;" FontFamily="Segoe MDL2 Assets" FontSize="13" VerticalAlignment="Center"/>
                         <TextBlock Text="Recargar" Margin="6,0,0,0"/>
@@ -84,6 +71,7 @@
             </Grid>
         </Border>
 
+        <!-- TABLA -->
         <Border Grid.Row="2" Background="{StaticResource Brush.Surface}" CornerRadius="12" Padding="0">
             <Grid>
                 <DataGrid ItemsSource="{Binding Invoices}" AutoGenerateColumns="False"
@@ -138,42 +126,49 @@
                         </Style>
                     </DataGrid.RowStyle>
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="ID" Binding="{Binding InvoiceID}" Width="70"/>
-                        <DataGridTextColumn Header="Paciente" Binding="{Binding Appointment.Patient.DisplayInfo}" Width="*"/>
-                        <DataGridTextColumn Header="Dentista" Binding="{Binding Appointment.Dentist.DisplayInfo}" Width="*"/>
-                        <DataGridTextColumn Header="Tratamiento" Binding="{Binding Appointment.Treatment.Name, TargetNullValue='-'}" Width="*"/>
-                        <DataGridTextColumn Header="Fecha" Binding="{Binding Appointment.AppointmentDate, StringFormat=d}" Width="110"/>
-                        <DataGridTextColumn Header="Monto" Binding="{Binding TotalAmount, StringFormat=C}" Width="120"/>
-                        <DataGridCheckBoxColumn Header="Pagada" Binding="{Binding IsPaid, Mode=OneWay}" Width="80"/>
-                    <DataGridTemplateColumn Header="Acciones" Width="100">
-    <DataGridTemplateColumn.CellTemplate>
-        <DataTemplate>
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                <Button Command="{Binding DataContext.PrintTicketCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" Background="Transparent" BorderThickness="0" Cursor="Hand" ToolTip="Imprimir Ticket" Margin="5,0">
-    <TextBlock Text="🖨️" FontSize="16" Foreground="#14B8A6"/>
-</Button>
-            </StackPanel>
-        </DataTemplate>
-    </DataGridTemplateColumn.CellTemplate>
-</DataGridTemplateColumn>
-</DataGrid.Columns>
+                        <DataGridTextColumn Header="Folio" Binding="{Binding InvoiceID, StringFormat='#{0:D6}'}" Width="80"/>
+                        <DataGridTextColumn Header="Paciente" Binding="{Binding Patient.FullName}" Width="*"/>
+                        <DataGridTextColumn Header="Dentista" Binding="{Binding Appointment.Dentist.FullName, TargetNullValue='-'}" Width="*"/>
+                        <DataGridTextColumn Header="Tratamiento" Binding="{Binding Appointment.Treatment.Name, TargetNullValue='Servicio POS'}" Width="*"/>
+                        <DataGridTextColumn Header="Fecha" Binding="{Binding InvoiceDate, StringFormat=dd/MM/yyyy HH:mm}" Width="130"/>
+                        <DataGridTextColumn Header="Monto" Binding="{Binding TotalAmount, StringFormat=C}" Width="100"/>
+                        <DataGridCheckBoxColumn Header="Pagada" Binding="{Binding IsPaid, Mode=OneWay}" Width="70"/>
+                        <DataGridTemplateColumn Header="Acciones" Width="80">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button Command="{Binding DataContext.PrintTicketCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" 
+                                            CommandParameter="{Binding}" 
+                                            Background="Transparent" BorderThickness="0" Cursor="Hand" ToolTip="Ver / Imprimir Factura">
+                                        <TextBlock Text="🖨️" FontSize="16" Foreground="#14B8A6"/>
+                                    </Button>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
                 </DataGrid>
 
                 <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center"
                             Visibility="{Binding Invoices.Count, Converter={StaticResource ZeroToVisibleConverter}}">
                     <TextBlock Text="&#xE8C7;" FontFamily="Segoe MDL2 Assets" FontSize="48"
                                Foreground="{StaticResource Brush.TextMuted}" HorizontalAlignment="Center"/>
-                    <TextBlock Text="Sin facturas registradas" FontSize="16" FontWeight="SemiBold"
+                    <TextBlock Text="Sin facturas en este rango de fechas" FontSize="16" FontWeight="SemiBold"
                                Foreground="{StaticResource Brush.TextSecondary}"
                                HorizontalAlignment="Center" Margin="0,12,0,4"/>
-                    <TextBlock Text="Haz clic en Agregar Factura para empezar" FontSize="12"
+                    <TextBlock Text="Cambia las fechas o realiza una venta en el Punto de Venta" FontSize="12"
                                Foreground="{StaticResource Brush.TextMuted}" HorizontalAlignment="Center"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- PAGINACIÓN -->
+        <Border Grid.Row="3" Background="{StaticResource Brush.Surface}" CornerRadius="12" Padding="12,8" Margin="0,16,0,0">
+            <Grid>
+                <TextBlock Text="{Binding PageInfo}" VerticalAlignment="Center" Foreground="{StaticResource Brush.TextSecondary}" FontSize="13"/>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button Command="{Binding PrevPageCommand}" Content="Anterior" Style="{StaticResource Modern.Button.Secondary}" Margin="0,0,10,0" Padding="15,5"/>
+                    <Button Command="{Binding NextPageCommand}" Content="Siguiente" Style="{StaticResource Modern.Button.Secondary}" Padding="15,5"/>
                 </StackPanel>
             </Grid>
         </Border>
     </Grid>
 </UserControl>
-
-
-
-
