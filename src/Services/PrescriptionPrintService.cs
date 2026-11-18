@@ -24,23 +24,37 @@ namespace DentalClinicWPF.Services
             var printDialog = new PrintDialog();
             if (printDialog.ShowDialog() == true)
             {
-                var viewbox = new Viewbox { Child = printView, Stretch = Stretch.Uniform };
-                // Margen de 50px para que no toque los bordes de la hoja
-                var border = new Border { Child = viewbox, Padding = new Thickness(50) }; 
-                
-                var container = new Grid
+                // Viewbox para que escale sin cortar el texto ni el logo
+                var viewbox = new Viewbox
+                {
+                    Child = printView,
+                    Stretch = Stretch.Uniform
+                };
+
+                // Border que ocupa EXACTAMENTE la mitad superior de la hoja
+                var halfPageBorder = new Border
+                {
+                    Child = viewbox,
+                    Height = printDialog.PrintableAreaHeight / 2, // Mitad de la hoja
+                    HorizontalAlignment = HorizontalAlignment.Left,
+                    VerticalAlignment = VerticalAlignment.Top,
+                    Margin = new Thickness(40) // Margen blanco
+                };
+
+                var page = new Grid
                 {
                     Width = printDialog.PrintableAreaWidth,
                     Height = printDialog.PrintableAreaHeight,
                     Background = Brushes.White
                 };
-                container.Children.Add(border);
+                
+                page.Children.Add(halfPageBorder);
 
-                container.Measure(new Size(printDialog.PrintableAreaWidth, printDialog.PrintableAreaHeight));
-                container.Arrange(new Rect(new Point(0, 0), container.DesiredSize));
-                container.UpdateLayout();
+                page.Measure(new Size(printDialog.PrintableAreaWidth, printDialog.PrintableAreaHeight));
+                page.Arrange(new Rect(new Point(0, 0), new Size(printDialog.PrintableAreaWidth, printDialog.PrintableAreaHeight)));
+                page.UpdateLayout();
 
-                printDialog.PrintVisual(container, "Receta");
+                printDialog.PrintVisual(page, "Receta");
             }
         }
     }

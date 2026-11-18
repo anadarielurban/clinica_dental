@@ -4,7 +4,6 @@ namespace DentalClinicWPF.Views.Prescription
 {
     public partial class PrescriptionPreviewWindow : Window
     {
-        // Usamos el nombre completo para evitar el error CS0118
         private DentalClinicWPF.Models.Prescription _prescription;
 
         public PrescriptionPreviewWindow(DentalClinicWPF.Models.Prescription p)
