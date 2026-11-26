@@ -1,135 +1,121 @@
 ﻿<UserControl x:Class="DentalClinicWPF.Views.Dashboard.DashboardView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             mc:Ignorable="d"
-             d:DesignHeight="800" d:DesignWidth="1200"
              Background="#F8FAFC">
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="24">
-            
+
             <!-- Encabezado -->
             <TextBlock Text="Inicio" FontSize="28" FontWeight="Bold" Foreground="#0F172A" Margin="0,0,0,4"/>
-            <TextBlock Text="Resumen general de la clínica" FontSize="14" Foreground="#64748B" Margin="0,0,0,24"/>
+            <TextBlock Text="Resumen general de la clinica" FontSize="14" Foreground="#64748B" Margin="0,0,0,24"/>
 
-            <!-- Acciones Rápidas -->
+            <!-- Acciones Rapidas -->
             <Border Background="White" CornerRadius="12" Padding="24" Margin="0,0,0,24">
-                <Border.Effect>
-                    <DropShadowEffect Color="#000000" Opacity="0.05" BlurRadius="10" ShadowDepth="2"/>
-                </Border.Effect>
+                <Border.Effect><DropShadowEffect Color="#000000" Opacity="0.05" BlurRadius="10" ShadowDepth="2"/></Border.Effect>
                 <StackPanel>
-                    <TextBlock Text="⚡ Acciones Rápidas" FontSize="18" FontWeight="Bold" Foreground="#1E293B" Margin="0,0,0,16"/>
+                    <TextBlock Text="Acciones Rapidas" FontSize="18" FontWeight="Bold" Foreground="#1E293B" Margin="0,0,0,16"/>
                     <WrapPanel Orientation="Horizontal">
                         <Button Command="{Binding AddAppointmentCommand}" Background="#14B8A6" Foreground="White" Padding="20,12" BorderThickness="0" Cursor="Hand" Margin="0,0,10,10">
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="📅" FontSize="16" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                                <TextBlock Text="+ " FontSize="16" FontWeight="Bold" Margin="0,0,4,0" VerticalAlignment="Center"/>
                                 <TextBlock Text="Agregar Cita" FontWeight="SemiBold" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Button>
                         <Button Command="{Binding AddPatientCommand}" Background="#F1F5F9" Foreground="#334155" Padding="20,12" BorderThickness="0" Cursor="Hand" Margin="0,0,10,10">
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="👤" FontSize="16" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                                <TextBlock Text="+ " FontSize="16" FontWeight="Bold" Margin="0,0,4,0" VerticalAlignment="Center"/>
                                 <TextBlock Text="Agregar Paciente" FontWeight="SemiBold" VerticalAlignment="Center"/>
-                            </StackPanel>
-                        </Button>
-                        <Button Command="{Binding ExportPdfCommand}" Background="#F1F5F9" Foreground="#334155" Padding="20,12" BorderThickness="0" Cursor="Hand" Margin="0,0,10,10">
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="📄" FontSize="16" Margin="0,0,8,0" VerticalAlignment="Center"/>
-                                <TextBlock Text="Exportar a PDF" FontWeight="SemiBold" VerticalAlignment="Center"/>
-                            </StackPanel>
-                        </Button>
-                        <Button Command="{Binding ExportExcelCommand}" Background="#F1F5F9" Foreground="#334155" Padding="20,12" BorderThickness="0" Cursor="Hand" Margin="0,0,10,10">
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="📊" FontSize="16" Margin="0,0,8,0" VerticalAlignment="Center"/>
-                                <TextBlock Text="Exportar a Excel" FontWeight="SemiBold" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Button>
                     </WrapPanel>
                 </StackPanel>
             </Border>
 
-            <!-- Tarjetas KPI -->
+            <!-- Tarjetas de KPI (Resumen) -->
             <UniformGrid Columns="4" Margin="0,0,0,24">
-                <!-- KPI 1 -->
+                <!-- Ingresos -->
                 <Border Background="White" CornerRadius="12" Padding="20" Margin="0,0,12,0">
                     <Border.Effect><DropShadowEffect Color="#000000" Opacity="0.05" BlurRadius="10" ShadowDepth="2"/></Border.Effect>
                     <Grid>
                         <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
                         <Border Grid.Column="0" Width="48" Height="48" Background="#DCFCE7" CornerRadius="10" Margin="0,0,16,0">
-                            <TextBlock Text="💵" FontSize="24" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            <TextBlock Text="$" FontSize="24" FontWeight="Bold" Foreground="#16A34A" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
                         <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                            <TextBlock Text="Ingresos Totales" FontSize="12" Foreground="#64748B" FontWeight="Medium" Margin="0,0,0,4"/>
-                            <TextBlock Text="{Binding TotalIncome, StringFormat=C}" FontSize="24" FontWeight="Bold" Foreground="#0F172A"/>
+                            <TextBlock Text="Ingresos Totales" FontSize="12" Foreground="#64748B" FontWeight="Medium"/>
+                            <TextBlock Text="{Binding TotalIncome, StringFormat=C}" FontSize="20" FontWeight="Bold" Foreground="#0F172A"/>
                         </StackPanel>
                     </Grid>
                 </Border>
-                <!-- KPI 2 -->
+                <!-- Facturas Pendientes -->
                 <Border Background="White" CornerRadius="12" Padding="20" Margin="0,0,12,0">
                     <Border.Effect><DropShadowEffect Color="#000000" Opacity="0.05" BlurRadius="10" ShadowDepth="2"/></Border.Effect>
                     <Grid>
                         <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
                         <Border Grid.Column="0" Width="48" Height="48" Background="#FEF3C7" CornerRadius="10" Margin="0,0,16,0">
-                            <TextBlock Text="⚠️" FontSize="24" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            <TextBlock Text="!" FontSize="24" FontWeight="Bold" Foreground="#D97706" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
                         <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                            <TextBlock Text="Facturas sin Pagar" FontSize="12" Foreground="#64748B" FontWeight="Medium" Margin="0,0,0,4"/>
-                            <TextBlock Text="{Binding PendingInvoices}" FontSize="24" FontWeight="Bold" Foreground="#0F172A"/>
+                            <TextBlock Text="Facturas sin Pagar" FontSize="12" Foreground="#64748B" FontWeight="Medium"/>
+                            <TextBlock Text="{Binding PendingInvoices}" FontSize="20" FontWeight="Bold" Foreground="#0F172A"/>
                         </StackPanel>
                     </Grid>
                 </Border>
-                <!-- KPI 3 -->
+                <!-- Proximas Citas -->
                 <Border Background="White" CornerRadius="12" Padding="20" Margin="0,0,12,0">
                     <Border.Effect><DropShadowEffect Color="#000000" Opacity="0.05" BlurRadius="10" ShadowDepth="2"/></Border.Effect>
                     <Grid>
                         <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
                         <Border Grid.Column="0" Width="48" Height="48" Background="#E0F2FE" CornerRadius="10" Margin="0,0,16,0">
-                            <TextBlock Text="📅" FontSize="24" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            <TextBlock Text="C" FontSize="24" FontWeight="Bold" Foreground="#0284C7" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
                         <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                            <TextBlock Text="Próximas Citas" FontSize="12" Foreground="#64748B" FontWeight="Medium" Margin="0,0,0,4"/>
-                            <TextBlock Text="{Binding UpcomingAppointmentsCount}" FontSize="24" FontWeight="Bold" Foreground="#0F172A"/>
+                            <TextBlock Text="Proximas Citas" FontSize="12" Foreground="#64748B" FontWeight="Medium"/>
+                            <TextBlock Text="{Binding UpcomingAppointmentsCount}" FontSize="20" FontWeight="Bold" Foreground="#0F172A"/>
                         </StackPanel>
                     </Grid>
                 </Border>
-                <!-- KPI 4 -->
+                <!-- Dentistas Activos -->
                 <Border Background="White" CornerRadius="12" Padding="20">
                     <Border.Effect><DropShadowEffect Color="#000000" Opacity="0.05" BlurRadius="10" ShadowDepth="2"/></Border.Effect>
                     <Grid>
                         <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
                         <Border Grid.Column="0" Width="48" Height="48" Background="#F3E8FF" CornerRadius="10" Margin="0,0,16,0">
-                            <TextBlock Text="👨‍⚕️" FontSize="24" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            <TextBlock Text="D" FontSize="24" FontWeight="Bold" Foreground="#9333EA" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
                         <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                            <TextBlock Text="Dentistas Activos" FontSize="12" Foreground="#64748B" FontWeight="Medium" Margin="0,0,0,4"/>
-                            <TextBlock Text="{Binding ActiveDentistsCount}" FontSize="24" FontWeight="Bold" Foreground="#0F172A"/>
+                            <TextBlock Text="Dentistas Activos" FontSize="12" Foreground="#64748B" FontWeight="Medium"/>
+                            <TextBlock Text="{Binding ActiveDentistsCount}" FontSize="20" FontWeight="Bold" Foreground="#0F172A"/>
                         </StackPanel>
                     </Grid>
                 </Border>
             </UniformGrid>
 
-            <!-- Tablas -->
+            <!-- Tablas de Detalle -->
             <Grid>
                 <Grid.ColumnDefinitions><ColumnDefinition Width="2*"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+
+                <!-- Tabla Proximas Citas -->
                 <Border Grid.Column="0" Background="White" CornerRadius="12" Padding="20" Margin="0,0,12,0">
                     <Border.Effect><DropShadowEffect Color="#000000" Opacity="0.05" BlurRadius="10" ShadowDepth="2"/></Border.Effect>
                     <StackPanel>
-                        <TextBlock Text="📅 Próximas Citas" FontSize="18" FontWeight="Bold" Foreground="#1E293B" Margin="0,0,0,16"/>
+                        <TextBlock Text="Proximas Citas" FontSize="18" FontWeight="Bold" Foreground="#1E293B" Margin="0,0,0,16"/>
                         <DataGrid ItemsSource="{Binding UpcomingAppointments}" AutoGenerateColumns="False" CanUserAddRows="False" Background="Transparent" BorderThickness="0" RowHeight="40">
                             <DataGrid.Columns>
-                                <DataGridTextColumn Header="Fecha" Binding="{Binding Date, StringFormat=d}" Width="100"/>
-                                <DataGridTextColumn Header="Hora" Binding="{Binding Time, StringFormat=t}" Width="80"/>
-                                <DataGridTextColumn Header="Paciente" Binding="{Binding PatientName}" Width="*"/>
-                                <DataGridTextColumn Header="Dentista" Binding="{Binding DentistName}" Width="150"/>
+                                <DataGridTextColumn Header="Fecha" Binding="{Binding AppointmentDate, StringFormat=d}" Width="100"/>
+                                <DataGridTextColumn Header="Hora" Binding="{Binding AppointmentDate, StringFormat=t}" Width="80"/>
+                                <DataGridTextColumn Header="Paciente" Binding="{Binding Patient.FullName}" Width="*"/>
+                                <DataGridTextColumn Header="Dentista" Binding="{Binding Dentist.FirstName}" Width="120"/>
                             </DataGrid.Columns>
                         </DataGrid>
                     </StackPanel>
                 </Border>
+
+                <!-- Tabla Ingresos por Dentista -->
                 <Border Grid.Column="1" Background="White" CornerRadius="12" Padding="20">
                     <Border.Effect><DropShadowEffect Color="#000000" Opacity="0.05" BlurRadius="10" ShadowDepth="2"/></Border.Effect>
                     <StackPanel>
-                        <TextBlock Text="💵 Ingresos por Dentista" FontSize="18" FontWeight="Bold" Foreground="#1E293B" Margin="0,0,0,16"/>
+                        <TextBlock Text="Ingresos por Dentista" FontSize="18" FontWeight="Bold" Foreground="#1E293B" Margin="0,0,0,16"/>
                         <DataGrid ItemsSource="{Binding IncomeByDentist}" AutoGenerateColumns="False" CanUserAddRows="False" Background="Transparent" BorderThickness="0" RowHeight="40">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="Dentista" Binding="{Binding DentistName}" Width="*"/>
@@ -139,7 +125,7 @@
                     </StackPanel>
                 </Border>
             </Grid>
-            
+
         </StackPanel>
     </ScrollViewer>
 </UserControl>
