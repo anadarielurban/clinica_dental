@@ -1,6 +1,8 @@
 ﻿<Application x:Class="DentalClinicWPF.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:viewsCorte="clr-namespace:DentalClinicWPF.Views.Corte"
+             xmlns:vmCorte="clr-namespace:DentalClinicWPF.ViewModels.Corte"
              xmlns:local="clr-namespace:DentalClinicWPF"
              xmlns:vm="clr-namespace:DentalClinicWPF.ViewModels"
              xmlns:views="clr-namespace:DentalClinicWPF.Views"
@@ -130,6 +132,14 @@
                 <posView:PosView />
             </DataTemplate>
             
+        
+        <!-- DataTemplate Corte de Caja -->
+        <DataTemplate DataType="{x:Type vmCorte:CorteCajaViewModel}">
+            <viewsCorte:CorteCajaView />
+        </DataTemplate>
         </ResourceDictionary>
     </Application.Resources>
 </Application>
+
+
+

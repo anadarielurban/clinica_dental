@@ -42,6 +42,13 @@
                 <TextBlock Text="Inicio" Margin="8,0,0,0" />
               </StackPanel>
             </Button>
+
+<Button Tag="Corte de Caja" Command="{Binding ShowCorteCajaCommand}" Style="{StaticResource Modern.SidebarItem}">
+              <StackPanel Orientation="Horizontal">
+                <TextBlock Text="" FontFamily="Segoe MDL2 Assets" Width="20" VerticalAlignment="Center" />
+                <TextBlock Text="Corte de Caja" Margin="8,0,0,0" />
+              </StackPanel>
+            </Button>
             <TextBlock Text="CLÍNICA" Style="{StaticResource Modern.Caption}" Margin="20,18,20,6" />
             <Button Tag="Pacientes" Command="{Binding ShowPatientsCommand}" Style="{StaticResource Modern.SidebarItem}">
               <StackPanel Orientation="Horizontal">
@@ -192,6 +199,7 @@
     </TabControl>
   </DockPanel>
 </Window>
+
 
 
 

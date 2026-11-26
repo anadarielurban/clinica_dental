@@ -43,6 +43,7 @@ namespace DentalClinicWPF.ViewModels
 
         // Sidebar navigation commands
         public ICommand ShowDashboardCommand { get; }
+        public ICommand ShowCorteCajaCommand { get; }
         public ICommand ShowPatientsCommand { get; }
         public ICommand ShowAppointmentsCommand { get; }
         public ICommand ShowDentistsCommand { get; }
@@ -70,6 +71,7 @@ namespace DentalClinicWPF.ViewModels
 
             // Define navigation commands with OpenTab action
             ShowDashboardCommand = new RelayCommand(() => OpenTab("Inicio", new DashboardViewModel(_context, OpenTab)));
+            ShowCorteCajaCommand = new RelayCommand(() => OpenTab("Corte de Caja", new ViewModels.Corte.CorteCajaViewModel(_context)));
             ShowPatientsCommand = new RelayCommand(() => OpenTab("Pacientes", new PatientViewModel(_context, OpenTab)));
             ShowAppointmentsCommand = new RelayCommand(() => OpenTab("Citas", new AppointmentViewModel(_context)));
             ShowDentistsCommand = new RelayCommand(() => OpenTab("Dentistas", new DentistViewModel(_context, OpenTab)));
@@ -154,6 +156,9 @@ namespace DentalClinicWPF.ViewModels
         }
     }
 }
+
+
+
 
 
 
