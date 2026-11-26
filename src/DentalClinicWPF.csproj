@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <CETCompat>false</CETCompat>
@@ -105,5 +105,11 @@
       </Page>
     </ItemGroup>
 
+  <ItemGroup>
+    <Resource Include="images\logo_nexup.png" />
+  </ItemGroup>
+  <PropertyGroup>
+    <ApplicationIcon>images\logo_nexup.ico</ApplicationIcon>
+  </PropertyGroup>
 </Project>
 

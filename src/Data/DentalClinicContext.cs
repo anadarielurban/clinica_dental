@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using Microsoft.EntityFrameworkCore;
@@ -29,13 +29,15 @@ namespace DentalClinicWPF.Data
         public DbSet<Radiography> Radiographies { get; set; }
 
     public DbSet<Prescription> Prescriptions { get; set; }
+    public DbSet<Budget> Budgets { get; set; }
+    public DbSet<BudgetItem> BudgetItems { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
                 var dbPath = @"C:\Users\Ana\DentalClinic\src\DentalClinic.db";
-                optionsBuilder.UseSqlite($"Data Source={dbPath}");
+                optionsBuilder.UseSqlite($"Data Source={System.IO.Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "DentalClinic.db")}");
             }
         }
 

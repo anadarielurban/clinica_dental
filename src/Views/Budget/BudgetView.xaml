@@ -1,0 +1,143 @@
+﻿<UserControl x:Class="DentalClinicWPF.Views.Budget.BudgetView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="#F8FAFC">
+    
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0" Margin="0,0,0,15">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <StackPanel Grid.Column="0" Margin="0,0,20,0">
+                <TextBlock Text="Folio" FontWeight="Bold" Foreground="#475569" Margin="0,0,0,4"/>
+                <Border BorderBrush="#CBD5E1" BorderThickness="1" Background="White" Padding="10,5" CornerRadius="6" Width="150">
+                    <TextBlock Text="{Binding Folio}" FontSize="16" FontWeight="SemiBold" Foreground="#0F172A"/>
+                </Border>
+            </StackPanel>
+            <StackPanel Grid.Column="1">
+                <TextBlock Text="Fecha" FontWeight="Bold" Foreground="#475569" Margin="0,0,0,4"/>
+                <Border BorderBrush="#CBD5E1" BorderThickness="1" Background="White" Padding="10,5" CornerRadius="6" Width="150">
+                    <TextBlock Text="{Binding Date, StringFormat=d}" FontSize="16" FontWeight="SemiBold" Foreground="#0F172A"/>
+                </Border>
+            </StackPanel>
+        </Grid>
+
+        <Border Grid.Row="1" Background="White" CornerRadius="8" Padding="15" Margin="0,0,0,15">
+            <Border.Effect><DropShadowEffect Color="#000000" Opacity="0.05" BlurRadius="10" ShadowDepth="2"/></Border.Effect>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock Text="Paciente:" FontWeight="Bold" Foreground="#475569" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                    <ComboBox ItemsSource="{Binding AvailablePatients}" SelectedItem="{Binding SelectedPatient}" DisplayMemberPath="FullName" Width="250" Padding="5" Margin="0,0,20,0"/>
+                    <TextBlock Text="Expediente:" FontWeight="Bold" Foreground="#475569" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                    <TextBlock Text="{Binding PatientId}" FontSize="16" Foreground="#14B8A6" FontWeight="Bold" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock Text="Estado:" FontWeight="Bold" Foreground="#475569" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                    <ComboBox SelectedValue="{Binding Status}" Width="150" Padding="5">
+                        <ComboBoxItem Content="Prospecto"/>
+                        <ComboBoxItem Content="Aceptado"/>
+                        <ComboBoxItem Content="Iniciado"/>
+                        <ComboBoxItem Content="Terminado"/>
+                    </ComboBox>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <Border Grid.Row="2" Background="White" CornerRadius="8" BorderBrush="#E2E8F0" BorderThickness="1" Margin="0,0,0,15" Padding="1">
+            <Border.Effect><DropShadowEffect Color="#000000" Opacity="0.05" BlurRadius="10" ShadowDepth="2"/></Border.Effect>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Border Grid.Row="0" Background="#F8FAFC" Padding="10" BorderBrush="#E2E8F0" BorderThickness="0,0,0,1">
+                    <StackPanel Orientation="Horizontal">
+                        <ComboBox ItemsSource="{Binding AvailableTreatments}" SelectedItem="{Binding SelectedTreatment}" DisplayMemberPath="Name" Width="300" Padding="5" Margin="0,0,10,0"/>
+                        <Button Content="➕ Agregar" Command="{Binding AddItemCommand}" Background="#14B8A6" Foreground="White" Padding="15,5" BorderThickness="0" Cursor="Hand"/>
+                    </StackPanel>
+                </Border>
+                <DataGrid Grid.Row="1" ItemsSource="{Binding Items}" AutoGenerateColumns="False" CanUserAddRows="False" Background="Transparent" BorderThickness="0" HeadersVisibility="Column" RowHeight="35" GridLinesVisibility="Horizontal" HorizontalGridLinesBrush="#E2E8F0">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Cn" Binding="{Binding Quantity}" Width="50" />
+                        <DataGridTextColumn Header="Descripción del Tratamiento" Binding="{Binding Description}" Width="*" IsReadOnly="True"/>
+                        <DataGridTextColumn Header="Px" Binding="{Binding UnitPriceMXN, StringFormat=N2}" Width="80" />
+                        <DataGridTextColumn Header="% Dscto" Binding="{Binding DiscountPercentage, StringFormat=N2}" Width="70" />
+                        <DataGridTextColumn Header="Importe M.N." Binding="{Binding TotalMXN, StringFormat=C}" Width="100" IsReadOnly="True"/>
+                        <DataGridTextColumn Header="Importe USD" Binding="{Binding TotalUSD, StringFormat=C}" Width="100" IsReadOnly="True"/>
+                        <DataGridTemplateColumn Width="50">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button Content="🗑️" Command="{Binding DataContext.RemoveItemCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" Background="Transparent" BorderThickness="0" Cursor="Hand"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+        </Border>
+
+        <Grid Grid.Row="3" Margin="0,0,0,15">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <StackPanel Grid.Column="0" Margin="0,0,20,0">
+                <TextBlock Text="Observaciones del Tratamiento" FontWeight="Bold" Foreground="#475569" Margin="0,0,0,5"/>
+                <TextBox Text="{Binding Observations}" Height="80" TextWrapping="Wrap" AcceptsReturn="True" Padding="5" BorderBrush="#CBD5E1" Background="White"/>
+            </StackPanel>
+            <Border Grid.Column="1" Background="White" CornerRadius="8" Padding="20" BorderBrush="#E2E8F0" BorderThickness="1">
+                <Border.Effect><DropShadowEffect Color="#000000" Opacity="0.05" BlurRadius="10" ShadowDepth="2"/></Border.Effect>
+                <StackPanel>
+                    <Grid Margin="0,0,0,15">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="Totales M.N." FontWeight="Bold" Foreground="#475569"/>
+                        <TextBlock Grid.Column="1" Text="{Binding TotalMXN, StringFormat=C}" FontSize="18" FontWeight="Bold" Foreground="#EF4444"/>
+                    </Grid>
+                    <Grid Margin="0,0,0,15">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="Totales USD" FontWeight="Bold" Foreground="#475569"/>
+                        <TextBlock Grid.Column="1" Text="{Binding TotalUSD, StringFormat=C}" FontSize="18" FontWeight="Bold" Foreground="#EF4444"/>
+                    </Grid>
+                    <Border BorderBrush="#CBD5E1" BorderThickness="1" CornerRadius="6" Padding="10" Margin="0,10,0,0">
+                        <StackPanel>
+                            <TextBlock Text="Plan de Pago" FontWeight="Bold" FontSize="16" Foreground="#14B8A6" HorizontalAlignment="Center" Margin="0,0,0,10"/>
+                            <Grid Margin="0,0,0,5">
+                                <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="Anticipo M.N.: " FontWeight="SemiBold" Foreground="#475569" VerticalAlignment="Center"/>
+                                <TextBox Grid.Column="1" Text="{Binding DownPayment, UpdateSourceTrigger=PropertyChanged, StringFormat=N2}" Margin="5,0" Padding="5" BorderBrush="#CBD5E1" Background="White"/>
+                                <TextBlock Grid.Column="2" Text="{Binding RemainingBalance, StringFormat=C}" FontWeight="Bold" Foreground="#EF4444" VerticalAlignment="Center"/>
+                            </Grid>
+                            <Grid>
+                                <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="en: " FontWeight="SemiBold" Foreground="#475569" VerticalAlignment="Center"/>
+                                <TextBox Grid.Column="1" Text="{Binding NumberOfPayments, UpdateSourceTrigger=PropertyChanged}" Margin="5,0" Padding="5" BorderBrush="#CBD5E1" Background="White" Width="60"/>
+                                <TextBlock Grid.Column="2" Text="pagos de: " FontWeight="SemiBold" Foreground="#475569" VerticalAlignment="Center"/>
+                                <TextBlock Grid.Column="3" Text="{Binding PaymentAmount, StringFormat=C}" FontWeight="Bold" Foreground="#EF4444" VerticalAlignment="Center"/>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </Border>
+        </Grid>
+
+        <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Content="💾 Guardar" Command="{Binding SaveCommand}" Background="#14B8A6" Foreground="White" Padding="20,10" BorderThickness="0" Cursor="Hand" Margin="0,0,10,0" FontWeight="SemiBold"/>
+            <Button Content="🖨️ Imprimir" Command="{Binding PrintCommand}" Background="#F1F5F9" Foreground="#334155" Padding="20,10" BorderThickness="0" Cursor="Hand" Margin="0,0,10,0" FontWeight="SemiBold"/>
+            <Button Content="❌ Cancelar" Command="{Binding CancelCommand}" Background="#FEE2E2" Foreground="#EF4444" Padding="20,10" BorderThickness="0" Cursor="Hand" FontWeight="SemiBold"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

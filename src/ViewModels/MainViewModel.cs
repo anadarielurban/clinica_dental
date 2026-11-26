@@ -1,3 +1,4 @@
+﻿using DentalClinicWPF.ViewModels.Budget;
 using DentalClinicWPF.ViewModels.Pos;
 // ViewModels/MainViewModel.cs
 using System;
@@ -53,6 +54,8 @@ namespace DentalClinicWPF.ViewModels
         public ICommand ShowMedicalRecordsCommand { get; }
         public ICommand ShowPrescriptionsCommand { get; }
         public ICommand ShowSchedulesCommand { get; }
+        public ICommand ShowBudgetCommand { get; }
+    
         public ICommand ShowInventoryCommand { get; }
         public ICommand ShowSuppliersCommand { get; }
         public ICommand ShowLabOrdersCommand { get; }
@@ -72,14 +75,15 @@ namespace DentalClinicWPF.ViewModels
             ShowDentistsCommand = new RelayCommand(() => OpenTab("Dentistas", new DentistViewModel(_context, OpenTab)));
             ShowTreatmentsCommand = new RelayCommand(() => OpenTab("Tratamientos", new TreatmentViewModel(_context)));
             ShowInvoicesCommand = new RelayCommand(() => OpenTab("Facturas", new InvoiceViewModel(_context)));
+            ShowBudgetCommand = new RelayCommand(() => OpenTab("Presupuestos", new BudgetViewModel(_context)));
             ShowPosCommand = new RelayCommand(() => OpenTab("Punto de Venta", new PosViewModel(_context)));
             ShowTreatmentPlansCommand = new RelayCommand(() => OpenTab("Planes de Tratamiento", new TreatmentPlanViewModel(_context)));
             ShowMedicalRecordsCommand = new RelayCommand(() => OpenTab("Expedientes", new MedicalRecordViewModel(_context)));
             ShowPrescriptionsCommand = new RelayCommand(() => OpenTab("Recetas", new PrescriptionViewModel(_context, OpenTab)));
-            // ShowSchedulesCommand = new RelayCommand(() => OpenTab("Horarios", new ScheduleViewModel(_context))); // Módulo deshabilitado
+            // ShowSchedulesCommand = new RelayCommand(() => OpenTab("Horarios", new ScheduleViewModel(_context))); // MÃ³dulo deshabilitado
             ShowInventoryCommand = new RelayCommand(() => OpenTab("Inventario", new InventoryViewModel(_context)));
             ShowSuppliersCommand = new RelayCommand(() => OpenTab("Proveedores", new SupplierViewModel(_context)));
-            ShowLabOrdersCommand = new RelayCommand(() => OpenTab("Órdenes de Laboratorio", new LabOrderViewModel(_context)));
+            ShowLabOrdersCommand = new RelayCommand(() => OpenTab("Ã“rdenes de Laboratorio", new LabOrderViewModel(_context)));
             ShowEmployeesCommand = new RelayCommand(() => OpenTab("Empleados", new EmployeeViewModel(_context)));
             ShowRoomsCommand = new RelayCommand(() => OpenTab("Consultorios", new RoomViewModel(_context)));
             ShowEquipmentCommand = new RelayCommand(() => OpenTab("Equipos", new EquipmentViewModel(_context)));
@@ -117,14 +121,14 @@ namespace DentalClinicWPF.ViewModels
         {
             if (prescription == null) return;
 
-            // AQUI DEBES LLAMAR A TU MÉTODO QUE ABRE LA PESTAÑA DE RECETAS.
-            // Como no conozco el nombre exacto, asumo que tienes un comando o método para abrir pestañas.
+            // AQUI DEBES LLAMAR A TU MÃ‰TODO QUE ABRE LA PESTAÃ‘A DE RECETAS.
+            // Como no conozco el nombre exacto, asumo que tienes un comando o mÃ©todo para abrir pestaÃ±as.
             // Ejemplo: OpenTab("Recetas", new PrescriptionViewModel(_context));
             
-            // TODO: Descomentar y ajustar la siguiente línea según tu código real:
+            // TODO: Descomentar y ajustar la siguiente lÃ­nea segÃºn tu cÃ³digo real:
             // AbrirPestanaRecetas();
             
-            // 1. Intentar ejecutar el comando que abre el módulo de recetas
+            // 1. Intentar ejecutar el comando que abre el mÃ³dulo de recetas
                 var cmdProp = this.GetType().GetProperty("ShowPrescriptionsCommand") 
                            ?? this.GetType().GetProperty("OpenPrescriptionsCommand") 
                            ?? this.GetType().GetProperty("ShowRecetasCommand")
@@ -137,7 +141,7 @@ namespace DentalClinicWPF.ViewModels
                         var cmd = cmdProp.GetValue(this) as System.Windows.Input.ICommand;
                         if (cmd != null) 
                         {
-                            // Ejecuta el comando para cambiar de pestaña
+                            // Ejecuta el comando para cambiar de pestaÃ±a
                             cmd.Execute(null); 
                             return;
                         }
@@ -145,11 +149,15 @@ namespace DentalClinicWPF.ViewModels
                     catch { } // Si el comando falla, ignoramos el error y mostramos el mensaje de abajo
                 }
 
-                // 2. Si no se encuentra el comando exacto, avisamos pero la receta ya está seleccionada en el ViewModel
-                System.Windows.MessageBox.Show("Receta lista. Por favor haz clic en la pestaña 'Recetas' en el menú lateral.", "Navegación");
+                // 2. Si no se encuentra el comando exacto, avisamos pero la receta ya estÃ¡ seleccionada en el ViewModel
+                System.Windows.MessageBox.Show("Receta lista. Por favor haz clic en la pestaÃ±a 'Recetas' en el menÃº lateral.", "NavegaciÃ³n");
         }
     }
 }
+
+
+
+
 
 
 

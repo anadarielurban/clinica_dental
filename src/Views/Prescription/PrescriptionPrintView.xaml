@@ -19,10 +19,7 @@
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
-            <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
-                <TextBlock Text="Nexup" FontSize="32" FontWeight="Black" Foreground="#2B3464" FontFamily="Segoe UI"/>
-                <TextBlock Text="DENTAL" FontSize="12" FontWeight="Bold" Foreground="#00A8E1" Margin="5,8,0,0" VerticalAlignment="Center"/>
-            </StackPanel>
+            <Image Source="/images/logo_nexup.png" Width="160" MaxHeight="65" HorizontalAlignment="Left" VerticalAlignment="Center" Stretch="Uniform"/>
             <StackPanel Grid.Column="1" HorizontalAlignment="Right">
                 <TextBlock Text="Dra. Nayeli Sandoval Chavez" FontSize="14" FontWeight="Bold" Foreground="#333333" HorizontalAlignment="Right"/>
                 <TextBlock Text="Cédula Profesional: 15794017" FontSize="11" Foreground="#00A8E1" HorizontalAlignment="Right" Margin="0,2,0,2"/>
